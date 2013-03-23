@@ -9,6 +9,7 @@ public class Preferences {
 
 	public static final String KEY_SOURCE_ID = "sourceID";
 	public static final String KEY_PREFERRED_STOP_ID = "PreferredStopID";
+	public static final String KEY_STOPS = "Stops";
 	
 	private static boolean initialised = false;
 	
@@ -28,8 +29,13 @@ public class Preferences {
 	
 	public static String getPreference(Context ctx, String key) {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ctx);
-		return sharedPreferences.getString(key, null);
+		return sharedPreferences.getString(key, "");
 	}
 	
-	
+	public static void setPreference(Context ctx, String key, String value) {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ctx);
+		SharedPreferences.Editor editor = sharedPreferences.edit();
+		editor.putString(key, value);
+		editor.commit();
+	}
 }

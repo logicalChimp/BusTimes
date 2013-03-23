@@ -22,6 +22,8 @@
     <string name="settings_metawatch_screen_title">Meta Watch</string>
     <string name="settings_metawatch_register">Register with MWM</string>
     <string name="settings_metawatch_register_desc">Attempts to register as a watch application with the currently installed Meta Watch Manager</string>
+    <string name="settings_stops_title">Stops List</string>
+    <string name="settings_stops_desc">Cache of Stops downloaded from chosen source</string>
 
     <string-array name="settings_sources_names">
         <item>London, UK (TFL)</item>

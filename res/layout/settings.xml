@@ -16,6 +16,12 @@
         android:summary="@string/settings_preferred_stop_id_desc"
         android:defaultValue="" />
     
+    <EditTextPreference
+        android:title="@string/settings_stops_title"
+        android:key="Stops"
+        android:summary="@string/settings_stops_desc"
+        android:defaultValue="" />
+    
     <PreferenceScreen android:title="@string/settings_metawatch_screen_title">
         <Preference
             android:title="@string/settings_metawatch_register" 

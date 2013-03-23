@@ -60,7 +60,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int app_name=0x7f050001;
         public static final int dummy_button=0x7f050007;
         public static final int dummy_content=0x7f050006;
-        public static final int hello_world=0x7f050015;
+        public static final int hello_world=0x7f050017;
         public static final int menu_announce=0x7f050004;
         public static final int menu_notify=0x7f050005;
         public static final int menu_settings=0x7f050003;
@@ -77,7 +77,9 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int settings_preferred_stop_id_title=0x7f050010;
         public static final int settings_sources_dialogtitle=0x7f05000f;
         public static final int settings_sources_title=0x7f05000e;
-        public static final int title_activity_meta_watch=0x7f050016;
+        public static final int settings_stops_desc=0x7f050016;
+        public static final int settings_stops_title=0x7f050015;
+        public static final int title_activity_meta_watch=0x7f050018;
         public static final int title_activity_settings=0x7f050008;
     }
     public static final class style {

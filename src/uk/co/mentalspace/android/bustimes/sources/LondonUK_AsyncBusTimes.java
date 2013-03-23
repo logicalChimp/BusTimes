@@ -21,10 +21,9 @@ import uk.co.mentalspace.android.bustimes.Renderer;
 import android.os.AsyncTask;
 import android.util.Log;
 
-public class LondonUK_Async extends AsyncTask<Void, Void, List<BusTime>> {
+public class LondonUK_AsyncBusTimes extends AsyncTask<Void, Void, List<BusTime>> {
 	private static final String BUS_TIMES_URL = "http://countdown.api.tfl.gov.uk/interfaces/ura/instant_V1";
-//	private static final String BUS_LOCATIONS_URL = "http://www.tfl.gov.uk/tfl/businessandpartners/syndication/feed.aspx?email=willinghamg@hotmail.com&Id=10";
-	private static final String LOGNAME = "LondonUK_Async";
+	private static final String LOGNAME = "LondonUK_AsyncBusTimes";
 
 	private Renderer display = null;
 	private Location location = null;

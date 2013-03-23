@@ -12,10 +12,10 @@ public class RefreshBusTimes extends DataRefreshTask {
 			public void run() {
 				
 		        //fetch list of bus times for the location
-				LondonUK_Async async = null;
+				LondonUK_AsyncBusTimes async = null;
 				try {
 					Log.d(LOGNAME, "Creating async task...");
-					async = new LondonUK_Async();
+					async = new LondonUK_AsyncBusTimes();
 				} catch (Exception e) {
 					Log.d(LOGNAME, "Unexpected error", e);
 					return;
