@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_id">BusTimes</string>
+    <string name="app_name">Bus Times</string>
+    <string name="mw_placeholder">Displaying on MetaWatch</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_announce">Announce to MW</string>
+    <string name="menu_notify">Notify MW</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="msg_no_source_selected">Please select a source of bus times from the settings menu.</string>
+    <string name="msg_invalid_source_selected">Your currently selected source of bus times is not valid.  Please select a new source of bus times from the settings menu.</string>
+    <string name="msg_unable_to_select_stop">Cannot retrieve bus stop details.  Please enable GPS, or enter preferred bus stop id in the settings.</string>
+    <string name="msg_failed_to_get_bus_times">Unable to retrieve bus times.  Please check your internet connection, and try again.</string>
+    <string name="settings_CancelButton">Cancel</string>
+    <string name="settings_sources_title">Select Source</string>
+    <string name="settings_sources_dialogtitle">Select Source</string>
+    <string name="settings_preferred_stop_id_title">Preferred Stop ID</string>
+    <string name="settings_preferred_stop_id_desc">The ID of your preferred bus stop</string>
+    <string name="settings_metawatch_screen_title">Meta Watch</string>
+    <string name="settings_metawatch_register">Register with MWM</string>
+    <string name="settings_metawatch_register_desc">Attempts to register as a watch application with the currently installed Meta Watch Manager</string>
+
+    <string-array name="settings_sources_names">
+        <item>London, UK (TFL)</item>
+    </string-array>
+    <string-array name="settings_sources_values">
+        <item>londonuk-tfl</item>
+    </string-array>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_meta_watch">MetaWatchActivity</string>
+
+</resources>
