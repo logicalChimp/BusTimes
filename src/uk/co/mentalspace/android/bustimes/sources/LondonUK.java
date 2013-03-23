@@ -2,6 +2,7 @@ package uk.co.mentalspace.android.bustimes.sources;
 
 import uk.co.mentalspace.android.bustimes.DataRefreshTask;
 import uk.co.mentalspace.android.bustimes.Location;
+import uk.co.mentalspace.android.bustimes.Preferences;
 import uk.co.mentalspace.android.bustimes.Renderer;
 import uk.co.mentalspace.android.bustimes.Source;
 
@@ -55,7 +56,8 @@ public class LondonUK implements Source {
 		//return Location object
 		
 		//return null;
-		return new Location("52053", "Dummy Stop", 530000, -1000);
+		String stopId = Preferences.getPreference(display.getDisplayContext(), Preferences.KEY_PREFERRED_STOP_ID);
+		return new Location(stopId, "Dummy Stop", 530000, -1000);
 	}
 
 	@Override
