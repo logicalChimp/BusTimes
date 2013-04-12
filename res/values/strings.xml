@@ -14,9 +14,16 @@
     <string name="msg_invalid_source_selected">Your currently selected source of bus times is not valid.  Please select a new source of bus times from the settings menu.</string>
     <string name="msg_unable_to_select_stop">Cannot retrieve bus stop details.  Please enable GPS, or enter preferred bus stop id in the settings.</string>
     <string name="msg_failed_to_get_bus_times">Unable to retrieve bus times.  Please check your internet connection, and try again.</string>
+    <string name="msg_no_locator_selected">Please select a Stop locator from the settings menu.</string>
+    <string name="msg_invalid_locator_selected">You currently selected Stop locator is not valid.  Please select a new Stop locator from the settings menu.</string>
     <string name="settings_CancelButton">Cancel</string>
+    <string name="settings_sources_screen_title">Sources</string>
+    <string name="settings_sources_locations_refresh">Refresh Data</string>
+    <string name="settings_sources_locations_refresh_desc">Refresh bus stops data for chosen source</string>
     <string name="settings_sources_title">Select Source</string>
     <string name="settings_sources_dialogtitle">Select Source</string>
+    <string name="settings_locators_title">Select Locator</string>
+    <string name="settings_locators_dialogtitle">Select Locator</string>
     <string name="settings_preferred_stop_id_title">Preferred Stop ID</string>
     <string name="settings_preferred_stop_id_desc">The ID of your preferred bus stop</string>
     <string name="settings_metawatch_screen_title">Meta Watch</string>
@@ -24,15 +31,33 @@
     <string name="settings_metawatch_register_desc">Attempts to register as a watch application with the currently installed Meta Watch Manager</string>
     <string name="settings_stops_title">Stops List</string>
     <string name="settings_stops_desc">Cache of Stops downloaded from chosen source</string>
+    <string name="location_selection_stop_code_filter_label">Stop</string>
+    <string name="location_selection_stop_code_filter_button">Find</string>
+    <string name="location_selection_stop_code_gps">GPS</string>
 
+    <string name="configure_source_icon_desc">icon indicating more options</string>
+    <string name="configure_source_label">Data Source</string>
+    <string name="configure_add_location_by_code_button">Specify\nLocation</string>
+    <string name="configure_browse_locations_button">Browse\nLocations</string>
+    <string name="configure_source_refresh_data_button">Refresh Locations Data</string>
+    
     <string-array name="settings_sources_names">
         <item>London, UK (TFL)</item>
     </string-array>
     <string-array name="settings_sources_values">
         <item>londonuk-tfl</item>
     </string-array>
+    <string-array name="settings_locators_names">
+        <item>Manually enter Stop ID</item>
+    </string-array>
+    <string-array name="settings_locators_values">
+        <item>PreferredLocationLocator</item>
+    </string-array>
 
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_meta_watch">MetaWatchActivity</string>
+    <string name="title_activity_select_location">SelectLocationActivity</string>
+    <string name="title_activity_configuration">ConfigurationActivity</string>
+    <string name="action_settings">Settings</string>
 
 </resources>

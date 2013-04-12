@@ -6,21 +6,15 @@
         android:showAsAction="never"
         android:title="@string/menu_settings"/>
 
-    <item
-        android:id="@+id/menu_announce"
+    <item 
+        android:id="@+id/menu_map"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/menu_announce"/>
+        android:title="Show Map "/>
 
-    <item
-        android:id="@+id/menu_notify"
+    <item 
+        android:id="@+id/menu_configure"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/menu_notify"/>
-
-    <item
-        android:id="@+id/menu_display"
-        android:orderInCategory="100"
-        android:showAsAction="never"
-        android:title="Test Display" />
+        android:title="Configure"/>
 </menu>

@@ -17,6 +17,19 @@ public class Coordinator {
 		}
 	}
 	
+	public static Source getChosenSource(Context ctx) {
+		Log.d("Coordinator", "Fetching current Source");
+		String sourceId = Preferences.getPreference(ctx, Preferences.KEY_SOURCE_ID);
+		if (null == sourceId || "".equals(sourceId.trim())) {			
+			Log.d("Coordinator", "No source specified");
+			return null;
+		}
+        
+		Log.d("Coordinator", "Fetching Source object for source id");
+        Source src = SourceManager.getSource(sourceId);
+        return src;
+	}
+
 	public static void execute(Renderer display) {
 		
 		Log.d("Coordinator", "Retrieving display context");
@@ -45,24 +58,38 @@ public class Coordinator {
 			return;
         }
         
-        Location loc = null;
+        String locatorId = Preferences.getPreference(ctx, Preferences.KEY_LOCATOR_ID);
+        if (null == locatorId || "".equals(locatorId.trim())) {
+        	String msg = ctx.getResources().getString(R.string.msg_no_locator_selected);
+        	display.displayMessage(msg, Renderer.MESSAGE_ERROR);
+        	return;
+        }
+        
+        Locator locator = LocatorManager.getLocator(locatorId);
+        if (null == locator) {
+        	String msg = ctx.getResources().getString(R.string.msg_invalid_locator_selected);
+        	display.displayMessage(msg, Renderer.MESSAGE_ERROR);
+        	return;
+        }
+        
+        Location loc = locator.getLocation(display);
         //check if GPS is enabled
         //  if it is, attempt to get lat/lon from GPS
         //  fetch location from source by lat/lon
         //  Location loc = src.getNearestStop(this, lat, lon);
         
-		Log.d("Coordinator", "Trying to retrieve preferred stop id from preferences");
-        //else, check if preferred stop is set in preferences
-        String preferredStopId = Preferences.getPreference(ctx, Preferences.KEY_PREFERRED_STOP_ID);
-        if (null != preferredStopId) {
-    		Log.d("Coordinator", "Preferred stop id not null - converting to location");
-        	loc = src.getSpecificStop(display, preferredStopId);
-        }
+//		Log.d("Coordinator", "Trying to retrieve preferred stop id from preferences");
+//        //else, check if preferred stop is set in preferences
+//        String preferredStopId = Preferences.getPreference(ctx, Preferences.KEY_PREFERRED_STOP_ID);
+//        if (null != preferredStopId) {
+//    		Log.d("Coordinator", "Preferred stop id not null - converting to location");
+//        	loc = src.getSpecificStop(display, preferredStopId);
+//        }
         
 		Log.d("Coordinator", "Checking for valid location object");
         //else, display message to user asking them to either enable GPS, or enter a preferred stop ID in the preferences, and exit function
         if (null == loc) {
-    		Log.e("Coordinator", "No valid location object retrieved (by either gps or preferences)");
+    		Log.e("Coordinator", "No valid location object retrieved by locator");
         	String msg = ctx.getResources().getString(R.string.msg_unable_to_select_stop);
 			display.displayMessage(msg, Renderer.MESSAGE_ERROR);
 			return;

@@ -3,10 +3,13 @@ package uk.co.mentalspace.android.bustimes.displays.android;
 
 import uk.co.mentalspace.android.bustimes.BusTime;
 import java.util.List;
+
+import uk.co.mentalspace.android.bustimes.ConfigurationActivity;
 import uk.co.mentalspace.android.bustimes.Coordinator;
 import uk.co.mentalspace.android.bustimes.Location;
 import uk.co.mentalspace.android.bustimes.R;
 import uk.co.mentalspace.android.bustimes.Renderer;
+import uk.co.mentalspace.android.bustimes.SelectLocationActivity;
 import uk.co.mentalspace.android.bustimes.SettingsActivity;
 
 import android.os.Bundle;
@@ -71,6 +74,12 @@ public class Main extends Activity implements Renderer {
     	switch (item.getItemId()) {
     	case R.id.menu_settings:
     		startActivity(new Intent(this, SettingsActivity.class));
+    		return true;
+    	case R.id.menu_map:
+    		startActivity(new Intent(this, SelectLocationActivity.class));
+    		return true;
+    	case R.id.menu_configure:
+    		startActivity(new Intent(this, ConfigurationActivity.class));
     		return true;
     	default:
     		return super.onOptionsItemSelected(item);

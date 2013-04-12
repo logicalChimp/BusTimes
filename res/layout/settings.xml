@@ -1,12 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     
+    <PreferenceScreen android:title="@string/settings_sources_screen_title">
+        <Preference
+            android:title="@string/settings_sources_locations_refresh" 
+            android:key="RefreshLocations"
+            android:summary="@string/settings_sources_locations_refresh_desc" />
+        
+	    <ListPreference
+	        android:entries="@array/settings_sources_names"
+	        android:entryValues="@array/settings_sources_values"
+	        android:dialogTitle="@string/settings_sources_dialogtitle"
+	        android:key="sourceID"
+	        android:title="@string/settings_sources_title"
+	        android:negativeButtonText="@string/settings_CancelButton"
+	        android:enabled="true" />        
+	</PreferenceScreen>
+	    
     <ListPreference
-        android:entries="@array/settings_sources_names"
-        android:entryValues="@array/settings_sources_values"
-        android:dialogTitle="@string/settings_sources_dialogtitle"
-        android:key="sourceID"
-        android:title="@string/settings_sources_title"
+        android:entries="@array/settings_locators_names"
+        android:entryValues="@array/settings_locators_values"
+        android:dialogTitle="@string/settings_locators_dialogtitle"
+        android:key="locatorID"
+        android:title="@string/settings_locators_title"
         android:negativeButtonText="@string/settings_CancelButton"
         android:enabled="true" />        
 

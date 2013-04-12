@@ -2,10 +2,12 @@ package uk.co.mentalspace.android.bustimes.sources;
 
 import java.util.Map;
 
+import android.content.Context;
 import android.util.Log;
 
 import uk.co.mentalspace.android.bustimes.DataRefreshTask;
 import uk.co.mentalspace.android.bustimes.Location;
+import uk.co.mentalspace.android.bustimes.ProgressDisplay;
 import uk.co.mentalspace.android.bustimes.Renderer;
 import uk.co.mentalspace.android.bustimes.Source;
 
@@ -28,6 +30,10 @@ public class LondonUK implements Source {
 	
 	public static void setLocations(Map<String,Location> locs) {
 		locations = locs;
+	}
+	
+	public int getEstimatedLocationCount() {
+		return 58000;
 	}
 
 	@Override
@@ -74,6 +80,24 @@ public class LondonUK implements Source {
 //		String stopId = Preferences.getPreference(display.getDisplayContext(), Preferences.KEY_PREFERRED_STOP_ID);
 //		return new Location(stopId, "Dummy Stop", 530000, -1000);
 	}
+
+	public void loadLocations(Context ctx) {
+		Log.d(LOGNAME, "Creating Bus Stops asyncronous task");
+		LondonUK_AsyncBusStops async = new LondonUK_AsyncBusStops();
+		async.init(ctx);
+		
+		Log.d(LOGNAME, "Executing asyncronous task");
+		async.execute();
+	}
+	
+	public void loadLocations(Context ctx, ProgressDisplay pd) {
+		Log.d(LOGNAME, "Creating Bus Stops asyncronous task (with Progress Bar)");
+		LondonUK_AsyncBusStops async = new LondonUK_AsyncBusStops();
+		async.init(ctx, pd);
+		
+		Log.d(LOGNAME, "Executing asyncronous task");
+		async.execute();
+	}
 	
 	private void populateLocations(Renderer display) {
 		Log.d(LOGNAME, "Building locations list");
@@ -82,7 +106,7 @@ public class LondonUK implements Source {
 
 			Log.d(LOGNAME, "Creating Bus Stops asyncronous task");
 			LondonUK_AsyncBusStops async = new LondonUK_AsyncBusStops();
-			async.init(display);
+			async.init(display.getDisplayContext());
 			
 			Log.d(LOGNAME, "Executing asyncronous task");
 			async.execute();

@@ -6,10 +6,26 @@
 
     <uses-sdk
         android:minSdkVersion="8"
-        android:targetSdkVersion="10" />
+        android:targetSdkVersion="17" />
 
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- Permissions for Google Maps V2 -->
+    <permission
+        android:name="uk.co.mentalspace.android.bustimes.permission.MAPS_RECEIVE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="uk.co.mentalspace.android.bustimes.permission.MAPS_RECEIVE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
+
+    <!-- Permissions for Network / GPS based locations -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -42,6 +58,19 @@
         <service android:name="uk.co.mentalspace.android.bustimes.displays.metawatch.MetaWatchService" >
         </service>
 
+        <activity
+            android:name="uk.co.mentalspace.android.bustimes.SelectLocationActivity"
+            android:label="@string/title_activity_select_location" >
+        </activity>
+
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="AIzaSyA0-3MHOXg9wT39-TawNm_Xv3V8mSY_Zss" />
+
+        <activity
+            android:name="uk.co.mentalspace.android.bustimes.ConfigurationActivity"
+            android:label="@string/title_activity_configuration" >
+        </activity>
     </application>
 
 </manifest>

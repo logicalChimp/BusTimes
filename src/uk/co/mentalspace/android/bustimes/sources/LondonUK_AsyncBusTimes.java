@@ -49,7 +49,7 @@ public class LondonUK_AsyncBusTimes extends AsyncTask<Void, Void, List<BusTime>>
 			return null;
 		}
 		
-		String url = BUS_TIMES_URL + "?StopCode1="+location.getId()+"&DirectionID=1&VisitNumber=1&ReturnList=LineName,DestinationText,EstimatedTime";
+		String url = BUS_TIMES_URL + "?StopCode1="+location.getStopCode()+"&DirectionID=1&VisitNumber=1&ReturnList=LineName,DestinationText,EstimatedTime";
 		Log.d(LOGNAME, "Data feed url: "+url);
 
 		ArrayList<BusTime> busTimes = new ArrayList<BusTime>();
@@ -129,8 +129,10 @@ public class LondonUK_AsyncBusTimes extends AsyncTask<Void, Void, List<BusTime>>
 	}
 	
 	protected void onPostExecute(List<BusTime> busTimes) {
-		if (null != busTimes) {
+		if (null != busTimes && busTimes.size() != 0) {
 			Coordinator.updateBusTimes(display, location, busTimes);
+		} else {
+			Coordinator.terminate();
 		}
 	}
 }
