@@ -23,8 +23,13 @@ public class LocationsDBAdapter {
     public static final String KEY_SRC_POS_A = "srcPosA";
     public static final String KEY_SRC_POS_B = "srcPosB";
     public static final String KEY_HEADING = "heading";
+    public static final String KEY_NICK_NAME = "nickName";
+    public static final String KEY_CHOSEN = "chosen";    
 
-    private BusTimesDBHelper mDbHelper;
+	private static final String[] ALL_COLUMNS = new String[] {KEY_ROWID, KEY_STOP_CODE, KEY_NAME, KEY_DESC, KEY_WGS84_LAT, KEY_WGS84_LONG, 
+		KEY_SRC_POS_A, KEY_SRC_POS_B, KEY_HEADING, KEY_NICK_NAME, KEY_CHOSEN};
+
+	private BusTimesDBHelper mDbHelper;
     private SQLiteDatabase mDb;
 
     private final Context mCtx;
@@ -69,6 +74,8 @@ public class LocationsDBAdapter {
         initialValues.put(KEY_SRC_POS_A, srcPosA);
         initialValues.put(KEY_SRC_POS_B, srcPosB);
         initialValues.put(KEY_HEADING, heading);
+        initialValues.put(KEY_NICK_NAME, "");
+        initialValues.put(KEY_CHOSEN, 0);
 
         return mDb.insert(BusTimesDBHelper.LOCATIONS_TABLE, null, initialValues);
     }
@@ -87,8 +94,31 @@ public class LocationsDBAdapter {
      * @return Cursor over all notes
      */
     public Cursor fetchAllLLocations() {
-        return mDb.query(BusTimesDBHelper.LOCATIONS_TABLE, new String[] {KEY_ROWID, KEY_STOP_CODE, KEY_NAME, KEY_DESC, KEY_WGS84_LAT, KEY_WGS84_LONG, 
-        		KEY_SRC_POS_A, KEY_SRC_POS_B, KEY_HEADING}, null, null, null, null, null);
+        return mDb.query(BusTimesDBHelper.LOCATIONS_TABLE, ALL_COLUMNS, null, null, null, null, null);
+    }
+    
+    public Cursor fetchClosestSelectedLocation(int lat, int lon) {
+    	String sql = "select _id, stopCode, name, desc, lat, lng, srcPosA, srcPosB, heading, nickName, chosen, " +
+    			"abs(lat - "+lat+") + abs(lng - "+lon+") as distance from "+BusTimesDBHelper.LOCATIONS_TABLE+" where chosen = 1 order by distance asc";
+    	//Math.abs(lat - "+lat+") + 
+    	Cursor c = mDb.rawQuery(sql, null);
+    	if (null != c) c.moveToFirst();
+    	
+    	return c;
+    }
+    
+    public Location getClosestSelectedLocation(int lat, int lon) {
+    	Cursor c = null;
+    	try {
+    		c = fetchClosestSelectedLocation(lat, lon);
+        	if (null == c || c.getCount() == 0) return null;        	
+        	return generateLocation(c);
+    	} catch (SQLException sqle) {
+    		Log.e(LOGNAME, "Failed to locate closest selected location", sqle);
+    		return null;
+    	} finally {
+    		if (null != c) c.close();
+    	}
     }
 
     /**
@@ -100,13 +130,25 @@ public class LocationsDBAdapter {
      */
     public Cursor fetchLocationByID(long rowId) throws SQLException {
         Cursor mCursor =
-                mDb.query(true, BusTimesDBHelper.LOCATIONS_TABLE, new String[] {KEY_ROWID, KEY_STOP_CODE, KEY_NAME, KEY_DESC, KEY_WGS84_LAT, KEY_WGS84_LONG, 
-                		KEY_SRC_POS_A, KEY_SRC_POS_B, KEY_HEADING}, KEY_ROWID + "=" + rowId, null,
+                mDb.query(true, BusTimesDBHelper.LOCATIONS_TABLE, ALL_COLUMNS, KEY_ROWID + "=" + rowId, null,
                         null, null, null, null);
         if (mCursor != null) {
             mCursor.moveToFirst();
         }
         return mCursor;
+    }
+    
+    public Location getLocationByID(long rowId) {
+    	Cursor c = null;
+    	try {
+    		c = fetchLocationByID(rowId);
+        	if (null == c || c.getCount() == 0) return null;        	
+        	return generateLocation(c);
+    	} catch (SQLException sqle) {
+    		return null;
+    	} finally {
+    		if (null != c) c.close();
+    	}
     }
     
     public Location getLocationByStopCode(String stopCode) {
@@ -131,7 +173,9 @@ public class LocationsDBAdapter {
                 c.getString(c.getColumnIndex(KEY_SRC_POS_B)),
                 c.getString(c.getColumnIndex(KEY_HEADING)),
                 c.getInt(c.getColumnIndex(KEY_WGS84_LAT)),
-                c.getInt(c.getColumnIndex(KEY_WGS84_LONG)));
+                c.getInt(c.getColumnIndex(KEY_WGS84_LONG)),
+                c.getString(c.getColumnIndex(KEY_NICK_NAME)),
+                c.getInt(c.getColumnIndex(KEY_CHOSEN)));
 		return loc;
     }
     
@@ -144,8 +188,7 @@ public class LocationsDBAdapter {
     public Cursor fetchLocationByStopCode(String stopCode) throws SQLException {
 
         Cursor mCursor =
-                mDb.query(true, BusTimesDBHelper.LOCATIONS_TABLE, new String[] {KEY_ROWID, KEY_STOP_CODE, KEY_NAME, KEY_DESC, KEY_WGS84_LAT, KEY_WGS84_LONG, 
-                		KEY_SRC_POS_A, KEY_SRC_POS_B, KEY_HEADING}, KEY_STOP_CODE + "= ?", new String[]{stopCode}, 
+                mDb.query(true, BusTimesDBHelper.LOCATIONS_TABLE, ALL_COLUMNS, KEY_STOP_CODE + "= ?", new String[]{stopCode}, 
                         null, null, null, null);
         if (mCursor != null) {
             mCursor.moveToFirst();
@@ -155,11 +198,9 @@ public class LocationsDBAdapter {
     
     public Cursor fetchLocationsInArea(int top, int right, int bottom, int left) throws SQLException {
         Cursor mCursor =
-                mDb.query(true, BusTimesDBHelper.LOCATIONS_TABLE, new String[] {KEY_ROWID, KEY_STOP_CODE, KEY_NAME, KEY_DESC, KEY_WGS84_LAT, KEY_WGS84_LONG, 
-                		KEY_SRC_POS_A, KEY_SRC_POS_B, KEY_HEADING}, 
+                mDb.query(true, BusTimesDBHelper.LOCATIONS_TABLE, ALL_COLUMNS, 
                 		KEY_WGS84_LAT+" <= "+top+" AND "+KEY_WGS84_LAT+" >= "+bottom+" AND "+KEY_WGS84_LONG+" >= "+left+" AND "+KEY_WGS84_LONG+" <= "+right, 
-                		null,
-                        null, null, null, null);
+                		null, null, null, null, null);
         if (mCursor != null) {
             mCursor.moveToFirst();
         }
@@ -179,14 +220,42 @@ public class LocationsDBAdapter {
 		    	locs.add(loc);
 		    	c.moveToNext();
 	    	}
-    	} catch (Exception e) {
-    		Log.e(LOGNAME, "Unknown exception occured: ", e);
-    		
     	} finally {
 	    	if (null != c) c.close();
     	}
     	return locs;
     }
+    
+    public Cursor fetchSelectedLocations() throws SQLException {
+        Cursor mCursor =
+                mDb.query(true, BusTimesDBHelper.LOCATIONS_TABLE, ALL_COLUMNS, 
+                		KEY_CHOSEN+" = 1", 
+                		null, null, null, null, null);
+        if (mCursor != null) {
+            mCursor.moveToFirst();
+        }
+        return mCursor;
+    }
+    
+    public List<Location> getSelectedLocations() throws SQLException {
+    	Log.d(LOGNAME, "Getting all Selected locations");
+    	Cursor c = fetchSelectedLocations();
+    	if (null == c) return null;
+
+    	ArrayList<Location> locs = new ArrayList<Location>();
+    	try {
+	    	c.moveToFirst();
+	    	while (!c.isAfterLast()) {
+		    	Location loc = generateLocation(c);
+		    	locs.add(loc);
+		    	c.moveToNext();
+	    	}
+    	} finally {
+	    	if (null != c) c.close();
+    	}
+    	return locs;
+    }
+    
     
     /**
      * Update the location using the details provided. The location to be updated is
@@ -197,9 +266,9 @@ public class LocationsDBAdapter {
      * @param body value to set note body to
      * @return true if the note was successfully updated, false otherwise
      */
-    public boolean updateBeacon(long rowId, String stopCode, String name, String desc, int lat, int lng, String srcPosA, String srcPosB, String heading) {
+    public boolean updateLocation(long rowId, String stopCode, String name, String desc, int lat, int lng, String srcPosA, String srcPosB, String heading, String nickName, int chosen) {
         ContentValues args = new ContentValues();
-        args.put(KEY_STOP_CODE, lng);
+        args.put(KEY_STOP_CODE, stopCode);
         args.put(KEY_NAME, name);
         args.put(KEY_DESC, desc);
         args.put(KEY_WGS84_LAT, lat);
@@ -207,8 +276,14 @@ public class LocationsDBAdapter {
         args.put(KEY_SRC_POS_A, srcPosA);
         args.put(KEY_SRC_POS_B, srcPosB);
         args.put(KEY_HEADING, heading);
+        args.put(KEY_NICK_NAME, nickName);
+        args.put(KEY_CHOSEN, chosen);
 
         return mDb.update(BusTimesDBHelper.LOCATIONS_TABLE, args, KEY_ROWID + "=" + rowId, null) > 0;
+    }
+    
+    public boolean updateLocation(Location loc) {
+    	return updateLocation(loc.getId(), loc.getStopCode(), loc.getLocationName(), loc.getDescription(), loc.getLat(), loc.getLon(), loc.getSrcPosA(), loc.getSrcPosB(), loc.getHeading(), loc.getNickName(), loc.getChosen());
     }
 
 }

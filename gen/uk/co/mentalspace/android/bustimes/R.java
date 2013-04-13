@@ -159,7 +159,7 @@ containing a value of this type.
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int action_settings=0x7f040026;
+        public static final int action_settings=0x7f040031;
         public static final int busTimesView=0x7f040013;
         public static final int chosen_location_nick_name_label=0x7f040020;
         public static final int chosen_location_stop_code_label=0x7f040022;
@@ -182,9 +182,17 @@ containing a value of this type.
         public static final int fullscreen_content_controls=0x7f04001a;
         public static final int hybrid=0x7f040004;
         public static final int locationSelectionMap=0x7f040018;
-        public static final int menu_configure=0x7f040025;
-        public static final int menu_map=0x7f040024;
-        public static final int menu_settings=0x7f040023;
+        public static final int map_info_window_dismiss_button=0x7f040029;
+        public static final int map_info_window_monitored_button=0x7f040028;
+        public static final int map_info_window_monitored_label=0x7f040027;
+        public static final int map_info_window_nick_name_label=0x7f040025;
+        public static final int map_info_window_nick_name_value=0x7f040026;
+        public static final int map_info_window_stop_code_value=0x7f04002a;
+        public static final int map_info_window_stop_name_label=0x7f040023;
+        public static final int map_info_window_stop_name_value=0x7f040024;
+        public static final int menu_configure=0x7f040030;
+        public static final int menu_map=0x7f04002f;
+        public static final int menu_settings=0x7f04002e;
         public static final int msgView=0x7f040012;
         public static final int none=0x7f040000;
         public static final int normal=0x7f040001;
@@ -193,6 +201,9 @@ containing a value of this type.
         public static final int rowBusNumber=0x7f04001d;
         public static final int rowLineNumber=0x7f04001c;
         public static final int satellite=0x7f040002;
+        public static final int select_location_map_info_window_chosen_icon=0x7f04002b;
+        public static final int select_location_map_info_window_nick_name_label=0x7f04002d;
+        public static final int select_location_map_info_window_stop_name_label=0x7f04002c;
         public static final int select_location_show_gps_location=0x7f040017;
         public static final int select_location_stop_code_filter=0x7f040015;
         public static final int select_location_stop_code_filter_button=0x7f040016;
@@ -207,7 +218,9 @@ containing a value of this type.
         public static final int activity_settings=0x7f030004;
         public static final int bus_times_row_layout=0x7f030005;
         public static final int chosen_location_row_layout=0x7f030006;
-        public static final int settings=0x7f030007;
+        public static final int map_info_window_popup=0x7f030007;
+        public static final int select_location_map_info_window=0x7f030008;
+        public static final int settings=0x7f030009;
     }
     public static final class menu {
         public static final int a=0x7f0a0000;
@@ -217,7 +230,7 @@ containing a value of this type.
         public static final int configuration=0x7f0a0004;
     }
     public static final class string {
-        public static final int action_settings=0x7f05003b;
+        public static final int action_settings=0x7f050043;
         public static final int app_id=0x7f050011;
         public static final int app_name=0x7f050012;
         /**   Title for notification shown when GooglePlayServices is unavailable [CHAR LIMIT=70] 
@@ -289,10 +302,17 @@ containing a value of this type.
         public static final int configure_source_refresh_data_button=0x7f050036;
         public static final int dummy_button=0x7f050018;
         public static final int dummy_content=0x7f050017;
-        public static final int hello_world=0x7f050037;
+        public static final int hello_world=0x7f05003f;
         public static final int location_selection_stop_code_filter_button=0x7f050030;
         public static final int location_selection_stop_code_filter_label=0x7f05002f;
         public static final int location_selection_stop_code_gps=0x7f050031;
+        public static final int map_info_window_choose_button=0x7f050038;
+        public static final int map_info_window_dismiss=0x7f05003e;
+        public static final int map_info_window_monitored_label=0x7f05003b;
+        public static final int map_info_window_monitored_off=0x7f05003d;
+        public static final int map_info_window_monitored_on=0x7f05003c;
+        public static final int map_info_window_nick_name_label=0x7f05003a;
+        public static final int map_info_window_stop_name_label=0x7f050039;
         public static final int menu_announce=0x7f050015;
         public static final int menu_notify=0x7f050016;
         public static final int menu_settings=0x7f050014;
@@ -303,6 +323,7 @@ containing a value of this type.
         public static final int msg_no_source_selected=0x7f05001a;
         public static final int msg_unable_to_select_stop=0x7f05001c;
         public static final int mw_placeholder=0x7f050013;
+        public static final int select_location_map_info_window_chosen_icon=0x7f050037;
         public static final int settings_CancelButton=0x7f050020;
         public static final int settings_locators_dialogtitle=0x7f050027;
         public static final int settings_locators_title=0x7f050026;
@@ -318,9 +339,9 @@ containing a value of this type.
         public static final int settings_sources_title=0x7f050024;
         public static final int settings_stops_desc=0x7f05002e;
         public static final int settings_stops_title=0x7f05002d;
-        public static final int title_activity_configuration=0x7f05003a;
-        public static final int title_activity_meta_watch=0x7f050038;
-        public static final int title_activity_select_location=0x7f050039;
+        public static final int title_activity_configuration=0x7f050042;
+        public static final int title_activity_meta_watch=0x7f050040;
+        public static final int title_activity_select_location=0x7f050041;
         public static final int title_activity_settings=0x7f050019;
     }
     public static final class style {

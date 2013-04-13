@@ -9,7 +9,7 @@ public class Preferences {
 
 	public static final String KEY_SOURCE_ID = "sourceID";
 	public static final String KEY_LOCATOR_ID = "locatorID";
-	public static final String KEY_PREFERRED_STOP_ID = "PreferredStopID";
+	public static final String KEY_SELECTED_STOP_IDS = "SelectedStopIDs";
 	public static final String KEY_STOPS = "Stops";
 	
 	private static boolean initialised = false;

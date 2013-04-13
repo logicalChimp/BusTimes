@@ -1,5 +1,8 @@
 package uk.co.mentalspace.android.bustimes;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.content.Intent;
@@ -48,20 +51,11 @@ public class ConfigurationActivity extends Activity implements OnClickListener {
 			addLocationsGroup.setVisibility(View.VISIBLE);
 		}
 		
-		String chosenStops = Preferences.getPreference(this, Preferences.KEY_PREFERRED_STOP_ID);
-		if (null != chosenStops && !"".equals(chosenStops.trim())) {
-			String[] stopCodes = chosenStops.split(",");
-
-			String locatorId = Preferences.getPreference(this, Preferences.KEY_LOCATOR_ID);
-	        if (null != locatorId && !"".equals(locatorId.trim())) {
-	        	Locator locator = LocatorManager.getLocator(locatorId);
-	        	if (null != locator) {
-	    			ChosenLocationsArrayAdapter claa = new ChosenLocationsArrayAdapter(this, stopCodes, locator);
-	    			ListView lv = (ListView)findViewById(R.id.configure_chosen_locations_list);
-	    			lv.setAdapter(claa);
-	        	}
-	        }
-		}
+		List<Location> selectedLocations = LocationManager.getSelectedLocations(this);
+		if (null == selectedLocations) selectedLocations = new ArrayList<Location>(); 
+		ChosenLocationsArrayAdapter claa = new ChosenLocationsArrayAdapter(this, selectedLocations.toArray(new Location[]{}));
+		ListView lv = (ListView)findViewById(R.id.configure_chosen_locations_list);
+		lv.setAdapter(claa);
 		
 		LinearLayout sourceSelectorGroup = (LinearLayout)this.findViewById(R.id.configure_source_group);
 		sourceSelectorGroup.setOnClickListener(this);

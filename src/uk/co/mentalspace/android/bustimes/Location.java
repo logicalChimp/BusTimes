@@ -12,12 +12,17 @@ public class Location {
 	private String nickName = null;
 	private int lat = 0;
 	private int lon = 0;
+	private int chosen = 0;
 	
 	public Location(String stopCode, String locName, String desc, String srcPosA, String srcPosB, String heading, int lattitude, int longitude) {
 		this(-1, stopCode, locName, desc, srcPosA, srcPosB, heading, lattitude, longitude);
 	}
 	
 	public Location(long id, String stopCode, String locName, String desc, String srcPosA, String srcPosB, String heading, int lattitude, int longitude) {
+		this(-1, stopCode, locName, desc, srcPosA, srcPosB, heading, lattitude, longitude, "", 0);
+	}
+	
+	public Location(long id, String stopCode, String locName, String desc, String srcPosA, String srcPosB, String heading, int lattitude, int longitude, String nickName, int chosen) {
 		this.id = id;
 		this.stopCode = stopCode;
 		this.desc = desc;
@@ -27,10 +32,43 @@ public class Location {
 		this.heading = heading;
 		lat = lattitude;
 		lon = longitude;
+		this.nickName = nickName;
+		this.chosen = chosen;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("[id:");
+		sb.append(this.id);
+		sb.append("], [stopCode:");
+		sb.append(this.stopCode);
+		sb.append("], [name:");
+		sb.append(this.locationName);
+		sb.append("], [desc:");
+		sb.append(this.desc);
+		sb.append("], [lat:");
+		sb.append(this.lat);
+		sb.append("], [lon:");
+		sb.append(this.lon);
+		sb.append("], [Nick:");
+		sb.append(this.nickName);
+		sb.append("], [Chosen:");
+		sb.append(this.chosen);
+		sb.append("]");
+		return sb.toString();
 	}
 	
 	public long getId() {
 		return id;
+	}
+	
+	public void setChosen(int chosen) {
+		this.chosen = chosen;
+	}
+	
+	public int getChosen() {
+		return chosen;
 	}
 	
 	public void setNickName(String name) {

@@ -88,7 +88,7 @@
 	        android:id="@+id/configure_locations_download_progress_bar"
 	        style="?android:attr/progressBarStyleHorizontal"
 	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
+	        android:layout_height="10dp"
 	        android:layout_marginLeft="20dp" 
 	        android:layout_marginRight="20dp"/>
 	    

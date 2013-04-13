@@ -35,7 +35,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/location_selection_stop_code_filter_button"
-            android:onClick="onFindStopIdClicked" />
+            android:onClick="onFindStopCodeClicked" />
 
         <ToggleButton
             android:id="@+id/select_location_show_gps_location"

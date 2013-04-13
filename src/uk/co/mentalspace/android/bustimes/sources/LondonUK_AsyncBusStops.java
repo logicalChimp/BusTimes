@@ -92,7 +92,7 @@ public class LondonUK_AsyncBusStops extends AsyncTask<Void, Integer, String> {
 
 				line = br.readLine();
 				count++;
-				if (count%500 == 0) {
+				if (count%100 == 0) {
 					this.publishProgress(2, count);
 				}
 			}
@@ -136,7 +136,7 @@ public class LondonUK_AsyncBusStops extends AsyncTask<Void, Integer, String> {
 //				String name = cols[3];
 //				String desc = "";
 //				String heading = cols[6];
-				ldba.updateBeacon(loc.getId(), cols[1], cols[3], "", loc.getLat(), loc.getLon(), cols[4], cols[5], cols[6]);
+				ldba.updateLocation(loc.getId(), cols[1], cols[3], loc.getDescription(), loc.getLat(), loc.getLon(), cols[4], cols[5], cols[6], loc.getNickName(), loc.getChosen());
 			}
 		}
 	}
@@ -169,7 +169,9 @@ public class LondonUK_AsyncBusStops extends AsyncTask<Void, Integer, String> {
 			int label = progress[0];
 			int value = progress[1];
 			
-			progressDisplay.setProgressLabel(progressLabels[label]);
+			String progressLabel = progressLabels[label];
+			if (progress[0] == 2) progressLabel += " ("+value+")";
+			progressDisplay.setProgressLabel(progressLabel);
 			progressDisplay.setProgress(value);
 		}
 	}

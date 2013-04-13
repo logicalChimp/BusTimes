@@ -7,9 +7,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class BusTimesDBHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "BusTimesLocationsData.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
-    private static final String LOCATIONS_TABLE_CREATE = "create table locations (_id integer primary key autoincrement, stopCode text not null, name text not null, desc text not null, lat integer, lng integer, srcPosA text not null, srcPosB text not null, heading text not null);";
+    private static final String LOCATIONS_TABLE_CREATE = "create table locations (_id integer primary key autoincrement, stopCode text not null, name text not null, desc text not null, lat integer, lng integer, srcPosA text not null, srcPosB text not null, heading text not null, nickName text not null, chosen int not null);";
     public static final String LOCATIONS_TABLE = "locations";
 
     public BusTimesDBHelper(Context context) {
@@ -27,8 +27,15 @@ public class BusTimesDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + LOCATIONS_TABLE);
-        onCreate(db);
+    	if (oldVersion < 2) upgradeToVersion2(db);
+    }
+    
+    private void upgradeToVersion2(SQLiteDatabase db) {
+    	final String alterLocationsAddNickName = "alter table "+LOCATIONS_TABLE+" add column nickName text not null default '';";
+        db.execSQL(alterLocationsAddNickName);
+
+        final String alterLocationsAddChosen = "alter table "+LOCATIONS_TABLE+" add column chosen int not null default 0;";
+        db.execSQL(alterLocationsAddChosen);
     }
 }
 

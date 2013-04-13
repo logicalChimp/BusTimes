@@ -65,14 +65,7 @@ public class Coordinator {
         	return;
         }
         
-        Locator locator = LocatorManager.getLocator(locatorId);
-        if (null == locator) {
-        	String msg = ctx.getResources().getString(R.string.msg_invalid_locator_selected);
-        	display.displayMessage(msg, Renderer.MESSAGE_ERROR);
-        	return;
-        }
-        
-        Location loc = locator.getLocation(display);
+        Location loc = LocationManager.getNearestSelectedLocation(display.getDisplayContext(), 0, 0);
         //check if GPS is enabled
         //  if it is, attempt to get lat/lon from GPS
         //  fetch location from source by lat/lon
@@ -99,8 +92,9 @@ public class Coordinator {
 		display.displayMessage("fetching bus times...", Renderer.MESSAGE_NORMAL);
     	DataRefreshTask task = src.getBusTimes(display, loc);
 
-    	if (null == timer) timer = new Timer();
-    	timer.scheduleAtFixedRate(task, 0, REFRESH_RATE);
+//    	if (null == timer) timer = new Timer();
+//    	timer.scheduleAtFixedRate(task, 0, REFRESH_RATE);
+    	task.run();
 
 //    	try {
 //			src.getBusTimesAsync(display, loc);

@@ -41,6 +41,15 @@
     <string name="configure_browse_locations_button">Browse\nLocations</string>
     <string name="configure_source_refresh_data_button">Refresh Locations Data</string>
     
+    <string name="select_location_map_info_window_chosen_icon">Icon indicating if the location is \'selected\' or not</string>
+    <string name="map_info_window_choose_button">Favourite</string>
+    <string name="map_info_window_stop_name_label">Stop Name</string>
+    <string name="map_info_window_nick_name_label">Nickname</string>
+    <string name="map_info_window_monitored_label">Monitored</string>
+    <string name="map_info_window_monitored_on">Monitored</string>
+    <string name="map_info_window_monitored_off">Not monitored</string>
+    <string name="map_info_window_dismiss">Close</string>
+    
     <string-array name="settings_sources_names">
         <item>London, UK (TFL)</item>
     </string-array>
