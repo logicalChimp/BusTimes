@@ -7,6 +7,7 @@ import java.util.List;
 import uk.co.mentalspace.android.bustimes.ConfigurationActivity;
 import uk.co.mentalspace.android.bustimes.Coordinator;
 import uk.co.mentalspace.android.bustimes.Location;
+import uk.co.mentalspace.android.bustimes.LocationTracker;
 import uk.co.mentalspace.android.bustimes.R;
 import uk.co.mentalspace.android.bustimes.Renderer;
 import uk.co.mentalspace.android.bustimes.SelectLocationActivity;
@@ -32,6 +33,12 @@ public class Main extends Activity implements Renderer {
 		findViewById(R.id.busTimesView).setVisibility(View.GONE);
 		findViewById(R.id.msgView).setVisibility(View.GONE);
 
+		LocationTracker posTracker = new LocationTracker(this);
+		if (!posTracker.isGPSEnabled) {
+			posTracker.showSettingsAlert();
+		}
+		posTracker.stopTrackingLocation();
+		
 		Log.d(this.getLocalClassName(), "Main Activity loaded, handing over to Coordinator");
         Coordinator.execute(this);
     }

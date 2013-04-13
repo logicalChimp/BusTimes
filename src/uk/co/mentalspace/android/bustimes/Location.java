@@ -59,6 +59,21 @@ public class Location {
 		return sb.toString();
 	}
 	
+	@Override
+	public boolean equals(Object o) {
+		if (null == o) return false;
+		if (this == o) return true;
+		if (!this.getClass().equals(o.getClass())) return false;
+		
+		Location other = (Location)o;
+		if (this.getId() != -1) return this.getId() == other.getId();
+		else {
+			if (other.getId() != -1) return false;
+			if (null == this.getStopCode()) return null == other.getStopCode();
+			return this.getStopCode().equals(other.getStopCode());
+		}
+	}
+	
 	public long getId() {
 		return id;
 	}

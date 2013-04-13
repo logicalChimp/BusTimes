@@ -41,9 +41,10 @@
             android:id="@+id/select_location_show_gps_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:checked="true"
+            android:onClick="onToggleGPSClicked"
             android:textOff="@string/location_selection_stop_code_gps"
-            android:textOn="@string/location_selection_stop_code_gps"
-            android:onClick="onToggleGPSClicked" />
+            android:textOn="@string/location_selection_stop_code_gps" />
 
     </LinearLayout>
 

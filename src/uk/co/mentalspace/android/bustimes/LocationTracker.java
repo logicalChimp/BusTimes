@@ -12,7 +12,7 @@ import android.provider.Settings;
 import android.util.Log;
 
 /**
- * Code taken from Stack Overflow: http://stackoverflow.com/questions/12724533/how-to-get-current-location-in-android-application
+ * Based on code taken from Stack Overflow: http://stackoverflow.com/questions/12724533/how-to-get-current-location-in-android-application
  * @author Stack Overflow user: Aamir Shah
  */
 public class LocationTracker implements LocationListener {
@@ -54,30 +54,23 @@ public class LocationTracker implements LocationListener {
 	 */
 	public Location getLocation() {
 	    try {
-	        locationManager = (LocationManager) mContext
-	                .getSystemService(Context.LOCATION_SERVICE);
+	        locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
 	
 	        // getting GPS status
-	        isGPSEnabled = locationManager
-	                .isProviderEnabled(LocationManager.GPS_PROVIDER);
-	
+	        isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);	
 	        Log.v("isGPSEnabled", "=" + isGPSEnabled);
 	
 	        // getting network status
-	        isNetworkEnabled = locationManager
-	                .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-	
+	        isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 	        Log.v("isNetworkEnabled", "=" + isNetworkEnabled);
 	
 	        if (isGPSEnabled == false && isNetworkEnabled == false) {
 	            // no network provider is enabled
+	        	Log.w("LocationTracker", "No location service enabled");
 	        } else {
 	            this.canGetLocation = true;
 	            if (isNetworkEnabled) {
-	                locationManager.requestLocationUpdates(
-	                        LocationManager.NETWORK_PROVIDER,
-	                        MIN_TIME_BW_UPDATES,
-	                        MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+	                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
 	                Log.d("Network", "Network");
 	                if (locationManager != null) {
 	                    location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
@@ -90,14 +83,10 @@ public class LocationTracker implements LocationListener {
 	            // if GPS Enabled get lat/long using GPS Services
 	            if (isGPSEnabled) {
 	                if (location == null) {
-	                    locationManager.requestLocationUpdates(
-	                            LocationManager.GPS_PROVIDER,
-	                            MIN_TIME_BW_UPDATES,
-	                            MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+	                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
 	                    Log.d("GPS Enabled", "GPS Enabled");
 	                    if (locationManager != null) {
-	                        location = locationManager
-	                                .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+	                        location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 	                        if (location != null) {
 	                            latitude = location.getLatitude();
 	                            longitude = location.getLongitude();
@@ -108,6 +97,7 @@ public class LocationTracker implements LocationListener {
 	        }
 	
 	    } catch (Exception e) {
+	    	Log.e("LocationTracker", "Unknown Exception:", e);
 	        e.printStackTrace();
 	    }
 	
@@ -118,7 +108,7 @@ public class LocationTracker implements LocationListener {
 	 * Stop using GPS listener Calling this function will stop using GPS in your
 	 * app
 	 * */
-	public void stopUsingGPS() {
+	public void stopTrackingLocation() {
 	    if (locationManager != null) {
 	        locationManager.removeUpdates(LocationTracker.this);
 	    }
@@ -194,6 +184,7 @@ public class LocationTracker implements LocationListener {
 	
 	@Override
 	public void onLocationChanged(Location location) {
+		this.location = location;
 	}
 	
 	@Override

@@ -1,6 +1,6 @@
 package uk.co.mentalspace.android.bustimes;
 
-import uk.co.mentalspace.android.bustimes.sources.LondonUK;
+import uk.co.mentalspace.android.bustimes.sources.londonuk.LondonUK;
 
 public class SourceManager {
 

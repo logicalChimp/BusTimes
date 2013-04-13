@@ -1,4 +1,4 @@
-package uk.co.mentalspace.android.bustimes.sources;
+package uk.co.mentalspace.android.bustimes.sources.londonuk;
 
 import java.io.IOException;
 import java.io.BufferedReader;

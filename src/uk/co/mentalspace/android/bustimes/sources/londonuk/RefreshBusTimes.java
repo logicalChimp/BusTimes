@@ -1,4 +1,4 @@
-package uk.co.mentalspace.android.bustimes.sources;
+package uk.co.mentalspace.android.bustimes.sources.londonuk;
 
 import android.util.Log;
 import uk.co.mentalspace.android.bustimes.DataRefreshTask;

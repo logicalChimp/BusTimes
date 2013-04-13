@@ -1,7 +1,7 @@
 package uk.co.mentalspace.android.bustimes;
 
-import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -40,6 +40,8 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
      */
     private GoogleMap mMap;
     private PopupWindow popup;
+    private boolean mapTracksUserPos = false;
+    private LocationTracker posTracker;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +59,9 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
     
     @Override
     protected void onPause() {
+    	if (null != posTracker) {
+    		posTracker.stopTrackingLocation();
+    	}
     	super.onPause();
     }
 
@@ -95,8 +100,8 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
      */
     private void setUpMap() {
     	mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-    	mMap.setMyLocationEnabled(false);
-    	mMap.getUiSettings().setMyLocationButtonEnabled(false); //hide the stock button
+    	mMap.setMyLocationEnabled(true);
+//    	mMap.getUiSettings().setMyLocationButtonEnabled(false); //hide the stock button
     	mMap.getUiSettings().setAllGesturesEnabled(true);
     	mMap.getUiSettings().setZoomControlsEnabled(false);
     	mMap.getUiSettings().setCompassEnabled(true);
@@ -106,41 +111,11 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
     	mMap.setOnMyLocationChangeListener(this);
     	mMap.setOnInfoWindowClickListener(this);
     	
-
-    	
-//    	final Context mapWindowContext = this; 
-//    	mMap.setInfoWindowAdapter(new InfoWindowAdapter() {
-//
-//            // Use default InfoWindow frame
-//            @Override
-//            public View getInfoWindow(Marker marker) {              
-//                return null;
-//            }           
-//
-//            // Defines the contents of the InfoWindow
-//            @Override
-//            public View getInfoContents(Marker marker) {
-//            	String stopCode = marker.getSnippet();
-//            	Log.d(LOGNAME, "Displaying marker for stopCode: "+stopCode);
-//            	Location loc = LocationManager.getLocationByStopCode(mapWindowContext, stopCode);
-//            	if (null == loc) return null;
-//            	
-//            	Log.d(LOGNAME, "Info for: "+loc);
-//            	
-//                // Getting view from the layout file info_window_layout
-//                View v = getLayoutInflater().inflate(R.layout.select_location_map_info_window, null);
-//
-//                ((TextView)v.findViewById(R.id.select_location_map_info_window_stop_name_label)).setText(loc.getLocationName());
-//                ((TextView)v.findViewById(R.id.select_location_map_info_window_nick_name_label)).setText(loc.getNickName());
-//                if (loc.getChosen() == 1) {
-//                	((ImageView)v.findViewById(R.id.select_location_map_info_window_chosen_icon)).setImageDrawable(v.getResources().getDrawable(android.R.drawable.star_on));
-//                }
-//
-//                // Returning the view containing InfoWindow contents
-//                return v;
-//            }
-//
-//        });
+//    	posTracker = new LocationTracker(this);
+//    	if (posTracker.canGetLocation()) {
+//	    	LatLng userLatLng = new LatLng(posTracker.getLatitude(), posTracker.getLongitude());    	
+//			mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, DEFAULT_ZOOM_LEVEL));
+//    	}
     }
     
     public void onCameraChange(CameraPosition position) {
@@ -149,8 +124,6 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
 
     	//remove all markers (will re-add visible ones once retrieved
     	Log.d(LOGNAME, "removing existing markers");
-//    	mMap.clear();
-//    	markers.clear();
     	
     	//if too zoomed out, don't display any markers (otherwise map will be cluttered with 1000's!
     	if (position.zoom < MARKER_MAX_ZOOM_LEVEL) {
@@ -174,17 +147,25 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
         List<Location> toRemove = new ArrayList<Location>();
         toRemove.addAll(markers.keySet());
         toRemove.removeAll(locations);
+        Log.d(LOGNAME, "Current marker count ["+markers.size()+"], to remove ["+toRemove.size()+"]");
         for (Location loc: toRemove) {
         	removeMarker(loc);
         }
 
         //identify all *new* locations that need to be displayed
-        List<Location> toAdd = new ArrayList<Location>();
-        toAdd.addAll(locations);
-        toAdd.removeAll(markers.keySet());
-        for (Location loc: toAdd) {
-        	addMarker(loc);
+        List<Location> reference = new ArrayList<Location>();
+        reference.addAll(markers.keySet());
+        reference.retainAll(locations);
+        Log.d(LOGNAME, "Current marker count ["+markers.size()+"], to add ["+(locations.size() - reference.size())+"]");
+        for (Location loc: locations) {
+        	Log.d(LOGNAME, "Location ["+loc.getStopCode()+"] is already on map: "+reference.contains(loc));
+        	if (!reference.contains(loc)) {
+        		Log.d(LOGNAME, "...adding marker");
+        		addMarker(loc);        	
+        	}
         }
+        
+        Log.d(LOGNAME, "Total marker count: "+markers.size());
     }
     
     private void removeMarker(Location loc) {
@@ -209,7 +190,7 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
 
 	@Override
 	public void onMyLocationChange(android.location.Location arg0) {
-    	if (null != mMap) {
+    	if (null != mMap && mapTracksUserPos) {
         	LatLng userLatLng = new LatLng(arg0.getLatitude(), arg0.getLongitude());    	
     		mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, DEFAULT_ZOOM_LEVEL));
     	}
@@ -219,9 +200,9 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
 		if (null == mMap) return; //map not loaded - ignore button actions
 		
 	    // Is the toggle on?
-	    boolean on = ((ToggleButton) view).isChecked();
-	    Log.d(LOGNAME, "Gps is toggled on: "+on);
-    	mMap.setMyLocationEnabled(on);
+	    mapTracksUserPos = ((ToggleButton) view).isChecked();
+//	    Log.d(LOGNAME, "Gps is toggled on: "+on);
+//    	mMap.setMyLocationEnabled(on);
 	}
 	
 	public void onFindStopCodeClicked(View view) {
