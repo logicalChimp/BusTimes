@@ -1,7 +1,7 @@
 package uk.co.mentalspace.android.bustimes;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -9,13 +9,15 @@ import android.content.Intent;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class ConfigurationActivity extends Activity implements OnClickListener {
+public class ConfigurationActivity extends Activity implements OnClickListener, OnItemClickListener {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,7 @@ public class ConfigurationActivity extends Activity implements OnClickListener {
 		ChosenLocationsArrayAdapter claa = new ChosenLocationsArrayAdapter(this, selectedLocations.toArray(new Location[]{}));
 		ListView lv = (ListView)findViewById(R.id.configure_chosen_locations_list);
 		lv.setAdapter(claa);
+		lv.setOnItemClickListener(this);
 		
 		LinearLayout sourceSelectorGroup = (LinearLayout)this.findViewById(R.id.configure_source_group);
 		sourceSelectorGroup.setOnClickListener(this);
@@ -94,5 +97,16 @@ public class ConfigurationActivity extends Activity implements OnClickListener {
 			return;
 		default:
 		}
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> listView, View view, int position, long id) {
+		String stopCode = ((TextView)view.findViewById(R.id.chosen_location_stop_code_label)).getText().toString();
+		if (null == stopCode || "".equals(stopCode.trim())) return;
+		
+		Location loc = LocationManager.getLocationByStopCode(this, stopCode);
+		if (null == loc) return;
+		
+    	new LocationPopupWindow(this, this, loc);
 	}
 }

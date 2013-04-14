@@ -1,7 +1,7 @@
 package uk.co.mentalspace.android.bustimes;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -18,17 +18,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.PopupWindow;
-import android.widget.TextView;
 import android.widget.ToggleButton;
 import android.os.Bundle;
 
-public class SelectLocationActivity extends FragmentActivity implements OnCameraChangeListener, OnMyLocationChangeListener, OnInfoWindowClickListener, OnClickListener {
+public class SelectLocationActivity extends FragmentActivity implements OnCameraChangeListener, OnMyLocationChangeListener, OnInfoWindowClickListener {
 	private static final String LOGNAME = "SelectLocationActivity";
 	private static final float MARKER_MAX_ZOOM_LEVEL = 15.0f;
 	private static final float DEFAULT_ZOOM_LEVEL = 16.0f;
@@ -39,7 +34,6 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
      * Note that this may be null if the Google Play services APK is not available.
      */
     private GoogleMap mMap;
-    private PopupWindow popup;
     private boolean mapTracksUserPos = false;
     private LocationTracker posTracker;
 	
@@ -246,77 +240,28 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
 //    	//trigger re-display of marker window, with 'chosen' indicator updated
 ////    	newMarker.showInfoWindow();
     	
-    	View popupView = getLayoutInflater().inflate(R.layout.map_info_window_popup, null);
-    	((TextView)popupView.findViewById(R.id.map_info_window_stop_code_value)).setText(loc.getStopCode());
-    	((TextView)popupView.findViewById(R.id.map_info_window_stop_name_value)).setText(loc.getLocationName());
-    	((EditText)popupView.findViewById(R.id.map_info_window_nick_name_value)).setText(loc.getNickName());
-    	Button chosenButton = ((Button)popupView.findViewById(R.id.map_info_window_monitored_button)); 
-    	chosenButton.setOnClickListener(this);
-    	if (loc.getChosen() == 1) {
-    		chosenButton.setText(R.string.map_info_window_monitored_on);
-    	} else {
-    		chosenButton.setText(R.string.map_info_window_monitored_off);
-    	}
-    	Button dismissButton = ((Button)popupView.findViewById(R.id.map_info_window_dismiss_button));
-    	dismissButton.setOnClickListener(this);
-    	
-    	popup = new PopupWindow(popupView, this.getWindow().getAttributes().width, this.getWindow().getAttributes().height, true);
-//    	popup.setContentView(popupView);
-    	popup.setHeight(popup.getMaxAvailableHeight(this.getCurrentFocus()));
-    	popup.update();
-    	popup.showAtLocation(this.getCurrentFocus(), Gravity.BOTTOM, 10, 10);
-    	popup.update();
-    	Log.d(LOGNAME, "Displaying popup window");
-	}
-
-	public void onDismissPopupClicked(View view) {
-		if (null != popup) {
-			Log.d(LOGNAME, "Dismissing popup window");
-			
-			//check for change to nick name
-			String stopCode = ((TextView)popup.getContentView().findViewById(R.id.map_info_window_stop_code_value)).getText().toString();
-			if (null != stopCode && !"".equals(stopCode.trim())) {
-				Location loc = LocationManager.getLocationByStopCode(this, stopCode);
-				if (null != loc) {
-					String nickName = ((EditText)popup.getContentView().findViewById(R.id.map_info_window_nick_name_value)).getText().toString();
-					if (nickName != null && !nickName.equals(loc.getNickName())) {
-						LocationManager.updateNickName(this, loc.getId(), nickName);
-					}
-				}
-			}
-			
-			popup.dismiss();
-			popup = null;
-		}
-	}
-	
-	public void onMonitorLocationClicked(View view) {
-		Log.d(LOGNAME, "Monitor button clicked");
-		String stopCode = ((TextView)popup.getContentView().findViewById(R.id.map_info_window_stop_code_value)).getText().toString();
-		if (null == stopCode || "".equals(stopCode.trim())) return;
-		
-		Location loc = LocationManager.getLocationByStopCode(this, stopCode);
-		if (null == loc) return;
-		
-		if (loc.getChosen() == 1) {
-			LocationManager.deselectLocation(this, loc.getId());
-    		((Button)view).setText(R.string.map_info_window_monitored_off);
-    	} else {
-    		((Button)view).setText(R.string.map_info_window_monitored_on);
-			LocationManager.selectLocation(this, loc.getId());
-		}
-	}
-
-	@Override
-	public void onClick(View v) {
-		switch (v.getId()) {
-		case R.id.map_info_window_dismiss_button:
-			onDismissPopupClicked(v);
-			return;
-		case R.id.map_info_window_monitored_button:
-			onMonitorLocationClicked(v);
-			return;
-		}
+//    	View popupView = getLayoutInflater().inflate(R.layout.map_info_window_popup, null);
+//    	((TextView)popupView.findViewById(R.id.map_info_window_stop_code_value)).setText(loc.getStopCode());
+//    	((TextView)popupView.findViewById(R.id.map_info_window_stop_name_value)).setText(loc.getLocationName());
+//    	((EditText)popupView.findViewById(R.id.map_info_window_nick_name_value)).setText(loc.getNickName());
+//    	Button chosenButton = ((Button)popupView.findViewById(R.id.map_info_window_monitored_button)); 
+//    	chosenButton.setOnClickListener(this);
+//    	if (loc.getChosen() == 1) {
+//    		chosenButton.setText(R.string.map_info_window_monitored_on);
+//    	} else {
+//    		chosenButton.setText(R.string.map_info_window_monitored_off);
+//    	}
+//    	Button dismissButton = ((Button)popupView.findViewById(R.id.map_info_window_dismiss_button));
+//    	dismissButton.setOnClickListener(this);
+//    	
+//    	popup = new PopupWindow(popupView, this.getWindow().getAttributes().width, this.getWindow().getAttributes().height, true);
+////    	popup.setContentView(popupView);
+//    	popup.setHeight(popup.getMaxAvailableHeight(this.getCurrentFocus()));
+//    	popup.update();
+//    	popup.showAtLocation(this.getCurrentFocus(), Gravity.BOTTOM, 10, 10);
+//    	popup.update();
+//    	Log.d(LOGNAME, "Displaying popup window");
+    	new LocationPopupWindow(this, this, loc);
 	}
 
 }
