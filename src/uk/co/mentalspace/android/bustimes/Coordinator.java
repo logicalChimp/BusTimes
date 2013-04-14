@@ -6,7 +6,8 @@ import android.content.Context;
 import android.util.Log;
 
 public class Coordinator {
-
+	private static final String LOGNAME = "Coordinator";
+	
 	public static Timer timer = null;
 	public static final long REFRESH_RATE = 30*1000L; //30 seconds
 
@@ -15,6 +16,36 @@ public class Coordinator {
 			timer.cancel();
 			timer = null;
 		}
+	}
+	
+	public static Location getNextLocation(Renderer display, Location loc) {
+		return LocationManager.getNextLocation(display.getDisplayContext(), loc);
+	}
+	
+	public static Location getNearestLocation(Renderer display, int lat, int lon) {
+		return LocationManager.getNearestSelectedLocation(display.getDisplayContext(), lat, lon);
+	}
+
+	public static void getBusTimes(Renderer display, Location loc) {
+		Context ctx = display.getDisplayContext();
+
+		if (null == loc) {
+			Log.e(LOGNAME, "Request to get Bus Times for null location!");
+			display.displayMessage("Please select at least one location",  Renderer.MESSAGE_ERROR);
+			return;
+		}
+		
+		Source src = getChosenSource(ctx);
+		if (null == src) {
+			Log.w(LOGNAME, "Request to get Bus Times without selecting a data source");
+			display.displayMessage("Please select a data source", Renderer.MESSAGE_ERROR);
+			return;
+		}
+		
+		Log.d(LOGNAME, "Initiating request of bus times for location");
+		display.displayMessage("fetching bus times...", Renderer.MESSAGE_NORMAL);
+    	DataRefreshTask task = src.getBusTimes(display, loc);
+    	task.run();
 	}
 	
 	public static Source getChosenSource(Context ctx) {
@@ -30,81 +61,6 @@ public class Coordinator {
         return src;
 	}
 
-	public static void execute(Renderer display) {
-		
-		Log.d("Coordinator", "Retrieving display context");
-		Context ctx = display.getDisplayContext();
-		
-		Log.d("Coordinator", "Fetching bus times source id from preferences");
-		//get id of preferred source of bus times from preferences
-		String sourceId = Preferences.getPreference(ctx, Preferences.KEY_SOURCE_ID);
-
-		Log.d("Coordinator", "Validating bus timed source id");
-        //if not set, display message asking user to select bus time source, and exit function
-		if (null == sourceId || "".equals(sourceId.trim())) {			
-			Log.e("Coordinator", "Bus times source id null or empty - aborting");
-			String msg = ctx.getResources().getString(R.string.msg_no_source_selected);
-			display.displayMessage(msg, Renderer.MESSAGE_ERROR);
-			return;
-		}
-        
-		Log.d("Coordinator", "Fetching Source object for source id");
-        //get specified source from source manager by id
-        Source src = SourceManager.getSource(sourceId);
-        if (null == src) {
-    		Log.e("Coordinator", "Source object not found - aborting");
-        	String msg = ctx.getResources().getString(R.string.msg_invalid_source_selected);
-			display.displayMessage(msg, Renderer.MESSAGE_ERROR);
-			return;
-        }
-        
-        String locatorId = Preferences.getPreference(ctx, Preferences.KEY_LOCATOR_ID);
-        if (null == locatorId || "".equals(locatorId.trim())) {
-        	String msg = ctx.getResources().getString(R.string.msg_no_locator_selected);
-        	display.displayMessage(msg, Renderer.MESSAGE_ERROR);
-        	return;
-        }
-        
-        Location loc = LocationManager.getNearestSelectedLocation(display.getDisplayContext(), 0, 0);
-        //check if GPS is enabled
-        //  if it is, attempt to get lat/lon from GPS
-        //  fetch location from source by lat/lon
-        //  Location loc = src.getNearestStop(this, lat, lon);
-        
-//		Log.d("Coordinator", "Trying to retrieve preferred stop id from preferences");
-//        //else, check if preferred stop is set in preferences
-//        String preferredStopId = Preferences.getPreference(ctx, Preferences.KEY_PREFERRED_STOP_ID);
-//        if (null != preferredStopId) {
-//    		Log.d("Coordinator", "Preferred stop id not null - converting to location");
-//        	loc = src.getSpecificStop(display, preferredStopId);
-//        }
-        
-		Log.d("Coordinator", "Checking for valid location object");
-        //else, display message to user asking them to either enable GPS, or enter a preferred stop ID in the preferences, and exit function
-        if (null == loc) {
-    		Log.e("Coordinator", "No valid location object retrieved by locator");
-        	String msg = ctx.getResources().getString(R.string.msg_unable_to_select_stop);
-			display.displayMessage(msg, Renderer.MESSAGE_ERROR);
-			return;
-        }
-        
-		Log.d("Coordinator", "Initiating request of list of bus times for location");
-		display.displayMessage("fetching bus times...", Renderer.MESSAGE_NORMAL);
-    	DataRefreshTask task = src.getBusTimes(display, loc);
-
-//    	if (null == timer) timer = new Timer();
-//    	timer.scheduleAtFixedRate(task, 0, REFRESH_RATE);
-    	task.run();
-
-//    	try {
-//			src.getBusTimesAsync(display, loc);
-//		} catch (Exception e) {
-//			Log.e("Coordinator", "Unknown failure ["+e+"] to retrieve bus times - aborting");
-//			display.displayMessage("Unknown error whilst getting bus times.  Error: "+e, Renderer.MESSAGE_ERROR);
-//			return;
-//		}
-	}
-	
 	public static void updateBusTimes(Renderer display, Location location, List<BusTime> busTimes) {
 		Context ctx = display.getDisplayContext();
 		

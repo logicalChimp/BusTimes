@@ -1,12 +1,28 @@
 package uk.co.mentalspace.android.bustimes;
 
+import java.io.IOException;
+import java.io.InputStream;
+
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 
 public class Utils {
 
 	private static final byte WHITE_PIXEL_BIT = 0x0;
 	private static final byte BLACK_PIXEL_BIT = 0x1;
+	
+	public static Bitmap loadBitmapFromAssets(Context context, String path) {		
+		try {
+			InputStream inputStream = context.getAssets().open(path);
+	        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+	        inputStream.close();
+	        return bitmap;
+		} catch (IOException e) {
+			return null;
+		}
+	}
 	
 	//bitmapToBuffer function copied from Regattapp on Github, by Marius Gundersen
 	public static byte[] bitmapToBuffer(Bitmap bitmap) {

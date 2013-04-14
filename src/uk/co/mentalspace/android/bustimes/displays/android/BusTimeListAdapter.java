@@ -25,12 +25,17 @@ public class BusTimeListAdapter extends ArrayAdapter<BusTime> {
 		View rowView = inflater.inflate(R.layout.bus_times_row_layout,  parent, false);
 		
 		BusTime bt = busTimes[position];
-		((TextView)rowView.findViewById(R.id.rowLineNumber)).setText(String.valueOf(position+1));
+//		((TextView)rowView.findViewById(R.id.rowLineNumber)).setText(String.valueOf(position+1));
 		((TextView)rowView.findViewById(R.id.rowBusNumber)).setText(bt.getBusNumber());
 		((TextView)rowView.findViewById(R.id.rowBusDestination)).setText(bt.getDestination());
 		
 		String due = bt.getEstimatedArrivalTime();
-		due += ("Due".equals(due)) ? "" : " mins";
+		try {
+			Integer.parseInt(due);
+//			due += " mins";
+		} catch (NumberFormatException nfe) {
+			//do nothing - just testing if a numeric value was supplied
+		}
 		((TextView)rowView.findViewById(R.id.rowBusExpected)).setText(due);
 		
 		return rowView;

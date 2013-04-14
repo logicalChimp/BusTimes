@@ -20,7 +20,15 @@ public class ChosenLocationsArrayAdapter extends ArrayAdapter<Location> {
 		this.selectedLocations = selectedLocations;
 	}
 	
+	public View getDropDownView(int position, View convertView, ViewGroup parent) {
+		return getCustomView(position, convertView, parent);
+	}
+	
 	public View getView(int position, View convertView, ViewGroup parent) {
+		return getCustomView(position, convertView, parent);
+	}
+	
+	protected View getCustomView(int position, View convertView, ViewGroup parent) {
 		LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View rowView = inflater.inflate(R.layout.chosen_location_row_layout,  parent, false);
 		

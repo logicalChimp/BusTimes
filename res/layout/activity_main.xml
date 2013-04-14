@@ -1,29 +1,27 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".Main" >
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:orientation="vertical" >
 
+    <Spinner
+        android:id="@+id/bus_times_location"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    
     <TextView
-        android:id="@+id/msgView"
+        android:id="@+id/bus_times_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="30dp"
-        android:text=""
+        android:visibility="gone"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <ListView
-        android:id="@+id/busTimesView"
+        android:id="@+id/bus_times_results"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="0dp"
-        android:layout_marginTop="20dp" >
-
+        android:layout_height="wrap_content" 
+        android:visibility="gone" >
     </ListView>
 
-</RelativeLayout>
+</LinearLayout>

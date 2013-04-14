@@ -69,6 +69,17 @@ public class LocationManager {
         }
 	}
 	
+	public static Location getNextLocation(Context ctx, Location loc) {
+		List<Location> locs = getSelectedLocations(ctx);
+		if (null != loc && locs.contains(loc)) {
+			int nextPosition = locs.indexOf(loc)+1;
+			if (nextPosition == locs.size()) nextPosition = 0;
+			return locs.get(nextPosition);
+		} else {
+			return locs.get(0);
+		}
+	}
+	
 	public static List<Location> getLocationsInArea(Context ctx, int top, int right, int bottom, int left) {
         LocationsDBAdapter ldba = new LocationsDBAdapter(ctx);
         try {

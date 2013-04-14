@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+	<string name="bus_times_location_dropdown_icon_description">Icon indicating drop-down list of locations</string>    
     <string name="app_id">BusTimes</string>
     <string name="app_name">Bus Times</string>
     <string name="mw_placeholder">Displaying on MetaWatch</string>
