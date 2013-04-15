@@ -13,5 +13,7 @@ public abstract class DataRefreshTask extends TimerTask {
 		display = taskDisplay;
 		location = taskLocation;
 	}
+	
+	public abstract void executeSync();
 
 }

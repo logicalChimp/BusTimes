@@ -45,7 +45,7 @@ public class MetaWatchService extends IntentService {
 				int lon = (int)(pt.getLongitude()*10000);
 				loc = Coordinator.getNearestLocation(mwd, lat, lon);
 			}
-			Coordinator.getBusTimes(mwd, loc);
+			Coordinator.getBusTimes(mwd, loc, false); //non-async
 		}
 		else if (MetaWatchReceiver.MW_DEACTIVATED.equals(action)) {
 			Log.d(LOGNAME, "MetaWatch Deactivated, terminating");

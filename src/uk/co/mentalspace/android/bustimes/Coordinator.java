@@ -1,5 +1,6 @@
 package uk.co.mentalspace.android.bustimes;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
 import android.content.Context;
@@ -7,6 +8,8 @@ import android.util.Log;
 
 public class Coordinator {
 	private static final String LOGNAME = "Coordinator";
+	
+	private static final BusTimeComparator btComparator = new BusTimeComparator();
 	
 	public static Timer timer = null;
 	public static final long REFRESH_RATE = 30*1000L; //30 seconds
@@ -27,6 +30,10 @@ public class Coordinator {
 	}
 
 	public static void getBusTimes(Renderer display, Location loc) {
+		getBusTimes(display, loc, true);
+	}
+	
+	public static void getBusTimes(Renderer display, Location loc, boolean async) {
 		Context ctx = display.getDisplayContext();
 
 		if (null == loc) {
@@ -45,7 +52,9 @@ public class Coordinator {
 		Log.d(LOGNAME, "Initiating request of bus times for location");
 		display.displayMessage("fetching bus times...", Renderer.MESSAGE_NORMAL);
     	DataRefreshTask task = src.getBusTimes(display, loc);
-    	task.run();
+    	
+    	if (async) task.run();
+    	else task.executeSync();
 	}
 	
 	public static Source getChosenSource(Context ctx) {
@@ -84,6 +93,8 @@ public class Coordinator {
     		Log.i("Coordinator", "Too many bus times reported - truncating to first 10"); 
         	busTimes = busTimes.subList(0, 10);
         }
+        
+        Collections.sort(busTimes, btComparator);
         
         //set timer to refresh list of bus times in 30 seconds
 

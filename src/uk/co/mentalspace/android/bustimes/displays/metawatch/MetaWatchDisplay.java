@@ -51,6 +51,11 @@ public class MetaWatchDisplay implements Renderer {
 		Bitmap bitmap = Bitmap.createBitmap(METAWATCH_WIDTH, METAWATCH_HEIGHT, Bitmap.Config.RGB_565);
 		Canvas canvas = new Canvas(bitmap);
 		
+		if (null == fontface) {
+			Log.d(LOGNAME, "Fontface not yet initialised - loading");
+			fontface = Typeface.createFromAsset(ctx.getAssets(), "metawatch_8pt_7pxl_CAPS.ttf");
+		}
+
 		//set background color of the canvas
 		canvas.drawColor(Color.WHITE);
 
