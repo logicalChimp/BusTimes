@@ -34,6 +34,7 @@ public class Coordinator {
 	}
 	
 	public static void getBusTimes(Renderer display, Location loc, boolean async) {
+		Log.d(LOGNAME, "Getting bus times.  Async? "+async);
 		Context ctx = display.getDisplayContext();
 
 		if (null == loc) {
@@ -49,10 +50,10 @@ public class Coordinator {
 			return;
 		}
 		
-		Log.d(LOGNAME, "Initiating request of bus times for location");
+		Log.d(LOGNAME, "Initiating request of bus times for location: "+loc);
 		display.displayMessage("fetching bus times...", Renderer.MESSAGE_NORMAL);
     	DataRefreshTask task = src.getBusTimes(display, loc);
-    	
+
     	if (async) task.run();
     	else task.executeSync();
 	}
@@ -84,7 +85,7 @@ public class Coordinator {
         //if no bus times available, add 'fake' entry stating no times available.
         else if (busTimes.size() == 0) {
     		Log.w("Coordinator", "No bus times reported - displaying warning message");
-        	BusTime dummy = new BusTime("", "No Bus Times Reported", "");
+        	BusTime dummy = new BusTime("", "No Buses", "");
         	busTimes.add(dummy);
         } 
         

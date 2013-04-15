@@ -10,12 +10,25 @@ public class RefreshBusTimes extends DataRefreshTask {
 	public void run() {
 		display.execute(new Runnable() {
 			public void run() {
-				executeSync();
+				LondonUK_AsyncBusTimes async = getBusTimesTask();
+				if (null == async) return;
+
+				Log.d(LOGNAME, "Executing async task");
+				async.execute();
 			}
 		});
 	}
 	
+	@Override
 	public void executeSync() {
+		LondonUK_AsyncBusTimes async = getBusTimesTask();
+		if (null == async) return;
+		
+		Log.d(LOGNAME, "Executing async task synchronously");
+		async.executeSync();
+	}
+	
+	private LondonUK_AsyncBusTimes getBusTimesTask() {
         //fetch list of bus times for the location
 		LondonUK_AsyncBusTimes async = null;
 		try {
@@ -23,13 +36,12 @@ public class RefreshBusTimes extends DataRefreshTask {
 			async = new LondonUK_AsyncBusTimes();
 		} catch (Exception e) {
 			Log.d(LOGNAME, "Unexpected error", e);
-			return;
+			return null;
 		}
 		
 		Log.d(LOGNAME, "Initialising async task with display, location");
 		async.init(display, location);
-		
-		Log.d(LOGNAME, "Executing async task");
-		async.execute();
+
+		return async;
 	}
 }

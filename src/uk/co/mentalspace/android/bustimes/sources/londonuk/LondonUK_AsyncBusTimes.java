@@ -39,7 +39,12 @@ public class LondonUK_AsyncBusTimes extends AsyncTask<Void, Void, List<BusTime>>
 		return failure;
 	}
 	
-	protected List<BusTime> doInBackground(Void... strings) {
+	public void executeSync() {
+		List<BusTime> busTimes = getBusTimes();
+		onPostExecute(busTimes);
+	}
+	
+	public List<BusTime> getBusTimes() {
 		if (null == display) {
 			failure = new IllegalArgumentException("Renderer not initialised");
 			return null;
@@ -93,6 +98,10 @@ public class LondonUK_AsyncBusTimes extends AsyncTask<Void, Void, List<BusTime>>
 		
 		return busTimes;
 	}
+	
+	protected List<BusTime> doInBackground(Void... strings) {
+		return getBusTimes();
+	}
 
 	private long getRefTime(String line) {
 		try {
@@ -129,7 +138,7 @@ public class LondonUK_AsyncBusTimes extends AsyncTask<Void, Void, List<BusTime>>
 	}
 	
 	protected void onPostExecute(List<BusTime> busTimes) {
-		if (null != busTimes && busTimes.size() != 0) {
+		if (null != busTimes) {
 			Coordinator.updateBusTimes(display, location, busTimes);
 		} else {
 			Coordinator.terminate();

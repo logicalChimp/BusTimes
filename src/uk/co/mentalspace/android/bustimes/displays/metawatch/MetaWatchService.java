@@ -37,7 +37,6 @@ public class MetaWatchService extends IntentService {
 		final String action = intent.getAction();
 		if (MetaWatchReceiver.MW_ACTIVATED.equals(action)) {
 			Log.d(LOGNAME, "MetaWatch Activated, handing over to Coordinator");
-//	        Coordinator.execute(this);
 			MetaWatchDisplay mwd = new MetaWatchDisplay(getApplicationContext());
 			if (null == loc) {
 				LocationTracker pt = getPosTracker();
@@ -49,8 +48,7 @@ public class MetaWatchService extends IntentService {
 		}
 		else if (MetaWatchReceiver.MW_DEACTIVATED.equals(action)) {
 			Log.d(LOGNAME, "MetaWatch Deactivated, terminating");
-//			Coordinator.terminate();
-			terminate();
+			//nothing else needs doing for now - the pos tracker will be terminated at the end of the function
 		}
 		else if (MetaWatchReceiver.MW_BUTTON.equals(action)) {
 			int btnId = intent.getIntExtra("button", -1);
@@ -68,6 +66,8 @@ public class MetaWatchService extends IntentService {
 		else {
 			Log.d(LOGNAME, "Unrecognised intent action: "+action);
 		}
+
+		terminate();
 	}
 	
 	public void terminate() {
