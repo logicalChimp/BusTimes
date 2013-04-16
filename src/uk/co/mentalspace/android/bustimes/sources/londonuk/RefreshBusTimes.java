@@ -1,5 +1,8 @@
 package uk.co.mentalspace.android.bustimes.sources.londonuk;
 
+import android.annotation.TargetApi;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.util.Log;
 import uk.co.mentalspace.android.bustimes.DataRefreshTask;
 
@@ -9,12 +12,14 @@ public class RefreshBusTimes extends DataRefreshTask {
 	@Override
 	public void run() {
 		display.execute(new Runnable() {
+			@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 			public void run() {
 				LondonUK_AsyncBusTimes async = getBusTimesTask();
 				if (null == async) return;
 
 				Log.d(LOGNAME, "Executing async task");
-				async.execute();
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) async.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+			    else async.execute();
 			}
 		});
 	}

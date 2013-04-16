@@ -5,7 +5,11 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -19,7 +23,17 @@ import android.widget.TextView;
 
 public class ConfigurationActivity extends Activity implements OnClickListener, OnItemClickListener {
 
-	@Override
+	private static final String LOGNAME = "ConfigurationActivity";
+	
+	private BroadcastReceiver drsReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+        	ConfigurationActivity.this.receiveBroadcast(intent);
+        }
+    };
+    private boolean drsReceiverIsRegistered = false;
+    
+    @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_configuration);
@@ -30,6 +44,24 @@ public class ConfigurationActivity extends Activity implements OnClickListener, 
 	protected void onResume() {
 		super.onResume();
 		configureLayout();
+		if (!drsReceiverIsRegistered) {
+		    registerReceiver(drsReceiver, new IntentFilter(DataRefreshService.ACTION_UPDATE_DATA_REFRESH_PROGRESS));
+		    drsReceiverIsRegistered = true;
+
+		    //request update on service progress - after re-registering the broadcast receiver
+			Intent intent = new Intent(this, DataRefreshService.class);
+			intent.setAction(DataRefreshService.ACTION_GET_REFRESH_PROGRESS);
+			startService(intent);
+		}		
+	}
+
+	@Override
+	protected void onPause() {
+		if (drsReceiverIsRegistered) {
+		    unregisterReceiver(drsReceiver);
+		    drsReceiverIsRegistered = false;
+		}
+		super.onPause();
 	}
 
 	@Override
@@ -83,13 +115,19 @@ public class ConfigurationActivity extends Activity implements OnClickListener, 
 			String sourceId = Preferences.getPreference(this, Preferences.KEY_SOURCE_ID);
 			if (null == sourceId || "".equals(sourceId.trim())) return;
 			
-			Source src = SourceManager.getSource(sourceId);
-			View container = (View)this.findViewById(R.id.configure_source_progress_group);
-			TextView label = (TextView)this.findViewById(R.id.configure_locations_download_progress_label);
-			ProgressBar bar = (ProgressBar)this.findViewById(R.id.configure_locations_download_progress_bar);
-			ProgressDisplay pd = new ProgressDisplay(this, container, label, bar);
-			pd.setMaxValue(src.getEstimatedLocationCount());
-			src.loadLocations(this, pd);
+			Log.d(LOGNAME, "Sending intent to start Data Refresh Service");
+			Intent intent = new Intent(this, DataRefreshService.class);
+			intent.setAction(DataRefreshService.ACTION_REFRESH_LOCATION_DATA);
+			intent.putExtra(DataRefreshService.EXTRA_SOURCE_NAME, sourceId);
+			this.startService(intent);
+			
+//			Source src = SourceManager.getSource(sourceId);
+//			View container = (View)this.findViewById(R.id.configure_source_progress_group);
+//			TextView label = (TextView)this.findViewById(R.id.configure_locations_download_progress_label);
+//			ProgressBar bar = (ProgressBar)this.findViewById(R.id.configure_locations_download_progress_bar);
+//			ProgressDisplayImpl pd = new ProgressDisplayImpl(this, container, label, bar);
+//			pd.setMaxValue(src.getEstimatedLocationCount());
+//			src.loadLocations(this, pd);
 			return;
 		case R.id.configure_browse_locations_button:
 			//trigger display of location selector activity
@@ -109,4 +147,21 @@ public class ConfigurationActivity extends Activity implements OnClickListener, 
 		
     	new LocationPopupWindow(this, this, loc);
 	}
+
+    public void receiveBroadcast(Intent intent) {
+    	String action = intent.getAction();
+    	Log.d(LOGNAME, "Received broadcast intent.  Action: " + action);
+    	if (DataRefreshService.ACTION_UPDATE_DATA_REFRESH_PROGRESS.equals(action)) {
+			TextView label = (TextView)this.findViewById(R.id.configure_locations_download_progress_label);
+			ProgressBar bar = (ProgressBar)this.findViewById(R.id.configure_locations_download_progress_bar);
+			
+			bar.setMax(intent.getIntExtra(DataRefreshService.EXTRA_MAX_VALUE, 0));
+			bar.setProgress(intent.getIntExtra(DataRefreshService.EXTRA_CURRENT_VALUE, 0));
+			label.setText(intent.getStringExtra(DataRefreshService.EXTRA_PROGRESS_LABEL));
+			
+			View container = (View)this.findViewById(R.id.configure_source_progress_group);
+			container.setVisibility(View.VISIBLE);
+    	}
+    }
+
 }

@@ -48,6 +48,7 @@ public class MetaWatchDisplay implements Renderer {
     
 	@Override
 	public void displayMessage(String msg, int msgLevel) {
+		Log.d(LOGNAME, "Displaying message: " + msg);
 		Bitmap bitmap = Bitmap.createBitmap(METAWATCH_WIDTH, METAWATCH_HEIGHT, Bitmap.Config.RGB_565);
 		Canvas canvas = new Canvas(bitmap);
 		

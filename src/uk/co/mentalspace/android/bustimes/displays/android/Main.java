@@ -45,13 +45,13 @@ public class Main extends Activity implements Renderer, OnItemSelectedListener {
 		findViewById(R.id.bus_times_message).setVisibility(View.GONE);
 		((Spinner)findViewById(R.id.bus_times_location)).setOnItemSelectedListener(this);
 
-		Log.d(this.getLocalClassName(), "Main Activity loaded, handing over to Coordinator");
+		Log.d(LOGNAME, "Main Activity loaded, handing over to Coordinator");
     }
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		Log.d(this.getLocalClassName(), "Resuming activity - starting fresh Coordinator");
+		Log.d(LOGNAME, "Resuming activity - starting fresh Coordinator");
 		if (null == posTracker) {
 			posTracker = new LocationTracker(this);
 			if (!posTracker.isGPSEnabled) {
@@ -73,12 +73,18 @@ public class Main extends Activity implements Renderer, OnItemSelectedListener {
 	}
 	
 	private void showBusTimes() {
-		Log.d(LOGNAME, "Fetching bus times...");
 		if (null == loc) {
+			Log.d(LOGNAME, "No location yet chosen - requesting load of nearest chosen location");
 			int lat = (int)(posTracker.getLatitude()*10000);
 			int lon = (int)(posTracker.getLongitude()*10000);
 			loc = Coordinator.getNearestLocation(this, lat, lon);
 		}
+		if (null == loc) {
+			Log.w(LOGNAME, "Cannot get 'nearest' location - maybe none chosen?");
+			this.displayMessage("Please select one or more locations to monitor.", Renderer.MESSAGE_ERROR);
+			return;
+		}
+		Log.d(LOGNAME, "Fetching bus times for location ["+loc+"]");
 		Coordinator.getBusTimes(this, loc);
 	}
 
@@ -91,14 +97,14 @@ public class Main extends Activity implements Renderer, OnItemSelectedListener {
 
 	@Override
 	public void finish() {
-		Log.d(this.getLocalClassName(), "Terminating activity - terminating Coordinator timer");
+		Log.d(LOGNAME, "Terminating activity - terminating Coordinator timer");
 		Coordinator.terminate();
 		super.finish();
 	}
 	
 	@Override
 	public void onPause() {
-		Log.d(this.getLocalClassName(), "Pausing activity - terminating Coordinator timer");
+		Log.d(LOGNAME, "Pausing activity - terminating Coordinator timer");
 		Coordinator.terminate();
 		if (null != posTracker) {
 			posTracker.stopTrackingLocation();
@@ -168,7 +174,10 @@ public class Main extends Activity implements Renderer, OnItemSelectedListener {
 	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 		Log.d(LOGNAME, "Locations drop-down list item selected");
 		// TODO Auto-generated method stub
-		String stopCode = ((TextView)view.findViewById(R.id.chosen_location_stop_code_label)).getText().toString();
+		TextView tv = ((TextView)view.findViewById(R.id.chosen_location_stop_code_label));
+		if (null == tv) return;
+		
+		String stopCode = tv.getText().toString();
 		if (null == stopCode || "".equals(stopCode.trim())) return;
 		Log.d(LOGNAME, "Selected stop code: " + stopCode);
 		

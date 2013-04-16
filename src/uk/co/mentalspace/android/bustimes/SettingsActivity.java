@@ -1,11 +1,7 @@
 package uk.co.mentalspace.android.bustimes;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.preference.Preference.OnPreferenceClickListener;
-
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -20,16 +16,16 @@ public class SettingsActivity extends PreferenceActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 	
-		final Context ctx = this;
+//		final Context ctx = this;
 		addPreferencesFromResource(R.layout.settings);
 	
-		Preference refreshData = findPreference("RefreshLocations");
-		refreshData.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-			public boolean onPreferenceClick(Preference arg0) {
-				Source src = Coordinator.getChosenSource(ctx);
-				src.loadLocations(ctx);
-				return false;
-			}
-		});
+//		Preference refreshData = findPreference("RefreshLocations");
+//		refreshData.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+//			public boolean onPreferenceClick(Preference arg0) {
+//				Source src = Coordinator.getChosenSource(ctx);
+//				src.loadLocations(ctx);
+//				return false;
+//			}
+//		});
 	}
 }

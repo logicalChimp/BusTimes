@@ -33,46 +33,54 @@ public class MetaWatchService extends IntentService {
 			posTracker = new LocationTracker(getApplicationContext());
 		}
 		
-		Log.d(LOGNAME, "Meta Watch Service handling intent");
-		final String action = intent.getAction();
-		if (MetaWatchReceiver.MW_ACTIVATED.equals(action)) {
-			Log.d(LOGNAME, "MetaWatch Activated, handing over to Coordinator");
-			MetaWatchDisplay mwd = new MetaWatchDisplay(getApplicationContext());
-			if (null == loc) {
-				LocationTracker pt = getPosTracker();
-				int lat = (int)(pt.getLatitude()*10000);
-				int lon = (int)(pt.getLongitude()*10000);
-				loc = Coordinator.getNearestLocation(mwd, lat, lon);
-			}
-			Coordinator.getBusTimes(mwd, loc, false); //non-async
-		}
-		else if (MetaWatchReceiver.MW_DEACTIVATED.equals(action)) {
-			Log.d(LOGNAME, "MetaWatch Deactivated, terminating");
-			//nothing else needs doing for now - the pos tracker will be terminated at the end of the function
-		}
-		else if (MetaWatchReceiver.MW_BUTTON.equals(action)) {
-			int btnId = intent.getIntExtra("button", -1);
-			Log.d(LOGNAME, "Metawatch Button ["+btnId+"] pressed");
-			if (BUTTON_NEXT_LOCATION == btnId) {
+		try {
+			Log.d(LOGNAME, "Meta Watch Service handling intent");
+			final String action = intent.getAction();
+			if (MetaWatchReceiver.MW_ACTIVATED.equals(action)) {
+				Log.d(LOGNAME, "MetaWatch app activated, handing over to Coordinator");
 				MetaWatchDisplay mwd = new MetaWatchDisplay(getApplicationContext());
-				Log.d(LOGNAME, "Getting next location. Current: "+loc.getLocationName());
-				loc = Coordinator.getNextLocation(mwd, loc);
-				Log.d(LOGNAME, "Next Location: "+loc.getLocationName());
-				Coordinator.getBusTimes(mwd, loc);
-			} else {
-				Log.d(LOGNAME, "Wrong button. "+BUTTON_NEXT_LOCATION+" != "+btnId);
+				if (null == loc) {
+					LocationTracker pt = getPosTracker();
+					int lat = (int)(pt.getLatitude()*10000);
+					int lon = (int)(pt.getLongitude()*10000);
+					loc = Coordinator.getNearestLocation(mwd, lat, lon);
+				}
+				Coordinator.getBusTimes(mwd, loc, false); //non-async
 			}
+			else if (MetaWatchReceiver.MW_DEACTIVATED.equals(action)) {
+				Log.d(LOGNAME, "MetaWatch app deactivated, displaying blank screen and terminating");
+				MetaWatchDisplay mwd = new MetaWatchDisplay(getApplicationContext());
+				mwd.displayMessage("", MetaWatchDisplay.MESSAGE_NORMAL);
+				//GPS will auto-disconnect when this function terminates
+			}
+			else if (MetaWatchReceiver.MW_BUTTON.equals(action)) {
+				int btnId = intent.getIntExtra("button", -1);
+				Log.d(LOGNAME, "Metawatch Button ["+btnId+"] pressed");
+				if (BUTTON_NEXT_LOCATION == btnId) {
+					MetaWatchDisplay mwd = new MetaWatchDisplay(getApplicationContext());
+					Log.d(LOGNAME, "Getting next location. Current: "+loc.getLocationName());
+					loc = Coordinator.getNextLocation(mwd, loc);
+					Log.d(LOGNAME, "Next Location: "+loc.getLocationName());
+					Coordinator.getBusTimes(mwd, loc);
+				} else {
+					Log.d(LOGNAME, "Wrong button. "+BUTTON_NEXT_LOCATION+" != "+btnId);
+				}
+			}
+			else {
+				Log.d(LOGNAME, "Unrecognised intent action: "+action);
+			}
+		} catch (Exception e) {
+			Log.e(LOGNAME, "Unknown exception: ", e);
 		}
-		else {
-			Log.d(LOGNAME, "Unrecognised intent action: "+action);
-		}
-
 		terminate();
 	}
 	
 	public void terminate() {
-		if (null != posTracker) posTracker.stopTrackingLocation();
-		stopSelf();
+		if (null != posTracker) {
+			posTracker.stopTrackingLocation();
+		}
+		posTracker = null;
 	}
 
+	
 }
