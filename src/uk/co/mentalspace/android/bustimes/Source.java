@@ -13,7 +13,7 @@ public interface Source {
 //	public void loadLocations(Context ctx, ProgressDisplay pd);
 	public int getEstimatedLocationCount();
 	
-	public DataRefreshTask getBusTimes(Renderer display, Location location);
+	public DataRefreshTask getBusTimesTask(Renderer display, Location location);
 //	public void getBusTimes(Renderer display, Location location);
 //	public void getBusTimesAsync(Renderer display, Location location);
 

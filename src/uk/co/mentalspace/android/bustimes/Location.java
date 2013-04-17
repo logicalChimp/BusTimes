@@ -13,16 +13,17 @@ public class Location {
 	private int lat = 0;
 	private int lon = 0;
 	private int chosen = 0;
+	private String sourceId = null;
 	
 	public Location(String stopCode, String locName, String desc, String srcPosA, String srcPosB, String heading, int lattitude, int longitude) {
 		this(-1, stopCode, locName, desc, srcPosA, srcPosB, heading, lattitude, longitude);
 	}
 	
 	public Location(long id, String stopCode, String locName, String desc, String srcPosA, String srcPosB, String heading, int lattitude, int longitude) {
-		this(-1, stopCode, locName, desc, srcPosA, srcPosB, heading, lattitude, longitude, "", 0);
+		this(id, stopCode, locName, desc, srcPosA, srcPosB, heading, lattitude, longitude, "", 0, "");
 	}
 	
-	public Location(long id, String stopCode, String locName, String desc, String srcPosA, String srcPosB, String heading, int lattitude, int longitude, String nickName, int chosen) {
+	public Location(long id, String stopCode, String locName, String desc, String srcPosA, String srcPosB, String heading, int lattitude, int longitude, String nickName, int chosen, String sourceId) {
 		this.id = id;
 		this.stopCode = stopCode;
 		this.desc = desc;
@@ -34,6 +35,7 @@ public class Location {
 		lon = longitude;
 		this.nickName = nickName;
 		this.chosen = chosen;
+		this.sourceId = sourceId;
 	}
 	
 	@Override
@@ -55,6 +57,8 @@ public class Location {
 		sb.append(this.nickName);
 		sb.append("], [Chosen:");
 		sb.append(this.chosen);
+		sb.append("], [Source:");
+		sb.append(this.sourceId);
 		sb.append("]");
 		return sb.toString();
 	}
@@ -70,7 +74,7 @@ public class Location {
 		else {
 			if (other.getId() != -1) return false;
 			if (null == this.getStopCode()) return null == other.getStopCode();
-			return this.getStopCode().equals(other.getStopCode());
+			return this.getStopCode().equals(other.getStopCode()) && this.getSourceId().equals(other.getSourceId());
 		}
 	}
 	
@@ -128,5 +132,9 @@ public class Location {
 	
 	public int getLon() {
 		return lon;
+	}
+	
+	public String getSourceId() {
+		return sourceId;
 	}
 }

@@ -29,9 +29,9 @@ public class BusStopsRefresh extends LocationRefreshTask {
 			String heading = "0";
 			Location loc = ldba.getLocationByStopCode(stopCode);
 			if (null == loc) {
-				ldba.createLocation(stopCode, stopName, "", lat, lng, srcPosA, srcPosB, heading);
+				ldba.createLocation(stopCode, stopName, "", lat, lng, srcPosA, srcPosB, heading, getSourceId());
 			} else {
-				ldba.updateLocation(loc.getId(), stopCode, stopName, loc.getDescription(), loc.getLat(), loc.getLon(), srcPosA, srcPosB, heading, loc.getNickName(), loc.getChosen());
+				ldba.updateLocation(loc.getId(), stopCode, stopName, loc.getDescription(), loc.getLat(), loc.getLon(), srcPosA, srcPosB, heading, loc.getNickName(), loc.getChosen(), loc.getSourceId());
 			}
 
 			publishProgress(PROGRESS_POSITION_PROCESSING_DATA, 1);

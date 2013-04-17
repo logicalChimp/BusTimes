@@ -35,7 +35,6 @@ public class Coordinator {
 	
 	public static void getBusTimes(Renderer display, Location loc, boolean async) {
 		Log.d(LOGNAME, "Getting bus times.  Async? "+async);
-		Context ctx = display.getDisplayContext();
 
 		if (null == loc) {
 			Log.e(LOGNAME, "Request to get Bus Times for null location!");
@@ -43,7 +42,7 @@ public class Coordinator {
 			return;
 		}
 		
-		Source src = getChosenSource(ctx);
+		Source src = getLocationSource(loc);
 		if (null == src) {
 			Log.w(LOGNAME, "Request to get Bus Times without selecting a data source");
 			display.displayMessage("Please select a data source", Renderer.MESSAGE_ERROR);
@@ -52,25 +51,25 @@ public class Coordinator {
 		
 		Log.d(LOGNAME, "Initiating request of bus times for location: "+loc);
 		display.displayMessage("fetching bus times...", Renderer.MESSAGE_NORMAL);
-    	DataRefreshTask task = src.getBusTimes(display, loc);
+    	DataRefreshTask task = src.getBusTimesTask(display, loc);
 
     	if (async) task.run();
     	else task.executeSync();
 	}
 	
-	public static Source getChosenSource(Context ctx) {
-		Log.d("Coordinator", "Fetching current Source");
-		String sourceId = Preferences.getPreference(ctx, Preferences.KEY_SOURCE_ID);
+	public static Source getLocationSource(Location loc) {		
+		Log.d(LOGNAME, "Fetching Source for location");
+		String sourceId = loc.getSourceId();
 		if (null == sourceId || "".equals(sourceId.trim())) {			
-			Log.d("Coordinator", "No source specified");
+			Log.d("Coordinator", "No source specified for location - aborting");
 			return null;
 		}
         
-		Log.d("Coordinator", "Fetching Source object for source id");
+		Log.d("Coordinator", "Fetching Source object for source id ["+sourceId+"]");
         Source src = SourceManager.getSource(sourceId);
         return src;
 	}
-
+	
 	public static void updateBusTimes(Renderer display, Location location, List<BusTime> busTimes) {
 		Context ctx = display.getDisplayContext();
 		

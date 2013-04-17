@@ -119,7 +119,7 @@ public class LondonUK implements Source {
 //	}
 	
 	@Override
-	public DataRefreshTask getBusTimes(Renderer display, Location location) {
+	public DataRefreshTask getBusTimesTask(Renderer display, Location location) {
     	DataRefreshTask task = new RefreshBusTimes();
     	task.init(display, location);
     	return task;

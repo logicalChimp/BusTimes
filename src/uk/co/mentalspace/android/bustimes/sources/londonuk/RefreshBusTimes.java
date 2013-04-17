@@ -14,6 +14,7 @@ public class RefreshBusTimes extends DataRefreshTask {
 		display.execute(new Runnable() {
 			@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 			public void run() {
+				Log.d(LOGNAME, "Refreshing Bus Times asyncronously");
 				LondonUK_AsyncBusTimes async = getBusTimesTask();
 				if (null == async) return;
 

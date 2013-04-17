@@ -24,10 +24,11 @@ public class LocationsDBAdapter {
     public static final String KEY_SRC_POS_B = "srcPosB";
     public static final String KEY_HEADING = "heading";
     public static final String KEY_NICK_NAME = "nickName";
-    public static final String KEY_CHOSEN = "chosen";    
+    public static final String KEY_CHOSEN = "chosen";
+    public static final String KEY_SOURCE_ID = "sourceId";
 
 	private static final String[] ALL_COLUMNS = new String[] {KEY_ROWID, KEY_STOP_CODE, KEY_NAME, KEY_DESC, KEY_WGS84_LAT, KEY_WGS84_LONG, 
-		KEY_SRC_POS_A, KEY_SRC_POS_B, KEY_HEADING, KEY_NICK_NAME, KEY_CHOSEN};
+		KEY_SRC_POS_A, KEY_SRC_POS_B, KEY_HEADING, KEY_NICK_NAME, KEY_CHOSEN, KEY_SOURCE_ID};
 
 	private BusTimesDBHelper mDbHelper;
     private SQLiteDatabase mDb;
@@ -64,7 +65,7 @@ public class LocationsDBAdapter {
     /**
      * @return rowId or -1 if failed
      */
-    public long createLocation(String stopCode, String name, String desc, int lat, int lng, String srcPosA, String srcPosB, String heading) {
+    public long createLocation(String stopCode, String name, String desc, int lat, int lng, String srcPosA, String srcPosB, String heading, String sourceId) {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_STOP_CODE, stopCode);
         initialValues.put(KEY_NAME, name);
@@ -76,6 +77,7 @@ public class LocationsDBAdapter {
         initialValues.put(KEY_HEADING, heading);
         initialValues.put(KEY_NICK_NAME, "");
         initialValues.put(KEY_CHOSEN, 0);
+        initialValues.put(KEY_SOURCE_ID, sourceId);
 
         return mDb.insert(BusTimesDBHelper.LOCATIONS_TABLE, null, initialValues);
     }
@@ -98,7 +100,7 @@ public class LocationsDBAdapter {
     }
     
     public Cursor fetchClosestSelectedLocation(int lat, int lon) {
-    	String sql = "select _id, stopCode, name, desc, lat, lng, srcPosA, srcPosB, heading, nickName, chosen, " +
+    	String sql = "select _id, stopCode, name, desc, lat, lng, srcPosA, srcPosB, heading, nickName, chosen, sourceId, " +
     			"abs(lat - "+lat+") + abs(lng - "+lon+") as distance from "+BusTimesDBHelper.LOCATIONS_TABLE+" where chosen = 1 order by distance asc";
     	//Math.abs(lat - "+lat+") + 
     	Cursor c = mDb.rawQuery(sql, null);
@@ -175,7 +177,8 @@ public class LocationsDBAdapter {
                 c.getInt(c.getColumnIndex(KEY_WGS84_LAT)),
                 c.getInt(c.getColumnIndex(KEY_WGS84_LONG)),
                 c.getString(c.getColumnIndex(KEY_NICK_NAME)),
-                c.getInt(c.getColumnIndex(KEY_CHOSEN)));
+                c.getInt(c.getColumnIndex(KEY_CHOSEN)),
+                c.getString(c.getColumnIndex(KEY_SOURCE_ID)));
 		return loc;
     }
     
@@ -266,7 +269,7 @@ public class LocationsDBAdapter {
      * @param body value to set note body to
      * @return true if the note was successfully updated, false otherwise
      */
-    public boolean updateLocation(long rowId, String stopCode, String name, String desc, int lat, int lng, String srcPosA, String srcPosB, String heading, String nickName, int chosen) {
+    public boolean updateLocation(long rowId, String stopCode, String name, String desc, int lat, int lng, String srcPosA, String srcPosB, String heading, String nickName, int chosen, String sourceId) {
         ContentValues args = new ContentValues();
         args.put(KEY_STOP_CODE, stopCode);
         args.put(KEY_NAME, name);
@@ -278,12 +281,12 @@ public class LocationsDBAdapter {
         args.put(KEY_HEADING, heading);
         args.put(KEY_NICK_NAME, nickName);
         args.put(KEY_CHOSEN, chosen);
-
+        args.put(KEY_SOURCE_ID, sourceId);
         return mDb.update(BusTimesDBHelper.LOCATIONS_TABLE, args, KEY_ROWID + "=" + rowId, null) > 0;
     }
     
     public boolean updateLocation(Location loc) {
-    	return updateLocation(loc.getId(), loc.getStopCode(), loc.getLocationName(), loc.getDescription(), loc.getLat(), loc.getLon(), loc.getSrcPosA(), loc.getSrcPosB(), loc.getHeading(), loc.getNickName(), loc.getChosen());
+    	return updateLocation(loc.getId(), loc.getStopCode(), loc.getLocationName(), loc.getDescription(), loc.getLat(), loc.getLon(), loc.getSrcPosA(), loc.getSrcPosB(), loc.getHeading(), loc.getNickName(), loc.getChosen(), loc.getSourceId());
     }
 
 }

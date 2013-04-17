@@ -12,6 +12,8 @@ import uk.co.mentalspace.android.bustimes.Location;
 import uk.co.mentalspace.android.bustimes.LocationRefreshTask;
 import uk.me.jstott.jcoord.LatLng;
 import uk.me.jstott.jcoord.OSRef;
+import android.os.Debug;
+import android.os.Environment;
 import android.util.Log;
 
 public class LondonUK_AsyncBusStops extends LocationRefreshTask {
@@ -58,7 +60,8 @@ public class LondonUK_AsyncBusStops extends LocationRefreshTask {
 			//open the DB connection now, instead of inside the loop
 			publishProgress(PROGRESS_POSITION_PROCESSING_DATA, count);
 			ldba.open();
-			while (null != line && !("".equals(line))) {
+			Debug.startMethodTracing(Environment.getExternalStorageDirectory().getPath()+"/BusLocationProcessing.trace");
+			while (null != line && !("".equals(line)) && count < 50) {
 				processLocation(line);
 
 				line = br.readLine();
@@ -67,6 +70,7 @@ public class LondonUK_AsyncBusStops extends LocationRefreshTask {
 					publishProgress(PROGRESS_POSITION_PROCESSING_DATA, count);
 				}
 			}
+			Debug.stopMethodTracing();
 
 			Log.d(LOGNAME, "Finished processing response.");
 			
@@ -100,7 +104,7 @@ public class LondonUK_AsyncBusStops extends LocationRefreshTask {
 				ldba.deleteLocation(loc.getId());
 				createNewLocation(cols);
 			} else {
-				ldba.updateLocation(loc.getId(), cols[1], cols[3], loc.getDescription(), loc.getLat(), loc.getLon(), cols[4], cols[5], cols[6], loc.getNickName(), loc.getChosen());
+				ldba.updateLocation(loc.getId(), cols[1], cols[3], loc.getDescription(), loc.getLat(), loc.getLon(), cols[4], cols[5], cols[6], loc.getNickName(), loc.getChosen(), this.getSourceId());
 			}
 		}
 	}
@@ -118,6 +122,6 @@ public class LondonUK_AsyncBusStops extends LocationRefreshTask {
 		}
 		int lat = (int)(latlng.getLat()*10000);
 		int lng = (int)(latlng.getLng()*10000);
-		ldba.createLocation(cols[1], cols[3], "", lat, lng, cols[4], cols[5], cols[6]);
+		ldba.createLocation(cols[1], cols[3], "", lat, lng, cols[4], cols[5], cols[6], this.getSourceId());
 	}
 }

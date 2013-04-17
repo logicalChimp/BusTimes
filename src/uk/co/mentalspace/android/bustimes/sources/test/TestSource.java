@@ -30,7 +30,7 @@ public class TestSource implements Source {
 	}
 
 	@Override
-	public DataRefreshTask getBusTimes(Renderer display, Location location) {
+	public DataRefreshTask getBusTimesTask(Renderer display, Location location) {
 		// TODO Auto-generated method stub
 		return null;
 	}
