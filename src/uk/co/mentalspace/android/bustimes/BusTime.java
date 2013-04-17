@@ -1,6 +1,10 @@
 package uk.co.mentalspace.android.bustimes;
 
-public class BusTime {
+import java.io.Serializable;
+
+public class BusTime implements Serializable {
+
+	private static final long serialVersionUID = -5348213470332807592L;
 
 	private String busNo = null;
 	private String dest = null;

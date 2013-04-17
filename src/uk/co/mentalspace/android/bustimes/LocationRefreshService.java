@@ -28,7 +28,7 @@ public class LocationRefreshService extends IntentService {
 	private static final HashMap<String,LocationRefreshTask> lrts = new HashMap<String,LocationRefreshTask>();
 	
 	public LocationRefreshService() {
-		super("DataRefreshService");
+		super("LocationRefreshService");
 	}
 	
 	@Override

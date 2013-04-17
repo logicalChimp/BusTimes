@@ -1,9 +1,14 @@
 package uk.co.mentalspace.android.bustimes.displays.metawatch;
 
+
+import java.util.List;
 import android.app.IntentService;
 
-import uk.co.mentalspace.android.bustimes.Coordinator;
+import uk.co.mentalspace.android.bustimes.BusTime;
+import uk.co.mentalspace.android.bustimes.BusTimeRefreshService;
 import uk.co.mentalspace.android.bustimes.Location;
+import uk.co.mentalspace.android.bustimes.LocationManager;
+import uk.co.mentalspace.android.bustimes.Renderer;
 import uk.co.mentalspace.android.bustimes.utils.LocationTracker;
 import android.content.Intent;
 import android.util.Log;
@@ -43,9 +48,10 @@ public class MetaWatchService extends IntentService {
 					LocationTracker pt = getPosTracker();
 					int lat = (int)(pt.getLatitude()*10000);
 					int lon = (int)(pt.getLongitude()*10000);
-					loc = Coordinator.getNearestLocation(mwd, lat, lon);
+					loc = LocationManager.getNearestSelectedLocation(getApplicationContext(), lat, lon);
 				}
-				Coordinator.getBusTimes(mwd, loc, false); //non-async
+
+				getBusTimes(mwd, loc); 
 			}
 			else if (MetaWatchReceiver.MW_DEACTIVATED.equals(action)) {
 				Log.d(LOGNAME, "MetaWatch app deactivated, displaying blank screen and terminating");
@@ -59,11 +65,33 @@ public class MetaWatchService extends IntentService {
 				if (BUTTON_NEXT_LOCATION == btnId) {
 					MetaWatchDisplay mwd = new MetaWatchDisplay(getApplicationContext());
 					Log.d(LOGNAME, "Getting next location. Current: "+loc.getLocationName());
-					loc = Coordinator.getNextLocation(mwd, loc);
+					
+					loc = LocationManager.getNextLocation(getApplicationContext(), loc);
 					Log.d(LOGNAME, "Next Location: "+loc.getLocationName());
-					Coordinator.getBusTimes(mwd, loc);
+					getBusTimes(mwd, loc);
 				} else {
 					Log.d(LOGNAME, "Wrong button. "+BUTTON_NEXT_LOCATION+" != "+btnId);
+				}
+			}
+			else if (BusTimeRefreshService.ACTION_LATEST_BUS_TIMES.equals(action)) {
+				if (null == loc) {
+					Log.w(LOGNAME, "Received updated bus times, but no location selected.  Ignoring");
+				} else {
+					long locId = intent.getLongExtra(BusTimeRefreshService.EXTRA_LOCATION_ID, -1);
+					String srcId = intent.getStringExtra(BusTimeRefreshService.EXTRA_SOURCE_ID);
+					
+					if (loc.getId() != locId || !loc.getSourceId().equals(srcId)) {
+						Log.w(LOGNAME, "Received updated bus times, but for a different location than selected.  Ignoring.");
+					} else {
+						@SuppressWarnings("unchecked")
+						List<BusTime> busTimes = (List<BusTime>)intent.getSerializableExtra(BusTimeRefreshService.EXTRA_BUS_TIMES);
+						
+						int busTimesSize = (null == busTimes) ? -1 : busTimes.size();
+						Log.d(LOGNAME, "Received ["+busTimesSize+"] bus times");
+
+						MetaWatchDisplay mwd = new MetaWatchDisplay(getApplicationContext());
+						mwd.displayBusTimes(loc, busTimes);
+					}
 				}
 			}
 			else {
@@ -75,6 +103,17 @@ public class MetaWatchService extends IntentService {
 		terminate();
 	}
 	
+	public void getBusTimes(Renderer display, Location loc) {
+		Intent service = new Intent(this, BusTimeRefreshService.class);
+		service.setAction(BusTimeRefreshService.ACTION_REFRESH_BUS_TIMES);
+		service.putExtra(BusTimeRefreshService.EXTRA_LOCATION_ID, loc.getId());
+		service.putExtra(BusTimeRefreshService.EXTRA_SOURCE_ID, loc.getSourceId());
+		this.startService(service);
+
+		Log.d(LOGNAME, "Initiating request of bus times for location: "+loc);
+		display.displayMessage("fetching bus times...", Renderer.MESSAGE_NORMAL);
+	}
+
 	public void terminate() {
 		if (null != posTracker) {
 			posTracker.stopTrackingLocation();

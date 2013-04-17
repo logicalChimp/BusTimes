@@ -3,13 +3,13 @@ package uk.co.mentalspace.android.bustimes.displays.android;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.co.mentalspace.android.bustimes.ChosenLocationsArrayAdapter;
 import uk.co.mentalspace.android.bustimes.Location;
 import uk.co.mentalspace.android.bustimes.LocationManager;
 import uk.co.mentalspace.android.bustimes.LocationRefreshService;
 import uk.co.mentalspace.android.bustimes.R;
 import uk.co.mentalspace.android.bustimes.Source;
 import uk.co.mentalspace.android.bustimes.SourceManager;
+import uk.co.mentalspace.android.bustimes.utils.ChosenLocationsArrayAdapter;
 import uk.co.mentalspace.android.bustimes.utils.LocationPopupWindow;
 
 import android.app.Activity;

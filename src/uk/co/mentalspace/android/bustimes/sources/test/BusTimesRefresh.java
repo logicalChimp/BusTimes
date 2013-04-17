@@ -1,24 +1,21 @@
 package uk.co.mentalspace.android.bustimes.sources.test;
 
-import java.util.ArrayList;
 import java.util.List;
-
+import java.util.ArrayList;
 import uk.co.mentalspace.android.bustimes.BusTime;
-import uk.co.mentalspace.android.bustimes.Coordinator;
-import uk.co.mentalspace.android.bustimes.DataRefreshTask;
+import uk.co.mentalspace.android.bustimes.BusTimeRefreshTask;
+import uk.co.mentalspace.android.bustimes.Location;
 
-public class BusTimesRefresh extends DataRefreshTask {
+public class BusTimesRefresh implements BusTimeRefreshTask {
 
 	private static int cycleCount = 0;
 	
-	@Override
-	public void executeSync() {
+	public List<BusTime> getBusTimes(Location loc) {
 		cycleCount = (cycleCount+1)%3;
-		List<BusTime> busTimes = getBusTimes(2-cycleCount);
-		Coordinator.updateBusTimes(display, location, busTimes);
+		return getBusTimes(loc, cycleCount);
 	}
 
-	private List<BusTime> getBusTimes(int offset) {
+	public List<BusTime> getBusTimes(Location loc, int offset) {
 		ArrayList<BusTime> bts = new ArrayList<BusTime>();
 		int eta = 0 + offset;
 		
@@ -33,11 +30,5 @@ public class BusTimesRefresh extends DataRefreshTask {
 		bts.add(bt);
 		
 		return bts;
-	}
-
-	@Override
-	protected List<BusTime> doInBackground(Void... strings) {
-		cycleCount = (cycleCount+1)%3;
-		return getBusTimes(cycleCount);
 	}
 }

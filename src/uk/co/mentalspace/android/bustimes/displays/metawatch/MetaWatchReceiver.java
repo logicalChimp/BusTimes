@@ -1,6 +1,7 @@
 package uk.co.mentalspace.android.bustimes.displays.metawatch;
 
 import android.content.BroadcastReceiver;
+import uk.co.mentalspace.android.bustimes.BusTimeRefreshService;
 import uk.co.mentalspace.android.bustimes.R;
 import android.content.Context;
 import android.content.Intent;
@@ -59,6 +60,12 @@ public class MetaWatchReceiver extends BroadcastReceiver {
 		else if (MW_DEACTIVATED.equals(action)) {
 			Intent service = new Intent(context, MetaWatchService.class);
 			service.setAction(action);
+			context.startService(service);
+		}
+		else if (BusTimeRefreshService.ACTION_LATEST_BUS_TIMES.equals(action)) {
+			Intent service = new Intent(context, MetaWatchService.class);
+			service.setAction(BusTimeRefreshService.ACTION_LATEST_BUS_TIMES);
+			service.putExtras(intent.getExtras());
 			context.startService(service);
 		}
 		else {

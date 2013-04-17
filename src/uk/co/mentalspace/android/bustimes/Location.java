@@ -1,7 +1,11 @@
 package uk.co.mentalspace.android.bustimes;
 
-public class Location {
+import java.io.Serializable;
 
+public class Location implements Serializable {
+
+	private static final long serialVersionUID = -6198852740620788874L;
+	
 	private long id = -1;
 	private String stopCode = null;
 	private String locationName = null;

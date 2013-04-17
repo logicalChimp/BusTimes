@@ -15,31 +15,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import uk.co.mentalspace.android.bustimes.BusTime;
-import uk.co.mentalspace.android.bustimes.DataRefreshTask;
+import uk.co.mentalspace.android.bustimes.BusTimeRefreshTask;
+import uk.co.mentalspace.android.bustimes.Location;
 import android.util.Log;
 
-public class LondonUK_AsyncBusTimes extends DataRefreshTask {
+public class LondonUK_AsyncBusTimes implements BusTimeRefreshTask {
 	private static final String BUS_TIMES_URL = "http://countdown.api.tfl.gov.uk/interfaces/ura/instant_V1";
 	private static final String LOGNAME = "LondonUK_AsyncBusTimes";
 
-	public void executeSync() {
-		List<BusTime> busTimes = getBusTimes();
-		onPostExecute(busTimes);
-	}
-	
-	protected List<BusTime> doInBackground(Void... strings) {
-		return getBusTimes();
-	}
-
-	private List<BusTime> getBusTimes() {
-		if (null == display) {
-			Log.e(LOGNAME, "Attempting to get Bus Times with no display set");
-			failure = new IllegalArgumentException("Renderer not initialised");
-			return null;
-		}
+	public List<BusTime> getBusTimes(Location location) {
 		if (null == location) {
 			Log.e(LOGNAME, "Attempting to get Bus Times with no Location set");
-			failure = new IllegalArgumentException("Location not initialised");
 			return null;
 		}
 		

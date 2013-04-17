@@ -144,7 +144,7 @@ public class LocationManager {
         }
 	}
 	
-	public static Location getLocationById(Context ctx, int stopId) {
+	public static Location getLocationById(Context ctx, long stopId) {
 		Log.d(LOGNAME, "Getting location by Id: "+stopId);
         LocationsDBAdapter ldba = new LocationsDBAdapter(ctx);
         try {

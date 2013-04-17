@@ -1,21 +1,23 @@
 package uk.co.mentalspace.android.bustimes.displays.android;
 
-import uk.co.mentalspace.android.bustimes.BusTime;
 import java.util.ArrayList;
+import uk.co.mentalspace.android.bustimes.BusTime;
 import java.util.List;
 
-import uk.co.mentalspace.android.bustimes.ChosenLocationsArrayAdapter;
-import uk.co.mentalspace.android.bustimes.Coordinator;
+import uk.co.mentalspace.android.bustimes.BusTimeRefreshService;
 import uk.co.mentalspace.android.bustimes.Location;
 import uk.co.mentalspace.android.bustimes.LocationManager;
 import uk.co.mentalspace.android.bustimes.R;
 import uk.co.mentalspace.android.bustimes.Renderer;
+import uk.co.mentalspace.android.bustimes.utils.ChosenLocationsArrayAdapter;
 import uk.co.mentalspace.android.bustimes.utils.LocationTracker;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,7 +31,15 @@ import android.widget.TextView;
 public class Main extends Activity implements Renderer, OnItemSelectedListener {
 	private static final String LOGNAME = "AndroidDisplay";
 	
-	private Location loc = null;
+	private BroadcastReceiver btReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+        	Main.this.receiveBroadcast(intent);
+        }
+    };
+    private boolean btReceiverIsRegistered = false;
+
+    private Location loc = null;
 	private LocationTracker posTracker = null;
 	
     @Override
@@ -51,7 +61,11 @@ public class Main extends Activity implements Renderer, OnItemSelectedListener {
 				posTracker.showSettingsAlert();
 			}
 		}
-	
+
+		if (!btReceiverIsRegistered) {
+		    registerReceiver(btReceiver, new IntentFilter(BusTimeRefreshService.ACTION_LATEST_BUS_TIMES));
+		    btReceiverIsRegistered = true;
+		}
 		//populateListOfSelectedLocations will populate list, and then trigger onListItemSelected
 		populateListOfSelectedLocations();
 		
@@ -74,7 +88,7 @@ public class Main extends Activity implements Renderer, OnItemSelectedListener {
 			Log.d(LOGNAME, "No location yet chosen - requesting load of nearest chosen location");
 			int lat = (int)(posTracker.getLatitude()*10000);
 			int lon = (int)(posTracker.getLongitude()*10000);
-			loc = Coordinator.getNearestLocation(this, lat, lon);
+			loc = LocationManager.getNearestSelectedLocation(getDisplayContext(), lat, lon);
 		}
 		if (null == loc) {
 			Log.w(LOGNAME, "Cannot get 'nearest' location - maybe none chosen?");
@@ -82,7 +96,13 @@ public class Main extends Activity implements Renderer, OnItemSelectedListener {
 			return;
 		}
 		Log.d(LOGNAME, "Fetching bus times for location ["+loc+"]");
-		Coordinator.getBusTimes(this, loc);
+//		Coordinator.getBusTimes(this, loc);
+		
+		Intent intent = new Intent(this, BusTimeRefreshService.class);
+		intent.setAction(BusTimeRefreshService.ACTION_REFRESH_BUS_TIMES);
+		intent.putExtra(BusTimeRefreshService.EXTRA_LOCATION_ID, loc.getId());
+		intent.putExtra(BusTimeRefreshService.EXTRA_SOURCE_ID, loc.getSourceId());
+		this.startService(intent);
 	}
 
     @Override
@@ -95,17 +115,19 @@ public class Main extends Activity implements Renderer, OnItemSelectedListener {
 	@Override
 	public void finish() {
 		Log.d(LOGNAME, "Terminating activity - terminating Coordinator timer");
-		Coordinator.terminate();
 		super.finish();
 	}
 	
 	@Override
 	public void onPause() {
 		Log.d(LOGNAME, "Pausing activity - terminating Coordinator timer");
-		Coordinator.terminate();
 		if (null != posTracker) {
 			posTracker.stopTrackingLocation();
 			posTracker = null;
+		}
+		if (btReceiverIsRegistered) {
+		    unregisterReceiver(btReceiver);
+		    btReceiverIsRegistered = false;
 		}
 		super.onPause();
 	}
@@ -163,9 +185,14 @@ public class Main extends Activity implements Renderer, OnItemSelectedListener {
 		BusTimeListAdapter btla = new BusTimeListAdapter(this.getDisplayContext(), bts.toArray(new BusTime[bts.size()]));
 		lv.setAdapter(btla);
 	}
-
+	
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+		if (null == view) { 
+			Log.w(LOGNAME, "Null view selected - ignoring the item selection.");
+			return;
+		}
+		
 		Log.d(LOGNAME, "Locations drop-down list item selected");
 		// TODO Auto-generated method stub
 		TextView tv = ((TextView)view.findViewById(R.id.chosen_location_stop_code_label));
@@ -180,6 +207,7 @@ public class Main extends Activity implements Renderer, OnItemSelectedListener {
 		Log.d(LOGNAME, "Selected location: " + loc.getLocationName());
 		
 		showBusTimes();
+		this.displayMessage("Fetching bus times...", Renderer.MESSAGE_NORMAL);
 	}
 
 	@Override
@@ -187,4 +215,29 @@ public class Main extends Activity implements Renderer, OnItemSelectedListener {
 		//do nothing
 	}
 
+	public void receiveBroadcast(Intent intent) {
+		//don't bother processing the incoming intent if the user has deselected the current location
+		if (null == loc) return;
+
+		String action = intent.getAction();
+		Log.d(LOGNAME, "Received broadcast. action: "+action);
+		
+		if (BusTimeRefreshService.ACTION_LATEST_BUS_TIMES.equals(action)) {
+			long locId = intent.getLongExtra(BusTimeRefreshService.EXTRA_LOCATION_ID, -1);
+			String srcId = intent.getStringExtra(BusTimeRefreshService.EXTRA_SOURCE_ID);
+			
+			if (loc.getId() != locId || !loc.getSourceId().equals(srcId)) {
+				Log.w(LOGNAME, "Received updated bus times for location other than that selected. Loc id ["+locId+"], Src id ["+srcId+"].  Ignoring.");
+				return;
+			}
+			
+			@SuppressWarnings("unchecked")
+			List<BusTime> busTimes = (List<BusTime>)intent.getSerializableExtra(BusTimeRefreshService.EXTRA_BUS_TIMES);
+			
+			int busTimesSize = (null == busTimes) ? -1 : busTimes.size();
+			Log.d(LOGNAME, "Received ["+busTimesSize+"] bus times");
+
+			displayBusTimes(loc, busTimes);
+		}
+	}
 }

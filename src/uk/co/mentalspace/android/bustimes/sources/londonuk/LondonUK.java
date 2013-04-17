@@ -1,10 +1,8 @@
 package uk.co.mentalspace.android.bustimes.sources.londonuk;
 
 import android.util.Log;
-import uk.co.mentalspace.android.bustimes.DataRefreshTask;
-import uk.co.mentalspace.android.bustimes.Location;
+import uk.co.mentalspace.android.bustimes.BusTimeRefreshTask;
 import uk.co.mentalspace.android.bustimes.LocationRefreshTask;
-import uk.co.mentalspace.android.bustimes.Renderer;
 import uk.co.mentalspace.android.bustimes.Source;
 
 public class LondonUK implements Source {
@@ -31,10 +29,9 @@ public class LondonUK implements Source {
 	}
 	
 	@Override
-	public DataRefreshTask getBusTimesTask(Renderer display, Location location) {
-    	DataRefreshTask task = new LondonUK_AsyncBusTimes();
-    	task.init(display, location);
+	public BusTimeRefreshTask getBusTimesTask() {
+    	BusTimeRefreshTask task = new LondonUK_AsyncBusTimes();
     	return task;
 	}
-	
+
 }

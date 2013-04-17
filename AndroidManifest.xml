@@ -56,6 +56,7 @@
                 <action android:name="org.metawatch.manager.APPLICATION_ACTIVATE" />
                 <action android:name="org.metawatch.manager.APPLICATION_DEACTIVATE" />
                 <action android:name="org.metawatch.manager.BUTTON_PRESS" />
+                <action android:name="uk.co.mentalspace.bustimes.LATEST_BUS_TIMES" />
             </intent-filter>
         </receiver>
 
@@ -63,6 +64,9 @@
         </service>
 
         <service android:name="uk.co.mentalspace.android.bustimes.LocationRefreshService" >
+        </service>
+
+        <service android:name="uk.co.mentalspace.android.bustimes.BusTimeRefreshService" >
         </service>
 
         <activity

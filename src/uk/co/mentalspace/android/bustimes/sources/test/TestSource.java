@@ -1,12 +1,11 @@
 package uk.co.mentalspace.android.bustimes.sources.test;
 
-import uk.co.mentalspace.android.bustimes.DataRefreshTask;
-import uk.co.mentalspace.android.bustimes.Location;
+import uk.co.mentalspace.android.bustimes.BusTimeRefreshTask;
 import uk.co.mentalspace.android.bustimes.LocationRefreshTask;
-import uk.co.mentalspace.android.bustimes.Renderer;
 import uk.co.mentalspace.android.bustimes.Source;
 
 public class TestSource implements Source {
+	
 
 	@Override
 	public String getName() {
@@ -20,8 +19,8 @@ public class TestSource implements Source {
 
 	@Override
 	public LocationRefreshTask getLocationRefreshTask() {
-		// TODO Auto-generated method stub
-		return null;
+		LocationRefreshTask lrt = new BusStopsRefresh();
+		return lrt;
 	}
 
 	@Override
@@ -30,9 +29,9 @@ public class TestSource implements Source {
 	}
 
 	@Override
-	public DataRefreshTask getBusTimesTask(Renderer display, Location location) {
-		// TODO Auto-generated method stub
-		return null;
+	public BusTimeRefreshTask getBusTimesTask() {
+		BusTimeRefreshTask btrt = new BusTimesRefresh();
+		return btrt;
 	}
 
 }
