@@ -1,5 +1,11 @@
-package uk.co.mentalspace.android.bustimes;
+package uk.co.mentalspace.android.bustimes.utils;
 
+import uk.co.mentalspace.android.bustimes.Location;
+import uk.co.mentalspace.android.bustimes.LocationManager;
+import uk.co.mentalspace.android.bustimes.R;
+import uk.co.mentalspace.android.bustimes.R.id;
+import uk.co.mentalspace.android.bustimes.R.layout;
+import uk.co.mentalspace.android.bustimes.R.string;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;

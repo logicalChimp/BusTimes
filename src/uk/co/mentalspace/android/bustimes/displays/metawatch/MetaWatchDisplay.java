@@ -18,11 +18,11 @@ import uk.co.mentalspace.android.bustimes.BusTime;
 import uk.co.mentalspace.android.bustimes.Location;
 import uk.co.mentalspace.android.bustimes.R;
 import uk.co.mentalspace.android.bustimes.Renderer;
-import uk.co.mentalspace.android.bustimes.Utils;
+import uk.co.mentalspace.android.bustimes.utils.Utils;
 
 public class MetaWatchDisplay implements Renderer {
 
-	private static final String LOGNAME = "MetaWatchService";
+	private static final String LOGNAME = "MetaWatchDisplay";
 	
 	private static final int METAWATCH_WIDTH = 96;
 	private static final int METAWATCH_HEIGHT = 96;
@@ -79,6 +79,7 @@ public class MetaWatchDisplay implements Renderer {
 			start += 17;
 		}
 		
+		Log.d(LOGNAME, "Message converted to screen image...");
 		sendApplicationUpdate(bitmap);
 	}
 	
@@ -169,27 +170,27 @@ public class MetaWatchDisplay implements Renderer {
 	
 	private void renderBusTime(Canvas canvas, BusTime busTime, int busPosition, TextPaint tp) {
 		int verticalOffset = (32+(busPosition*12)-2); //-2 = 2px padding bottom
-		Log.d(LOGNAME, "Bus time ["+busPosition+"] vertical offset ["+verticalOffset+"]");
+		Log.v(LOGNAME, "Bus time ["+busPosition+"] vertical offset ["+verticalOffset+"]");
 		
 		if (verticalOffset >= METAWATCH_HEIGHT) return; //ignore bus times that would render off the bottom of the screen
 		
-		Log.d(LOGNAME, "Generate render points");
+		Log.v(LOGNAME, "Generate render points");
 		Point num = new Point(20, verticalOffset); //20=20px from left, specify right limit because right aligned
 		Point dest = new Point(22, verticalOffset); //22=22px from left, specify left limit because left aligned
 		Point time = new Point(94, verticalOffset); //94=94px from left, specify right limit because right aligned
 
-		Log.d(LOGNAME, "Render bus number");
+		Log.v(LOGNAME, "Render bus number");
 		//set text alignment to right (numeric data), and render bus position
 		tp.setTextAlign(Align.RIGHT);
 		canvas.drawText(busTime.getBusNumber(), num.x, num.y, tp);
 
-		Log.d(LOGNAME, "Render bus destination");
+		Log.v(LOGNAME, "Render bus destination");
 		//set text alignment to left (text data), and render destination (first 10 chars only)
 		tp.setTextAlign(Align.LEFT);
 		String destStr = (busTime.getDestination().length() > 9) ? busTime.getDestination().substring(0,9) : busTime.getDestination();
 		canvas.drawText(destStr, dest.x, dest.y, tp);
 
-		Log.d(LOGNAME, "Render bus time");
+		Log.v(LOGNAME, "Render bus time");
 		//set text alignment to right (numeric data), and render estimated time of arrival
 		tp.setTextAlign(Align.RIGHT);
 		canvas.drawText(busTime.getEstimatedArrivalTime(), time.x, time.y, tp);

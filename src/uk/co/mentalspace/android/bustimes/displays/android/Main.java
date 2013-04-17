@@ -1,21 +1,16 @@
 package uk.co.mentalspace.android.bustimes.displays.android;
 
-
 import uk.co.mentalspace.android.bustimes.BusTime;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import uk.co.mentalspace.android.bustimes.ChosenLocationsArrayAdapter;
-import uk.co.mentalspace.android.bustimes.ConfigurationActivity;
 import uk.co.mentalspace.android.bustimes.Coordinator;
 import uk.co.mentalspace.android.bustimes.Location;
 import uk.co.mentalspace.android.bustimes.LocationManager;
-import uk.co.mentalspace.android.bustimes.LocationTracker;
 import uk.co.mentalspace.android.bustimes.R;
 import uk.co.mentalspace.android.bustimes.Renderer;
-import uk.co.mentalspace.android.bustimes.SelectLocationActivity;
-import uk.co.mentalspace.android.bustimes.SettingsActivity;
+import uk.co.mentalspace.android.bustimes.utils.LocationTracker;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -123,9 +118,6 @@ public class Main extends Activity implements Renderer, OnItemSelectedListener {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
     	switch (item.getItemId()) {
-    	case R.id.menu_settings:
-    		startActivity(new Intent(this, SettingsActivity.class));
-    		return true;
     	case R.id.menu_map:
     		startActivity(new Intent(this, SelectLocationActivity.class));
     		return true;

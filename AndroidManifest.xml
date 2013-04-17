@@ -45,10 +45,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="uk.co.mentalspace.android.bustimes.SettingsActivity"
-            android:label="@string/title_activity_settings" >
-        </activity>
 
         <receiver 
             android:name="uk.co.mentalspace.android.bustimes.displays.metawatch.MetaWatchReceiver" 
@@ -70,7 +66,7 @@
         </service>
 
         <activity
-            android:name="uk.co.mentalspace.android.bustimes.SelectLocationActivity"
+            android:name="uk.co.mentalspace.android.bustimes.displays.android.SelectLocationActivity"
             android:label="@string/title_activity_select_location" >
         </activity>
 
@@ -79,7 +75,7 @@
             android:value="AIzaSyA0-3MHOXg9wT39-TawNm_Xv3V8mSY_Zss" />
 
         <activity
-            android:name="uk.co.mentalspace.android.bustimes.ConfigurationActivity"
+            android:name="uk.co.mentalspace.android.bustimes.displays.android.ConfigurationActivity"
             android:label="@string/title_activity_configuration" >
         </activity>
     </application>

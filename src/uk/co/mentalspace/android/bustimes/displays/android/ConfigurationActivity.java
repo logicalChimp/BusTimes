@@ -1,7 +1,16 @@
-package uk.co.mentalspace.android.bustimes;
+package uk.co.mentalspace.android.bustimes.displays.android;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+
+import uk.co.mentalspace.android.bustimes.ChosenLocationsArrayAdapter;
+import uk.co.mentalspace.android.bustimes.Location;
+import uk.co.mentalspace.android.bustimes.LocationManager;
+import uk.co.mentalspace.android.bustimes.LocationRefreshService;
+import uk.co.mentalspace.android.bustimes.R;
+import uk.co.mentalspace.android.bustimes.Source;
+import uk.co.mentalspace.android.bustimes.SourceManager;
+import uk.co.mentalspace.android.bustimes.utils.LocationPopupWindow;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -75,7 +84,8 @@ public class ConfigurationActivity extends Activity implements OnClickListener, 
 	}
 
 	private void configureLayout() {
-		String sourceId = Preferences.getPreference(this, Preferences.KEY_SOURCE_ID);
+		//TODO removed hardcoded source
+		String sourceId = "londonuk-tfl"; //Preferences.getPreference(this, Preferences.KEY_SOURCE_ID);
 		if (null != sourceId && !"".equals(sourceId.trim())) {
 			Source src = SourceManager.getSource(sourceId);
 			TextView srcLabel = (TextView)this.findViewById(R.id.configure_source_chosen_source);
@@ -115,7 +125,8 @@ public class ConfigurationActivity extends Activity implements OnClickListener, 
 			return;
 		case R.id.configure_source_refresh_data_button:
 			//trigger download of stops
-			String sourceId = Preferences.getPreference(this, Preferences.KEY_SOURCE_ID);
+			//TODO remove hard-coded source
+			String sourceId = "londonuk-tfl"; //Preferences.getPreference(this, Preferences.KEY_SOURCE_ID);
 			if (null == sourceId || "".equals(sourceId.trim())) return;
 			
 			Log.d(LOGNAME, "Sending intent to start Data Refresh Service");

@@ -1,8 +1,16 @@
-package uk.co.mentalspace.android.bustimes;
+package uk.co.mentalspace.android.bustimes.displays.android;
 
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
+
+import uk.co.mentalspace.android.bustimes.Location;
+import uk.co.mentalspace.android.bustimes.LocationManager;
+import uk.co.mentalspace.android.bustimes.R;
+import uk.co.mentalspace.android.bustimes.R.id;
+import uk.co.mentalspace.android.bustimes.R.layout;
+import uk.co.mentalspace.android.bustimes.utils.LocationPopupWindow;
+import uk.co.mentalspace.android.bustimes.utils.LocationTracker;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;

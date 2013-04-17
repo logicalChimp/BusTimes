@@ -4,7 +4,7 @@ import android.app.IntentService;
 
 import uk.co.mentalspace.android.bustimes.Coordinator;
 import uk.co.mentalspace.android.bustimes.Location;
-import uk.co.mentalspace.android.bustimes.LocationTracker;
+import uk.co.mentalspace.android.bustimes.utils.LocationTracker;
 import android.content.Intent;
 import android.util.Log;
 

@@ -1,4 +1,4 @@
-package uk.co.mentalspace.android.bustimes;
+package uk.co.mentalspace.android.bustimes.utils;
 
 import java.io.IOException;
 import java.io.InputStream;

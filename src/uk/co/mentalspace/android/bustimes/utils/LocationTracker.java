@@ -1,4 +1,4 @@
-package uk.co.mentalspace.android.bustimes;
+package uk.co.mentalspace.android.bustimes.utils;
 
 import android.app.AlertDialog;
 import android.content.Context;
