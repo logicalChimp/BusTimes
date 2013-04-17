@@ -25,7 +25,7 @@ public abstract class LocationRefreshTask extends AsyncTask<Void, Integer, Strin
 	protected int currentProgress = 0;
 	protected String currentProgressLabel = "";
 	
-	protected String[] progressLabels = new String[] {"Contacting server", "Downloading data", "Translating TFL coords to Lat/Long"};
+	protected String[] progressLabels = new String[] {"Contacting server", "Downloading data", "Processing records"};
 	
 	public void init(Context ctx) {
 		ldba = new LocationsDBAdapter(ctx);
@@ -63,7 +63,7 @@ public abstract class LocationRefreshTask extends AsyncTask<Void, Integer, Strin
 	protected void publishProgress(int labelIndex, int value) {
 		Log.d(LOGNAME, "Updating progress values");
 		String progressLabel = progressLabels[labelIndex];
-		if (PROGRESS_POSITION_PROCESSING_DATA == labelIndex) progressLabel += " ("+value+")";
+		if (PROGRESS_POSITION_PROCESSING_DATA == labelIndex) progressLabel += " ("+value+" / "+maxProgress+")";
 
 		currentProgress = value;
 		currentProgressLabel = progressLabel;

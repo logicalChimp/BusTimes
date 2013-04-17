@@ -1,8 +1,9 @@
 package uk.co.mentalspace.android.bustimes.sources.londonuk;
 
-import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Map;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -12,8 +13,6 @@ import uk.co.mentalspace.android.bustimes.Location;
 import uk.co.mentalspace.android.bustimes.LocationRefreshTask;
 import uk.me.jstott.jcoord.LatLng;
 import uk.me.jstott.jcoord.OSRef;
-import android.os.Debug;
-import android.os.Environment;
 import android.util.Log;
 
 public class LondonUK_AsyncBusStops extends LocationRefreshTask {
@@ -60,9 +59,9 @@ public class LondonUK_AsyncBusStops extends LocationRefreshTask {
 			//open the DB connection now, instead of inside the loop
 			publishProgress(PROGRESS_POSITION_PROCESSING_DATA, count);
 			ldba.open();
-			Debug.startMethodTracing(Environment.getExternalStorageDirectory().getPath()+"/BusLocationProcessing.trace");
-			while (null != line && !("".equals(line)) && count < 50) {
-				processLocation(line);
+			Map<String,String> keys = ldba.getComboKeys(getSourceId());
+			while (null != line && !("".equals(line))) {
+				processLocation(keys, line);
 
 				line = br.readLine();
 				count++;
@@ -70,7 +69,6 @@ public class LondonUK_AsyncBusStops extends LocationRefreshTask {
 					publishProgress(PROGRESS_POSITION_PROCESSING_DATA, count);
 				}
 			}
-			Debug.stopMethodTracing();
 
 			Log.d(LOGNAME, "Finished processing response.");
 			
@@ -91,21 +89,23 @@ public class LondonUK_AsyncBusStops extends LocationRefreshTask {
 		return null;
 	}
 
-	private void processLocation(String s) {
+	private void processLocation(Map<String,String> keys, String s) {
 		String cols[] = s.split(",");
 		if (cols.length < 6) return;
-		
-		Location loc = ldba.getLocationByStopCode(cols[1]);
 
-		if (null == loc) createNewLocation(cols);
-		else {
-			if (cols[4] != loc.getSrcPosA() || cols[5] != loc.getSrcPosB()) {
-				//stop has moved location - delete old one and re-create
-				ldba.deleteLocation(loc.getId());
-				createNewLocation(cols);
-			} else {
-				ldba.updateLocation(loc.getId(), cols[1], cols[3], loc.getDescription(), loc.getLat(), loc.getLon(), cols[4], cols[5], cols[6], loc.getNickName(), loc.getChosen(), this.getSourceId());
+		String comboKey = ldba.getComboKey(cols[1], cols[4], cols[5]);
+		String stopCode = keys.get(comboKey);
+
+		if (null == stopCode) {
+			if (keys.entrySet().contains(cols[1])) {
+				//stop code exists but srcPosA or srcPosB don't match - has moved location - delete old one and re-create
+				ldba.deleteLocationByStopCode(stopCode);
 			}
+			createNewLocation(cols);
+		}
+		else {
+			Location loc = ldba.getLocationByStopCode(stopCode);
+			ldba.updateLocation(loc.getId(), cols[1], cols[3], loc.getDescription(), loc.getLat(), loc.getLon(), cols[4], cols[5], cols[6], loc.getNickName(), loc.getChosen(), this.getSourceId());
 		}
 	}
 	

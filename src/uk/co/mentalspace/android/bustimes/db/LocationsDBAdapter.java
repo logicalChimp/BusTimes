@@ -1,7 +1,9 @@
 package uk.co.mentalspace.android.bustimes.db;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import uk.co.mentalspace.android.bustimes.Location;
 import android.content.ContentValues;
@@ -89,6 +91,10 @@ public class LocationsDBAdapter {
      */
     public boolean deleteLocation(long rowId) {
         return mDb.delete(BusTimesDBHelper.LOCATIONS_TABLE, KEY_ROWID + "=" + rowId, null) > 0;
+    }
+
+    public boolean deleteLocationByStopCode(String stopCode) {
+        return mDb.delete(BusTimesDBHelper.LOCATIONS_TABLE, KEY_STOP_CODE + "=" + stopCode, null) > 0;
     }
 
     /**
@@ -289,4 +295,28 @@ public class LocationsDBAdapter {
     	return updateLocation(loc.getId(), loc.getStopCode(), loc.getLocationName(), loc.getDescription(), loc.getLat(), loc.getLon(), loc.getSrcPosA(), loc.getSrcPosB(), loc.getHeading(), loc.getNickName(), loc.getChosen(), loc.getSourceId());
     }
 
+    public String getComboKey(String stopCode, String srcPosA, String srcPosB) {
+    	return stopCode+"_"+srcPosA+"_"+srcPosB;
+    }
+    public Map<String, String> getComboKeys(String sourceId) {
+    	String sql = "select stopCode, stopCode+'_'+srcPosA+'_'+srcPosB as combokey from "+BusTimesDBHelper.LOCATIONS_TABLE+" where sourceId = '"+sourceId+"'";
+    	Log.d(LOGNAME, "Getting combo keys.  SQL: "+sql);
+
+    	Cursor c = mDb.rawQuery(sql, null);
+    	if (null != c) c.moveToFirst();
+    	
+    	HashMap<String,String> keys = new HashMap<String,String>();
+    	try {
+	    	while (!c.isAfterLast()) {
+	    		String stopCode = c.getString(c.getColumnIndex(KEY_STOP_CODE));
+	    		String comboKey = c.getString(c.getColumnIndex("combokey"));
+	    		
+	    		keys.put(comboKey, stopCode);
+		    	c.moveToNext();
+	    	}
+	    	return keys;
+    	} finally {
+	    	if (null != c) c.close();
+    	}
+    }
 }
