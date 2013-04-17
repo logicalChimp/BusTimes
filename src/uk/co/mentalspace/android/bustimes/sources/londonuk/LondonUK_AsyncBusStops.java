@@ -28,6 +28,7 @@ public class LondonUK_AsyncBusStops extends LocationRefreshTask {
 	
 	protected String doInBackground(Void... strings) {
 		if (null == ldba) {
+			Log.e(LOGNAME, "get Bus Stops called with no Location DB Adapter set");
 			failure = new IllegalArgumentException("Database connection not initialised");
 			return null;
 		}
@@ -61,7 +62,7 @@ public class LondonUK_AsyncBusStops extends LocationRefreshTask {
 			publishProgress(PROGRESS_POSITION_PROCESSING_DATA, count);
 			ldba.open();
 			Map<String,String> keys = ldba.getComboKeys(getSourceId());
-			while (null != line && !("".equals(line.trim()))) {
+			while (null != line && !("".equals(line.trim())) && !this.isCancelled()) {
 
 				try {
 					processLocation(keys, line);
@@ -106,11 +107,11 @@ public class LondonUK_AsyncBusStops extends LocationRefreshTask {
 		boolean isFirstToken = true;
 		for (String split: splits) {
 			if (split.startsWith("\"")) {
-				split = split.substring(1); //remove leading "
+				split = split.substring(1); //remove leading quote
 				startsWithQuote = true;
 			}
 			if (split.endsWith("\"")) {
-				split = split.substring(0, split.length()-1); //remove the trailing "
+				split = split.substring(0, split.length()-1); //remove the trailing quote
 				endsWithQuote = true;
 			}
 
@@ -131,7 +132,7 @@ public class LondonUK_AsyncBusStops extends LocationRefreshTask {
 			}
 		}
 		if (hasQuotedCols) {
-			Log.i(LOGNAME, "Quoted Line ["+line+"], token count ["+cols.size()+"]");
+			Log.v(LOGNAME, "Quoted Line ["+line+"], token count ["+cols.size()+"]");
 		}
 		
 		String[] toReturn = cols.toArray(new String[]{});
@@ -140,7 +141,6 @@ public class LondonUK_AsyncBusStops extends LocationRefreshTask {
 	
 	private void processLocation(Map<String,String> keys, String s) {
 		String cols[] = getLocValues(s);
-//		String cols[] = s.split(",");
 		if (cols.length < 6) return;
 
 		String comboKey = ldba.getComboKey(cols[1], cols[4], cols[5]);
