@@ -54,7 +54,7 @@ public abstract class LocationRefreshTask extends AsyncTask<Void, Integer, Strin
 	
 	@Override
 	protected void onPreExecute() {
-		maxProgress = 58000; //TODO remove hard-coded value
+		maxProgress = 20000; //TODO remove hard-coded value
 		currentProgress = 0;
 		currentProgressLabel = "";
 		triggerProgressUpdate();

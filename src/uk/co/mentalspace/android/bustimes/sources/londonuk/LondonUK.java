@@ -29,7 +29,7 @@ public class LondonUK implements Source {
 //	}
 //	
 	public int getEstimatedLocationCount() {
-		return 58000;
+		return 20000;
 	}
 
 	@Override
