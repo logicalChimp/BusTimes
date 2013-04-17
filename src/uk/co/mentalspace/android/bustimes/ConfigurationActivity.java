@@ -47,12 +47,12 @@ public class ConfigurationActivity extends Activity implements OnClickListener, 
 		super.onResume();
 		configureLayout();
 		if (!drsReceiverIsRegistered) {
-		    registerReceiver(drsReceiver, new IntentFilter(DataRefreshService.ACTION_UPDATE_DATA_REFRESH_PROGRESS));
+		    registerReceiver(drsReceiver, new IntentFilter(LocationRefreshService.ACTION_UPDATE_DATA_REFRESH_PROGRESS));
 		    drsReceiverIsRegistered = true;
 
 		    //request update on service progress - after re-registering the broadcast receiver
-			Intent intent = new Intent(this, DataRefreshService.class);
-			intent.setAction(DataRefreshService.ACTION_GET_REFRESH_PROGRESS);
+			Intent intent = new Intent(this, LocationRefreshService.class);
+			intent.setAction(LocationRefreshService.ACTION_GET_REFRESH_PROGRESS);
 			startService(intent);
 		}		
 	}
@@ -119,9 +119,9 @@ public class ConfigurationActivity extends Activity implements OnClickListener, 
 			if (null == sourceId || "".equals(sourceId.trim())) return;
 			
 			Log.d(LOGNAME, "Sending intent to start Data Refresh Service");
-			Intent intent = new Intent(this, DataRefreshService.class);
-			intent.setAction(DataRefreshService.ACTION_REFRESH_LOCATION_DATA);
-			intent.putExtra(DataRefreshService.EXTRA_SOURCE_NAME, sourceId);
+			Intent intent = new Intent(this, LocationRefreshService.class);
+			intent.setAction(LocationRefreshService.ACTION_REFRESH_LOCATION_DATA);
+			intent.putExtra(LocationRefreshService.EXTRA_SOURCE_NAME, sourceId);
 			this.startService(intent);
 			
 //			Source src = SourceManager.getSource(sourceId);
@@ -154,18 +154,18 @@ public class ConfigurationActivity extends Activity implements OnClickListener, 
     public void receiveBroadcast(Intent intent) {
     	String action = intent.getAction();
     	Log.d(LOGNAME, "Received broadcast intent.  Action: " + action);
-    	if (DataRefreshService.ACTION_UPDATE_DATA_REFRESH_PROGRESS.equals(action)) {
+    	if (LocationRefreshService.ACTION_UPDATE_DATA_REFRESH_PROGRESS.equals(action)) {
 			TextView label = (TextView)this.findViewById(R.id.configure_locations_download_progress_label);
 			ProgressBar bar = (ProgressBar)this.findViewById(R.id.configure_locations_download_progress_bar);
 			
-			bar.setMax(intent.getIntExtra(DataRefreshService.EXTRA_MAX_VALUE, 0));
-			bar.setProgress(intent.getIntExtra(DataRefreshService.EXTRA_CURRENT_VALUE, 0));
-			label.setText(intent.getStringExtra(DataRefreshService.EXTRA_PROGRESS_LABEL));
+			bar.setMax(intent.getIntExtra(LocationRefreshService.EXTRA_MAX_VALUE, 0));
+			bar.setProgress(intent.getIntExtra(LocationRefreshService.EXTRA_CURRENT_VALUE, 0));
+			label.setText(intent.getStringExtra(LocationRefreshService.EXTRA_PROGRESS_LABEL));
 			
 			View container = (View)this.findViewById(R.id.configure_source_progress_group);
 			container.setVisibility(View.VISIBLE);
     	}
-    	if (DataRefreshService.ACTION_LOCATION_REFRESH_TASK_COMPLETE.equals(action)) {
+    	if (LocationRefreshService.ACTION_LOCATION_REFRESH_TASK_COMPLETE.equals(action)) {
 			View container = (View)this.findViewById(R.id.configure_source_progress_group);
 			container.setVisibility(View.GONE);
 			Toast.makeText(this, "Locations download complete", Toast.LENGTH_SHORT).show();

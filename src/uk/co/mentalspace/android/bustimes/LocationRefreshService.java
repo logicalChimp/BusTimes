@@ -10,7 +10,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
 
-public class DataRefreshService extends IntentService {
+public class LocationRefreshService extends IntentService {
 
 	public static final String ACTION_UPDATE_DATA_REFRESH_PROGRESS = "uk.co.mentalspace.bustimes.UpdateDataRefreshProgress";
 	public static final String ACTION_REFRESH_LOCATION_DATA = "uk.co.mentalspace.bustimes.RefreshLocationData";
@@ -27,7 +27,7 @@ public class DataRefreshService extends IntentService {
 	
 	private static final HashMap<String,LocationRefreshTask> lrts = new HashMap<String,LocationRefreshTask>();
 	
-	public DataRefreshService() {
+	public LocationRefreshService() {
 		super("DataRefreshService");
 	}
 	

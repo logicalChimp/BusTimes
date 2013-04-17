@@ -73,9 +73,9 @@ public abstract class LocationRefreshTask extends AsyncTask<Void, Integer, Strin
 	
 	protected void triggerProgressUpdate() {
 		Log.d(LOGNAME, "Sending intent to trigger progress update");
-		Intent intent = new Intent(ctx, DataRefreshService.class);
-		intent.setAction(DataRefreshService.ACTION_GET_REFRESH_PROGRESS);
-		intent.putExtra(DataRefreshService.EXTRA_SOURCE_NAME, getSourceId());
+		Intent intent = new Intent(ctx, LocationRefreshService.class);
+		intent.setAction(LocationRefreshService.ACTION_GET_REFRESH_PROGRESS);
+		intent.putExtra(LocationRefreshService.EXTRA_SOURCE_NAME, getSourceId());
 		ctx.startService(intent);
 	}
 
@@ -96,9 +96,9 @@ public abstract class LocationRefreshTask extends AsyncTask<Void, Integer, Strin
 		}
 		
 		//notify the service that this task is complete
-		Intent intent = new Intent(ctx, DataRefreshService.class);
-		intent.setAction(DataRefreshService.ACTION_LOCATION_REFRESH_TASK_COMPLETE);
-		intent.putExtra(DataRefreshService.EXTRA_SOURCE_NAME, getSourceId());
+		Intent intent = new Intent(ctx, LocationRefreshService.class);
+		intent.setAction(LocationRefreshService.ACTION_LOCATION_REFRESH_TASK_COMPLETE);
+		intent.putExtra(LocationRefreshService.EXTRA_SOURCE_NAME, getSourceId());
 		ctx.startService(intent);
 	}
 
