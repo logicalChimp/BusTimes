@@ -3,6 +3,7 @@ package uk.co.mentalspace.android.bustimes.sources.londonuk;
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.apache.http.HttpResponse;
@@ -60,8 +61,13 @@ public class LondonUK_AsyncBusStops extends LocationRefreshTask {
 			publishProgress(PROGRESS_POSITION_PROCESSING_DATA, count);
 			ldba.open();
 			Map<String,String> keys = ldba.getComboKeys(getSourceId());
-			while (null != line && !("".equals(line))) {
-				processLocation(keys, line);
+			while (null != line && !("".equals(line.trim()))) {
+
+				try {
+					processLocation(keys, line);
+				} catch (Exception e) {
+					Log.w(LOGNAME, "Unknown exception processing stop data ["+line+"]", e);
+				}
 
 				line = br.readLine();
 				count++;
@@ -70,7 +76,7 @@ public class LondonUK_AsyncBusStops extends LocationRefreshTask {
 				}
 			}
 
-			Log.d(LOGNAME, "Finished processing response.");
+			Log.d(LOGNAME, "Finished processing ["+count+"] rows in the response.");
 			
 		} catch (IOException ioe) {
 			Log.e(LOGNAME, "Unexception IOException occured: "+ioe);
@@ -89,8 +95,52 @@ public class LondonUK_AsyncBusStops extends LocationRefreshTask {
 		return null;
 	}
 
+	private String[] getLocValues(String line) {
+		ArrayList<String> cols = new ArrayList<String>();
+		String[] splits = line.split(",");
+		
+		String col = "";
+		boolean hasQuotedCols = false;
+		boolean startsWithQuote = false;
+		boolean endsWithQuote = false;
+		boolean isFirstToken = true;
+		for (String split: splits) {
+			if (split.startsWith("\"")) {
+				split = split.substring(1); //remove leading "
+				startsWithQuote = true;
+			}
+			if (split.endsWith("\"")) {
+				split = split.substring(0, split.length()-1); //remove the trailing "
+				endsWithQuote = true;
+			}
+
+			if (!isFirstToken) col += ", ";
+			col += split;
+	
+			//debugging flag
+			if (startsWithQuote && endsWithQuote) {
+				hasQuotedCols = true;
+			}
+			
+			if (!startsWithQuote || (startsWithQuote && endsWithQuote)) {
+				startsWithQuote = false;
+				endsWithQuote = false;
+				isFirstToken = true;
+				cols.add(col);
+				col = "";
+			}
+		}
+		if (hasQuotedCols) {
+			Log.i(LOGNAME, "Quoted Line ["+line+"], token count ["+cols.size()+"]");
+		}
+		
+		String[] toReturn = cols.toArray(new String[]{});
+		return toReturn;
+	}
+	
 	private void processLocation(Map<String,String> keys, String s) {
-		String cols[] = s.split(",");
+		String cols[] = getLocValues(s);
+//		String cols[] = s.split(",");
 		if (cols.length < 6) return;
 
 		String comboKey = ldba.getComboKey(cols[1], cols[4], cols[5]);
