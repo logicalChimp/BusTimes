@@ -14,7 +14,7 @@ public interface Renderer {
 	
 	public Context getDisplayContext();
 	
-	public void displayMessage(String msg, int msgLevel);
+	public void displayMessage(Location location, String msg, int msgLevel);
 	public void displayBusTimes(Location location, List<BusTime> busTimes);
 	
 	public void execute(Runnable r);

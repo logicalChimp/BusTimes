@@ -56,7 +56,7 @@ public class MetaWatchService extends IntentService {
 			else if (MetaWatchReceiver.MW_DEACTIVATED.equals(action)) {
 				Log.d(LOGNAME, "MetaWatch app deactivated, displaying blank screen and terminating");
 				MetaWatchDisplay mwd = new MetaWatchDisplay(getApplicationContext());
-				mwd.displayMessage("", MetaWatchDisplay.MESSAGE_NORMAL);
+				mwd.displayMessage(null, "", MetaWatchDisplay.MESSAGE_NORMAL);
 				//GPS will auto-disconnect when this function terminates
 			}
 			else if (MetaWatchReceiver.MW_BUTTON.equals(action)) {
@@ -111,7 +111,7 @@ public class MetaWatchService extends IntentService {
 		this.startService(service);
 
 		Log.d(LOGNAME, "Initiating request of bus times for location: "+loc);
-		display.displayMessage("fetching bus times...", Renderer.MESSAGE_NORMAL);
+		display.displayMessage(loc, "fetching bus times...", Renderer.MESSAGE_NORMAL);
 	}
 
 	public void terminate() {

@@ -28,13 +28,13 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-public class Main extends Activity implements Renderer, OnItemSelectedListener {
+public class BusTimeActivity extends Activity implements Renderer, OnItemSelectedListener {
 	private static final String LOGNAME = "AndroidDisplay";
 	
 	private BroadcastReceiver btReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-        	Main.this.receiveBroadcast(intent);
+        	BusTimeActivity.this.receiveBroadcast(intent);
         }
     };
     private boolean btReceiverIsRegistered = false;
@@ -45,7 +45,7 @@ public class Main extends Activity implements Renderer, OnItemSelectedListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_bus_time);
 		findViewById(R.id.bus_times_results).setVisibility(View.GONE);
 		findViewById(R.id.bus_times_message).setVisibility(View.GONE);
 		((Spinner)findViewById(R.id.bus_times_location)).setOnItemSelectedListener(this);
@@ -92,7 +92,7 @@ public class Main extends Activity implements Renderer, OnItemSelectedListener {
 		}
 		if (null == loc) {
 			Log.w(LOGNAME, "Cannot get 'nearest' location - maybe none chosen?");
-			this.displayMessage("Please select one or more locations to monitor.", Renderer.MESSAGE_ERROR);
+			this.displayMessage(null, "Please select one or more locations to monitor.", Renderer.MESSAGE_ERROR);
 			return;
 		}
 		Log.d(LOGNAME, "Fetching bus times for location ["+loc+"]");
@@ -162,7 +162,7 @@ public class Main extends Activity implements Renderer, OnItemSelectedListener {
 	}
 
 	@Override
-	public void displayMessage(String msg, int msgLevel) {
+	public void displayMessage(Location loc, String msg, int msgLevel) {
 		findViewById(R.id.bus_times_results).setVisibility(View.GONE);
 		TextView tv = (TextView)findViewById(R.id.bus_times_message);
 		tv.setVisibility(View.VISIBLE);
@@ -206,8 +206,8 @@ public class Main extends Activity implements Renderer, OnItemSelectedListener {
 		if (null == loc) return;
 		Log.d(LOGNAME, "Selected location: " + loc.getLocationName());
 		
+		this.displayMessage(loc, "Fetching bus times...", Renderer.MESSAGE_NORMAL);
 		showBusTimes();
-		this.displayMessage("Fetching bus times...", Renderer.MESSAGE_NORMAL);
 	}
 
 	@Override

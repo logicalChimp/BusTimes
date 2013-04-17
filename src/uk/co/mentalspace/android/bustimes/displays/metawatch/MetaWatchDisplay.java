@@ -47,7 +47,7 @@ public class MetaWatchDisplay implements Renderer {
     }
     
 	@Override
-	public void displayMessage(String msg, int msgLevel) {
+	public void displayMessage(Location loc, String msg, int msgLevel) {
 		Log.d(LOGNAME, "Displaying message: " + msg);
 		Bitmap bitmap = Bitmap.createBitmap(METAWATCH_WIDTH, METAWATCH_HEIGHT, Bitmap.Config.RGB_565);
 		Canvas canvas = new Canvas(bitmap);
@@ -68,13 +68,25 @@ public class MetaWatchDisplay implements Renderer {
 		tp.setTextSize(fontsize);
 		tp.setTextAlign(Align.LEFT);
 
+		int maxRows = 8;
+		int startPos = 16;
+		if (null != loc) {
+			this.renderLocation(canvas, loc, tp);
+			startPos = 40;
+			maxRows = 5;
+			tp.setTextAlign(Align.LEFT);
+		}
+		
 		int start = 0;
-		int row = 1;
-		while (start < msg.length() && row < 8) {
+		int row = 0;
+		while (start < msg.length() && row < maxRows) {
 			int end = start+17;
 			end = (end >= msg.length()) ? -1 : end;
 			String line = (end == -1) ? msg.substring(start) : msg.substring(start, end);
-			canvas.drawText(line, 3, 16+(row*8), tp);
+			int displayRow = startPos+(row*8);
+			
+			Log.v(LOGNAME, "String ["+line+"], x ["+3+"], y ["+displayRow+"], ");
+			canvas.drawText(line, 3, displayRow, tp);
 			row++;
 			start += 17;
 		}

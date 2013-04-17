@@ -160,25 +160,25 @@ containing a value of this type.
     }
     public static final class id {
         public static final int action_settings=0x7f040031;
-        public static final int bus_times_location=0x7f040012;
-        public static final int bus_times_message=0x7f040013;
-        public static final int bus_times_results=0x7f040014;
+        public static final int bus_times_location=0x7f040005;
+        public static final int bus_times_message=0x7f040006;
+        public static final int bus_times_results=0x7f040007;
         public static final int chosen_location_nick_name_label=0x7f040020;
         public static final int chosen_location_stop_code_label=0x7f040022;
         public static final int chosen_location_stop_name_label=0x7f040021;
-        public static final int configure_add_location_by_code_button=0x7f04000f;
-        public static final int configure_add_location_group=0x7f04000e;
-        public static final int configure_browse_locations_button=0x7f040010;
-        public static final int configure_chosen_locations_list=0x7f040011;
-        public static final int configure_locations_download_progress_bar=0x7f04000d;
-        public static final int configure_locations_download_progress_label=0x7f04000c;
-        public static final int configure_source_chosen_source=0x7f040007;
-        public static final int configure_source_force_download_group=0x7f040009;
-        public static final int configure_source_group=0x7f040005;
-        public static final int configure_source_icon=0x7f040008;
-        public static final int configure_source_label=0x7f040006;
-        public static final int configure_source_progress_group=0x7f04000b;
-        public static final int configure_source_refresh_data_button=0x7f04000a;
+        public static final int configure_add_location_by_code_button=0x7f040012;
+        public static final int configure_add_location_group=0x7f040011;
+        public static final int configure_browse_locations_button=0x7f040013;
+        public static final int configure_chosen_locations_list=0x7f040014;
+        public static final int configure_locations_download_progress_bar=0x7f040010;
+        public static final int configure_locations_download_progress_label=0x7f04000f;
+        public static final int configure_source_chosen_source=0x7f04000a;
+        public static final int configure_source_force_download_group=0x7f04000c;
+        public static final int configure_source_group=0x7f040008;
+        public static final int configure_source_icon=0x7f04000b;
+        public static final int configure_source_label=0x7f040009;
+        public static final int configure_source_progress_group=0x7f04000e;
+        public static final int configure_source_refresh_data_button=0x7f04000d;
         public static final int dummy_button=0x7f04001c;
         public static final int fullscreen_content=0x7f04001a;
         public static final int fullscreen_content_controls=0x7f04001b;
@@ -211,8 +211,8 @@ containing a value of this type.
         public static final int terrain=0x7f040003;
     }
     public static final class layout {
-        public static final int activity_configuration=0x7f030000;
-        public static final int activity_main=0x7f030001;
+        public static final int activity_bus_time=0x7f030000;
+        public static final int activity_configuration=0x7f030001;
         public static final int activity_meta_watch=0x7f030002;
         public static final int activity_select_location=0x7f030003;
         public static final int activity_settings=0x7f030004;

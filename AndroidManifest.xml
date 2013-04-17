@@ -36,7 +36,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="uk.co.mentalspace.android.bustimes.displays.android.Main"
+            android:name="uk.co.mentalspace.android.bustimes.displays.android.BusTimeActivity"
             android:configChanges="keyboardHidden|orientation"
             android:label="@string/app_name" >
             <intent-filter>
