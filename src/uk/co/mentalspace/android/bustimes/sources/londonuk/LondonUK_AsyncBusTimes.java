@@ -1,7 +1,7 @@
 package uk.co.mentalspace.android.bustimes.sources.londonuk;
 
-import java.io.IOException;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,36 +15,23 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import uk.co.mentalspace.android.bustimes.BusTime;
-import uk.co.mentalspace.android.bustimes.Coordinator;
-import uk.co.mentalspace.android.bustimes.Location;
-import uk.co.mentalspace.android.bustimes.Renderer;
-import android.os.AsyncTask;
+import uk.co.mentalspace.android.bustimes.DataRefreshTask;
 import android.util.Log;
 
-public class LondonUK_AsyncBusTimes extends AsyncTask<Void, Void, List<BusTime>> {
+public class LondonUK_AsyncBusTimes extends DataRefreshTask {
 	private static final String BUS_TIMES_URL = "http://countdown.api.tfl.gov.uk/interfaces/ura/instant_V1";
 	private static final String LOGNAME = "LondonUK_AsyncBusTimes";
 
-	private Renderer display = null;
-	private Location location = null;
-	
-	private Exception failure = null;
-	
-	public void init(Renderer renderer, Location loc) {
-		display = renderer;
-		location = loc;
-	}
-	
-	public Exception getFailure() {
-		return failure;
-	}
-	
 	public void executeSync() {
 		List<BusTime> busTimes = getBusTimes();
 		onPostExecute(busTimes);
 	}
 	
-	public List<BusTime> getBusTimes() {
+	protected List<BusTime> doInBackground(Void... strings) {
+		return getBusTimes();
+	}
+
+	private List<BusTime> getBusTimes() {
 		if (null == display) {
 			failure = new IllegalArgumentException("Renderer not initialised");
 			return null;
@@ -88,21 +75,13 @@ public class LondonUK_AsyncBusTimes extends AsyncTask<Void, Void, List<BusTime>>
 			return null;
 		} finally {
 			if (null != br) {
-				try {
-					br.close();
-				} catch (IOException ioe2) {
-					Log.e(LOGNAME, "Failed to close input stream. cause: "+ioe2);
-				}
+				try { br.close(); } catch (IOException ioe2) { Log.e(LOGNAME, "Failed to close input stream. cause: "+ioe2); }
 			}
 		}
 		
 		return busTimes;
 	}
 	
-	protected List<BusTime> doInBackground(Void... strings) {
-		return getBusTimes();
-	}
-
 	private long getRefTime(String line) {
 		try {
 			JSONArray j = new JSONArray(line);
@@ -132,16 +111,5 @@ public class LondonUK_AsyncBusTimes extends AsyncTask<Void, Void, List<BusTime>>
 			Log.e(LOGNAME, "JSON Error parsing bus data.\nData: "+line+"\nError: ", e);
 		}
 		return new BusTime("", "", "");
-	}
-
-	protected void onProgressUpdate(Void... progress) {		
-	}
-	
-	protected void onPostExecute(List<BusTime> busTimes) {
-		if (null != busTimes) {
-			Coordinator.updateBusTimes(display, location, busTimes);
-		} else {
-			Coordinator.terminate();
-		}
 	}
 }

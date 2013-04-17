@@ -18,17 +18,6 @@ public class BusTimesRefresh extends DataRefreshTask {
 		Coordinator.updateBusTimes(display, location, busTimes);
 	}
 
-	@Override
-	public void run() {
-		display.execute(new Runnable() {
-			public void run() {
-				cycleCount = (cycleCount+1)%3;
-				List<BusTime> busTimes = getBusTimes(2-cycleCount);
-				Coordinator.updateBusTimes(display, location, busTimes);
-			}
-		});
-	}
-
 	private List<BusTime> getBusTimes(int offset) {
 		ArrayList<BusTime> bts = new ArrayList<BusTime>();
 		int eta = 0 + offset;
@@ -44,5 +33,11 @@ public class BusTimesRefresh extends DataRefreshTask {
 		bts.add(bt);
 		
 		return bts;
+	}
+
+	@Override
+	protected List<BusTime> doInBackground(Void... strings) {
+		cycleCount = (cycleCount+1)%3;
+		return getBusTimes(cycleCount);
 	}
 }

@@ -53,7 +53,7 @@ public class Coordinator {
 		display.displayMessage("fetching bus times...", Renderer.MESSAGE_NORMAL);
     	DataRefreshTask task = src.getBusTimesTask(display, loc);
 
-    	if (async) task.run();
+    	if (async) task.execute();
     	else task.executeSync();
 	}
 	
