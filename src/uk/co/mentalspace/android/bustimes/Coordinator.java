@@ -3,7 +3,11 @@ package uk.co.mentalspace.android.bustimes;
 import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
+
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.util.Log;
 
 public class Coordinator {
@@ -33,6 +37,7 @@ public class Coordinator {
 		getBusTimes(display, loc, true);
 	}
 	
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public static void getBusTimes(Renderer display, Location loc, boolean async) {
 		Log.d(LOGNAME, "Getting bus times.  Async? "+async);
 
@@ -53,7 +58,10 @@ public class Coordinator {
 		display.displayMessage("fetching bus times...", Renderer.MESSAGE_NORMAL);
     	DataRefreshTask task = src.getBusTimesTask(display, loc);
 
-    	if (async) task.execute();
+    	if (async) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+			else task.execute();
+    	}
     	else task.executeSync();
 	}
 	
