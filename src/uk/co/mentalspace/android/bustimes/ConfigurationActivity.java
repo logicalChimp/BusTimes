@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ConfigurationActivity extends Activity implements OnClickListener, OnItemClickListener {
 
@@ -37,11 +38,12 @@ public class ConfigurationActivity extends Activity implements OnClickListener, 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_configuration);
-		configureLayout();
+//		configureLayout();
 	}
 	
 	@Override
 	protected void onResume() {
+		Log.d(LOGNAME, "onResume");
 		super.onResume();
 		configureLayout();
 		if (!drsReceiverIsRegistered) {
@@ -57,6 +59,7 @@ public class ConfigurationActivity extends Activity implements OnClickListener, 
 
 	@Override
 	protected void onPause() {
+		Log.d(LOGNAME, "onPause");
 		if (drsReceiverIsRegistered) {
 		    unregisterReceiver(drsReceiver);
 		    drsReceiverIsRegistered = false;
@@ -161,6 +164,11 @@ public class ConfigurationActivity extends Activity implements OnClickListener, 
 			
 			View container = (View)this.findViewById(R.id.configure_source_progress_group);
 			container.setVisibility(View.VISIBLE);
+    	}
+    	if (DataRefreshService.ACTION_LOCATION_REFRESH_TASK_COMPLETE.equals(action)) {
+			View container = (View)this.findViewById(R.id.configure_source_progress_group);
+			container.setVisibility(View.GONE);
+			Toast.makeText(this, "Locations download complete", Toast.LENGTH_SHORT).show();
     	}
     }
 

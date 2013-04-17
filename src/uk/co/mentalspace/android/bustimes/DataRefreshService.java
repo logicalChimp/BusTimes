@@ -66,6 +66,14 @@ public class DataRefreshService extends IntentService {
 	    		}
 	    		Log.d(LOGNAME, "Removing LRT for source ["+srcId+"] from collection");
 	    		lrts.remove(srcId);
+	    		
+	    		Intent toSend = new Intent();
+	    		toSend.setAction(ACTION_LOCATION_REFRESH_TASK_COMPLETE);
+	    		toSend.putExtra(EXTRA_MAX_VALUE, lrt.getMaxProgress());
+	    		toSend.putExtra(EXTRA_CURRENT_VALUE, lrt.getCurrentProgress());
+	    		toSend.putExtra(EXTRA_PROGRESS_LABEL, lrt.getCurrentProgressLabel());
+	    		toSend.putExtra(EXTRA_SOURCE_NAME, lrt.getSourceId());
+	    		this.sendBroadcast(toSend);
 	    	}
 	    }
 	    super.onStart(intent, startId);
