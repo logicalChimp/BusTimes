@@ -61,7 +61,7 @@ public abstract class LocationRefreshTask extends AsyncTask<Void, Integer, Strin
 	}
 	
 	protected void publishProgress(int labelIndex, int value) {
-		Log.d(LOGNAME, "Updating progress values");
+		Log.v(LOGNAME, "Updating progress values");
 		String progressLabel = progressLabels[labelIndex];
 		if (PROGRESS_POSITION_PROCESSING_DATA == labelIndex) progressLabel += " ("+value+" / "+maxProgress+")";
 
@@ -72,7 +72,7 @@ public abstract class LocationRefreshTask extends AsyncTask<Void, Integer, Strin
 	}
 	
 	protected void triggerProgressUpdate() {
-		Log.d(LOGNAME, "Sending intent to trigger progress update");
+		Log.v(LOGNAME, "Sending intent to trigger progress update");
 		Intent intent = new Intent(ctx, LocationRefreshService.class);
 		intent.setAction(LocationRefreshService.ACTION_GET_REFRESH_PROGRESS);
 		intent.putExtra(LocationRefreshService.EXTRA_SOURCE_NAME, getSourceId());

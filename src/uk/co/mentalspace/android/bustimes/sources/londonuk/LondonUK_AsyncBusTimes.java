@@ -33,10 +33,12 @@ public class LondonUK_AsyncBusTimes extends DataRefreshTask {
 
 	private List<BusTime> getBusTimes() {
 		if (null == display) {
+			Log.e(LOGNAME, "Attempting to get Bus Times with no display set");
 			failure = new IllegalArgumentException("Renderer not initialised");
 			return null;
 		}
 		if (null == location) {
+			Log.e(LOGNAME, "Attempting to get Bus Times with no Location set");
 			failure = new IllegalArgumentException("Location not initialised");
 			return null;
 		}
@@ -57,12 +59,12 @@ public class LondonUK_AsyncBusTimes extends DataRefreshTask {
 			br = new BufferedReader(isr);
 			
 			String line = br.readLine();
-			Log.d(LOGNAME, "First line: "+line);
+			Log.v(LOGNAME, "First line: "+line);
 			long refTime = getRefTime(line);
 
 			line = br.readLine();  //ignore first line - headers
 			while (null != line && !("".equals(line))) {
-				Log.d(LOGNAME, "Line: " + line);
+				Log.v(LOGNAME, "Line: " + line);
 				BusTime bt = getBusTime(line, refTime);
 				busTimes.add(bt);
 				line = br.readLine();
