@@ -44,8 +44,6 @@ public class Main extends Activity implements Renderer, OnItemSelectedListener {
 		findViewById(R.id.bus_times_results).setVisibility(View.GONE);
 		findViewById(R.id.bus_times_message).setVisibility(View.GONE);
 		((Spinner)findViewById(R.id.bus_times_location)).setOnItemSelectedListener(this);
-
-		Log.d(LOGNAME, "Main Activity loaded, handing over to Coordinator");
     }
 
 	@Override
@@ -58,8 +56,12 @@ public class Main extends Activity implements Renderer, OnItemSelectedListener {
 				posTracker.showSettingsAlert();
 			}
 		}
+	
+		//populateListOfSelectedLocations will populate list, and then trigger onListItemSelected
 		populateListOfSelectedLocations();
-		showBusTimes();
+		
+		//onListItemSelected will load the selected Location, and then call showBusTimes
+		//showBusTimes();
 	}
 	
 	private void populateListOfSelectedLocations() {
