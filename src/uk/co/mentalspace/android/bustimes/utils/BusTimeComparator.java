@@ -1,6 +1,8 @@
-package uk.co.mentalspace.android.bustimes;
+package uk.co.mentalspace.android.bustimes.utils;
 
 import java.util.Comparator;
+
+import uk.co.mentalspace.android.bustimes.BusTime;
 
 public class BusTimeComparator implements Comparator<BusTime> {
 

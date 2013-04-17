@@ -1,5 +1,7 @@
-package uk.co.mentalspace.android.bustimes;
+package uk.co.mentalspace.android.bustimes.utils;
 
+import uk.co.mentalspace.android.bustimes.R;
+import uk.co.mentalspace.android.bustimes.Location;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
