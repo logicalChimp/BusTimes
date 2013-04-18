@@ -80,7 +80,27 @@ public class MetaWatchReceiver extends BroadcastReceiver {
 		b.putString("name", ctx.getResources().getString(R.string.app_name));
 		announce.putExtras(b);
 		ctx.sendBroadcast(announce);
-		Log.d(LOGNAME, "Sending Metawatch Announce");
+		Log.d(LOGNAME, "Sending Metawatch Start");
+	}
+	
+	public static void metaWatchStart(Context ctx) {
+		Intent announce = new Intent(MW_START);
+		Bundle b = new Bundle();
+		b.putString("id", ctx.getResources().getString(R.string.app_id));
+		b.putString("name", ctx.getResources().getString(R.string.app_name));
+		announce.putExtras(b);
+		ctx.sendBroadcast(announce);
+		Log.d(LOGNAME, "Sending Metawatch Start");
+	}
+	
+	public static void metaWatchStop(Context ctx) {
+		Intent announce = new Intent(MW_STOP);
+		Bundle b = new Bundle();
+		b.putString("id", ctx.getResources().getString(R.string.app_id));
+		b.putString("name", ctx.getResources().getString(R.string.app_name));
+		announce.putExtras(b);
+		ctx.sendBroadcast(announce);
+		Log.d(LOGNAME, "Sending Metawatch Start");
 	}
 	
 }
