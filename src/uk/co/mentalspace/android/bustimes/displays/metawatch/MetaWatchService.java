@@ -56,7 +56,7 @@ public class MetaWatchService extends IntentService {
 			else if (MetaWatchReceiver.MW_DEACTIVATED.equals(action)) {
 				Log.d(LOGNAME, "MetaWatch app deactivated, displaying blank screen and terminating");
 				MetaWatchDisplay mwd = new MetaWatchDisplay(getApplicationContext());
-				mwd.displayMessage(null, "Closing", MetaWatchDisplay.MESSAGE_NORMAL);
+				mwd.displayMessage(null, "", MetaWatchDisplay.MESSAGE_NORMAL);
 				//GPS will auto-disconnect when this function terminates
 			}
 			else if (MetaWatchReceiver.MW_BUTTON.equals(action)) {
