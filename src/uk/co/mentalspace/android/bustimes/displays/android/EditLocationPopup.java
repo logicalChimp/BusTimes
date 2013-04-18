@@ -26,6 +26,10 @@ public class EditLocationPopup extends DialogFragment implements OnClickListener
 		super();
 	}
 	
+	public Location getLocation() {
+		return loc;
+	}
+	
 	public static EditLocationPopup newInstance(Location loc) {
 		Bundle args = new Bundle();
 		args.putSerializable(EditLocationPopup.BUNDLE_LOCATION, loc);
@@ -71,14 +75,14 @@ public class EditLocationPopup extends DialogFragment implements OnClickListener
 				@Override
 				public void onClick(DialogInterface dialog, int id) {
 					Log.d(LOGNAME, "Dismiss button clicked");
-					dismissWindow();
+					dismiss();
 				}
 			});
 		
 		return builder.create();
 	}
 	
-	public void dismissWindow() {
+	public void onDismiss() {
 		Log.d(LOGNAME, "checking Nick Name before dismissing");
 		EditText et = ((EditText)getDialog().findViewById(R.id.map_info_window_nick_name_value));
 		String nickName = (null == et.getText()) ? "" : et.getText().toString();

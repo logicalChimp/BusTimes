@@ -26,10 +26,13 @@ import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 import android.widget.ToggleButton;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 
-public class SelectLocationActivity extends FragmentActivity implements OnCameraChangeListener, OnMyLocationChangeListener, OnMarkerClickListener {
+public class SelectLocationActivity extends FragmentActivity implements OnCameraChangeListener, OnMyLocationChangeListener, OnMarkerClickListener, OnDismissListener {
 	private static final String LOGNAME = "SelectLocationActivity";
 	private static final float MARKER_MAX_ZOOM_LEVEL = 15.0f;
 	private static final float DEFAULT_ZOOM_LEVEL = 16.0f;
@@ -43,6 +46,7 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
     private GoogleMap mMap;
     private boolean mapTracksUserPos = false;
     private LocationTracker posTracker;
+    private EditLocationPopup elp = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -57,9 +61,6 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
     	Log.d(LOGNAME, "resuming...");
         super.onResume();
         setUpMapIfNeeded();
-        
-        //force map to redraw for the same position
-        onCameraChange(mMap.getCameraPosition());
     }
     
     @Override
@@ -220,7 +221,8 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
         	LatLng ll = new LatLng(((double)loc.getLat())/10000,((double)loc.getLon())/10000);
     		mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll, DEFAULT_ZOOM_LEVEL));
 		} else {
-			Log.d(LOGNAME, "No location found");
+			Log.i(LOGNAME, "No location found");
+			Toast.makeText(this, "No matching stop found", Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -232,13 +234,30 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
 		mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(arg0.getPosition(), DEFAULT_ZOOM_LEVEL));
 
 		FragmentManager fragmentManager = getSupportFragmentManager();
-		EditLocationPopup elp = EditLocationPopup.newInstance(loc);
+		elp = EditLocationPopup.newInstance(loc);
 		
 		//show dialog
 		elp.show(fragmentManager, "EditLocationDialog");
+		fragmentManager.executePendingTransactions();
+		elp.getDialog().setOnDismissListener(this);
 
 		//return true to indicate we have handled the event
 		return true;
+	}
+
+	@Override
+	public void onDismiss(DialogInterface arg0) {
+		Log.d(LOGNAME, "Dialog dismissed - removing edited marker");
+		Location loc = elp.getLocation();
+		Marker marker = markers.get(loc);
+		markers.remove(loc);
+		locations.remove(marker);
+		
+		elp = null;
+
+		Log.d(LOGNAME, "Removed edited marker - refreshing map");
+		//force map to redraw for the same position
+        onCameraChange(mMap.getCameraPosition());
 	}
 
 }
