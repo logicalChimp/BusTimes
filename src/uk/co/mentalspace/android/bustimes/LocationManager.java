@@ -7,6 +7,7 @@ import java.util.List;
 import android.database.sqlite.SQLiteDatabaseLockedException;
 import android.util.Log;
 import android.widget.Toast;
+import uk.co.mentalspace.android.bustimes.db.LocationsRefreshDBAdapter;
 import uk.co.mentalspace.android.bustimes.db.LocationsDBAdapter;
 
 public class LocationManager {
@@ -175,6 +176,22 @@ public class LocationManager {
         	return null;
         } finally {
         	if (null != ldba) try {ldba.close(); } catch (Exception e) {Log.e(LOGNAME, "Unknown exception", e); }
+        }
+	}
+	
+	public static boolean createRefreshRecord(Context ctx, String sourceId, long startTime, long endTime) {
+		Log.d(LOGNAME, "Creating locations refresh record for source: "+sourceId);
+        LocationsRefreshDBAdapter lrdba = new LocationsRefreshDBAdapter(ctx);
+        try {
+	        lrdba.open();
+	        long rowId = lrdba.createBTRefreshRecord(sourceId, startTime, endTime);
+	        return rowId != -1;
+        } catch (SQLiteDatabaseLockedException sdle) {
+        	Log.e(LOGNAME, "Database Locked");
+        	Toast.makeText(ctx, "Failed to create log record", Toast.LENGTH_SHORT).show();
+        	return false;
+        } finally {
+        	if (null != lrdba) try {lrdba.close(); } catch (Exception e) {Log.e(LOGNAME, "Unknown exception", e); }
         }
 	}
 	

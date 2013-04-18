@@ -1,5 +1,7 @@
 package uk.co.mentalspace.android.bustimes;
 
+import java.util.Date;
+
 import android.annotation.TargetApi;
 import uk.co.mentalspace.android.bustimes.displays.android.ConfigurationActivity;
 import android.app.NotificationManager;
@@ -76,16 +78,20 @@ public class LocationRefreshService extends WakefulIntentService {
 			lrt.init(this, this);
 			lrtId = lrt.hashCode();
 			try {
+				long startTime = (new Date()).getTime();
 				lrt.execute();
+				long endTime = (new Date()).getTime();
+
+				LocationManager.createRefreshRecord(getApplicationContext(), srcName, startTime, endTime);
+				updateNotificationProgressComplete(lrt);
 			} catch (Exception e) {
 				setNotification(lrt.getSourceName(), e);
+				return;
+			} finally {
+				//null local reference, whether it completed or not
+			    lrt = null;
+			    lrtId = 0;
 			}
-
-			updateNotificationProgressComplete(lrt);
-
-			//once execute() returns, refresh is complete - null local reference
-		    lrt = null;
-		    lrtId = 0;
 		}
 	}
 	
