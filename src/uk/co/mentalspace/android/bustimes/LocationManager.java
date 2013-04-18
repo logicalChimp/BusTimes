@@ -86,7 +86,7 @@ public class LocationManager {
 	        ldba.openReadable();
 	        List<Location> locs = ldba.getSelectedLocations();
 	        return locs;
-        } catch (android.database.sqlite.SQLiteDatabaseLockedException sdle) {
+        } catch (SQLiteDatabaseLockedException sdle) {
         	Log.e(LOGNAME, "Failed to open Database: ", sdle);
         	Toast.makeText(ctx, "Failed to retrieve selected locations", Toast.LENGTH_SHORT).show();
         	return null;
