@@ -20,17 +20,26 @@ public class LondonUK_AsyncBusStops extends LocationRefreshTask {
 	private static final String BUS_LOCATIONS_URL = "http://www.tfl.gov.uk/tfl/businessandpartners/syndication/feed.aspx?email=willinghamg%40hotmail.com&feedId=10";
 	private static final String LOGNAME = "LondonUK_AsyncBusStops";
 
+	protected String[] progressLabels = new String[] {"Contacting server", "Downloading data", "Processing records"};
+	
+	protected void publishProgress(int labelIndex, int value) {
+		Log.v(LOGNAME, "Updating progress values");
+		String progressLabel = progressLabels[labelIndex];
+		if (PROGRESS_POSITION_PROCESSING_DATA == labelIndex) progressLabel += " ("+value+" / "+getMaxProgress()+")";
+
+		publishProgress(progressLabel, value);
+	}
+	
 	@Override
 	public String getSourceId() {
 		//TODO remove hard coding, and read from master 'LondonUK' value instead
 		return "londonuk-tfl";
 	}
 	
-	protected String doInBackground(Void... strings) {
+	public void performRefresh() {
 		if (null == ldba) {
 			Log.e(LOGNAME, "get Bus Stops called with no Location DB Adapter set");
-			failure = new IllegalArgumentException("Database connection not initialised");
-			return null;
+			return;
 		}
 
 		String url = BUS_LOCATIONS_URL;
@@ -60,7 +69,6 @@ public class LondonUK_AsyncBusStops extends LocationRefreshTask {
 			
 			//open the DB connection now, instead of inside the loop
 			publishProgress(PROGRESS_POSITION_PROCESSING_DATA, count);
-			ldba.open();
 			Map<String,String> keys = ldba.getComboKeys(getSourceId());
 			while (null != line && !("".equals(line.trim())) && !this.isCancelled()) {
 
@@ -81,19 +89,14 @@ public class LondonUK_AsyncBusStops extends LocationRefreshTask {
 			
 		} catch (IOException ioe) {
 			Log.e(LOGNAME, "Unexception IOException occured: "+ioe);
-			failure = ioe;
-			return null;
+			return;
 		} finally {
 			if (null != br) {
 				try { br.close(); } catch (IOException ioe2) { Log.e(LOGNAME, "Failed to close input stream. cause: "+ioe2); }
 			}
-			if (null != ldba) {
-				try { ldba.close(); } catch (Exception e) { Log.e(LOGNAME, "Unknown exception", e); }
-			}
 		}
 		
 		finish();
-		return null;
 	}
 
 	private String[] getLocValues(String line) {
@@ -173,5 +176,15 @@ public class LondonUK_AsyncBusStops extends LocationRefreshTask {
 		int lat = (int)(latlng.getLat()*10000);
 		int lng = (int)(latlng.getLng()*10000);
 		ldba.createLocation(cols[1], cols[3], "", lat, lng, cols[4], cols[5], cols[6], this.getSourceId());
+	}
+
+	@Override
+	public int getMaxProgress() {
+		return 20000;
+	}
+
+	@Override
+	public String getSourceName() {
+		return "London, UK (TFL)";
 	}
 }

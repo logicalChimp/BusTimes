@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-	<string name="bus_times_location_dropdown_icon_description">Icon indicating drop-down list of locations</string>    
+    <string name="bus_times_location_dropdown_icon_description">Icon indicating drop-down list of locations</string>
     <string name="app_id">BusTimes</string>
     <string name="app_name">Bus Times</string>
     <string name="mw_placeholder">Displaying on MetaWatch</string>
@@ -35,13 +35,11 @@
     <string name="location_selection_stop_code_filter_label">Stop</string>
     <string name="location_selection_stop_code_filter_button">Find</string>
     <string name="location_selection_stop_code_gps">GPS</string>
-
     <string name="configure_source_icon_desc">icon indicating more options</string>
     <string name="configure_source_label">Data Source</string>
     <string name="configure_add_location_by_code_button">Specify\nLocation</string>
     <string name="configure_browse_locations_button">Browse\nLocations</string>
     <string name="configure_source_refresh_data_button">Refresh Locations Data</string>
-    
     <string name="select_location_map_info_window_chosen_icon">Icon indicating if the location is \'selected\' or not</string>
     <string name="map_info_window_choose_button">Favourite</string>
     <string name="map_info_window_stop_name_label">Stop Name</string>
@@ -50,7 +48,7 @@
     <string name="map_info_window_monitored_on">Monitored</string>
     <string name="map_info_window_monitored_off">Not monitored</string>
     <string name="map_info_window_dismiss">Close</string>
-    
+
     <string-array name="settings_sources_names">
         <item>London, UK (TFL)</item>
     </string-array>
@@ -69,5 +67,6 @@
     <string name="title_activity_select_location">SelectLocationActivity</string>
     <string name="title_activity_configuration">ConfigurationActivity</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_edit_location">EditLocationActivity</string>
 
 </resources>

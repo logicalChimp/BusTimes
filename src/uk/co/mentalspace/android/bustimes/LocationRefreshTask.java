@@ -2,11 +2,9 @@ package uk.co.mentalspace.android.bustimes;
 
 import uk.co.mentalspace.android.bustimes.db.LocationsDBAdapter;
 import android.content.Context;
-import android.content.Intent;
-import android.os.AsyncTask;
 import android.util.Log;
 
-public abstract class LocationRefreshTask extends AsyncTask<Void, Integer, String> {
+public abstract class LocationRefreshTask {
 	private static final String LOGNAME = "LocationRefreshTask";
 	
 	protected static final int PROGRESS_POSITION_CONTACTING_SERVER = 0;
@@ -17,25 +15,19 @@ public abstract class LocationRefreshTask extends AsyncTask<Void, Integer, Strin
 	protected static final int PROGRESS_INDEX_PROGRESS_VALUE = 1;
 	
 	protected boolean isFinished = false;
+	protected boolean isCancelled = false;
 	protected Context ctx = null;
 	protected LocationsDBAdapter ldba = null;	
-	protected Exception failure = null;
+	protected LocationRefreshService lrs = null;
 	
-	protected int maxProgress = 0;
 	protected int currentProgress = 0;
 	protected String currentProgressLabel = "";
 	
-	protected String[] progressLabels = new String[] {"Contacting server", "Downloading data", "Processing records"};
-	
-	public void init(Context ctx) {
-		ldba = new LocationsDBAdapter(ctx);
+	public void init(Context ctx, LocationRefreshService lrs) {
 		this.ctx = ctx; 
+		this.lrs = lrs;
 	}
-	
-	public int getMaxProgress() {
-		return maxProgress;
-	}
-	
+		
 	public int getCurrentProgress() {
 		return currentProgress;
 	}
@@ -44,66 +36,45 @@ public abstract class LocationRefreshTask extends AsyncTask<Void, Integer, Strin
 		return currentProgressLabel;
 	}
 	
-	public Exception getFailure() {
-		return failure;
-	}
-	
 	public boolean isFinished() {
 		return isFinished;
 	}
 	
-	@Override
-	protected void onPreExecute() {
-		maxProgress = 20000; //TODO remove hard-coded value
-		currentProgress = 0;
-		currentProgressLabel = "";
-		triggerProgressUpdate();
+	public boolean isCancelled() {
+		return isCancelled;
 	}
 	
-	protected void publishProgress(int labelIndex, int value) {
-		Log.v(LOGNAME, "Updating progress values");
-		String progressLabel = progressLabels[labelIndex];
-		if (PROGRESS_POSITION_PROCESSING_DATA == labelIndex) progressLabel += " ("+value+" / "+maxProgress+")";
-
+	public void cancel() {
+		isCancelled = true;
+	}
+	
+	protected void publishProgress(String label, int value) {
 		currentProgress = value;
-		currentProgressLabel = progressLabel;
+		currentProgressLabel = label;
 
-		triggerProgressUpdate();
-	}
-	
-	protected void triggerProgressUpdate() {
-		Log.v(LOGNAME, "Sending intent to trigger progress update");
-		Intent intent = new Intent(ctx, LocationRefreshService.class);
-		intent.setAction(LocationRefreshService.ACTION_GET_REFRESH_PROGRESS);
-		intent.putExtra(LocationRefreshService.EXTRA_SOURCE_NAME, getSourceId());
-		ctx.startService(intent);
-	}
-
-	@Override
-	protected void onProgressUpdate(Integer... progress) {		
-		Log.d(LOGNAME, "onProgressUpdate called - transferring to progressUpdate");
-		int labelIndex = progress[PROGRESS_INDEX_PROGRESS_LABEL];
-		int value = progress[PROGRESS_INDEX_PROGRESS_VALUE];
-		publishProgress(labelIndex, value);
+		lrs.updateProgressStatus(this);
 	}
 	
 	protected void finish() {
+		Log.d(LOGNAME, "finish called");
 		isFinished = true;
-		
-		if (null != ldba) {
-			ldba.close();
-			ldba = null;
-		}
-		
-		//notify the service that this task is complete
-		Intent intent = new Intent(ctx, LocationRefreshService.class);
-		intent.setAction(LocationRefreshService.ACTION_LOCATION_REFRESH_TASK_COMPLETE);
-		intent.putExtra(LocationRefreshService.EXTRA_SOURCE_NAME, getSourceId());
-		ctx.startService(intent);
 	}
 
-	protected abstract String doInBackground(Void... strings);
+	public void execute() throws Exception {
+		try {
+			ldba = new LocationsDBAdapter(ctx);
+			ldba.open();
+			performRefresh();
+		} finally {
+			if (null != ldba) {
+				try { ldba.close(); } catch (Exception e) { Log.e(LOGNAME, "Unknown exception", e); }
+			}
+		}
+	}
 
+	public abstract int getMaxProgress();
+	public abstract void performRefresh();
 	public abstract String getSourceId();
+	public abstract String getSourceName();
 	
 }

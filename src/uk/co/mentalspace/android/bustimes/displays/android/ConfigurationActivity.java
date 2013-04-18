@@ -1,7 +1,7 @@
 package uk.co.mentalspace.android.bustimes.displays.android;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
 import uk.co.mentalspace.android.bustimes.Location;
 import uk.co.mentalspace.android.bustimes.LocationManager;
@@ -10,14 +10,14 @@ import uk.co.mentalspace.android.bustimes.R;
 import uk.co.mentalspace.android.bustimes.Source;
 import uk.co.mentalspace.android.bustimes.SourceManager;
 import uk.co.mentalspace.android.bustimes.utils.ChosenLocationsArrayAdapter;
-import uk.co.mentalspace.android.bustimes.utils.LocationPopupWindow;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -31,7 +31,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ConfigurationActivity extends Activity implements OnClickListener, OnItemClickListener {
+public class ConfigurationActivity extends FragmentActivity implements OnClickListener, OnItemClickListener {
 
 	private static final String LOGNAME = "ConfigurationActivity";
 	
@@ -159,7 +159,11 @@ public class ConfigurationActivity extends Activity implements OnClickListener, 
 		Location loc = LocationManager.getLocationByStopCode(this, stopCode);
 		if (null == loc) return;
 		
-    	new LocationPopupWindow(this, this, loc);
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		EditLocationPopup elp = EditLocationPopup.newInstance(loc);
+		
+		//show dialog
+		elp.show(fragmentManager, "EditLocationDialog");
 	}
 
     public void receiveBroadcast(Intent intent) {

@@ -1,13 +1,15 @@
 package uk.co.mentalspace.android.bustimes;
 
-import java.util.HashMap;
-import java.util.Set;
-
+import uk.co.mentalspace.android.bustimes.displays.android.ConfigurationActivity;
 import android.annotation.TargetApi;
 import android.app.IntentService;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Build;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
 public class LocationRefreshService extends IntentService {
@@ -25,7 +27,8 @@ public class LocationRefreshService extends IntentService {
 
 	private static final String LOGNAME = "DataRefreshService";
 	
-	private static final HashMap<String,LocationRefreshTask> lrts = new HashMap<String,LocationRefreshTask>();
+	private static LocationRefreshTask lrt = null;
+	private static int lrtId = 0;
 	
 	public LocationRefreshService() {
 		super("LocationRefreshService");
@@ -36,60 +39,24 @@ public class LocationRefreshService extends IntentService {
 		String action = intent.getAction();
 	    if (ACTION_CANCEL_DATA_REFRESH.equals(action)) {
 	    	Log.d(LOGNAME, "Terminating current data refresh...");
-	    	String srcId = intent.getStringExtra(EXTRA_SOURCE_NAME);
-	    	terminateRunningRefresh(srcId);
+	    	terminateRunningRefresh();
 	    }
 	    if (ACTION_GET_REFRESH_PROGRESS.equals(action)) {
-	    	if (lrts.isEmpty()) {
-	    		Log.d(LOGNAME, "Request for current progress - but no active location refresh tasks");
-	    	} else {
-	    		String srcName = intent.getStringExtra(EXTRA_SOURCE_NAME);
-	    		if (null == srcName || "".equals(srcName.trim())) {
-	    			Log.d(LOGNAME, "No source specified - sending update for ALL running tasks");
-		    		updateProgressStatusForAllTasks();
-	    		} else {
-		    		Log.d(LOGNAME, "Sending current progress for source ["+srcName+"]");
-	    			updateProgressStatus(srcName);
-	    		}
-	    	}
-	    }
-	    if (ACTION_LOCATION_REFRESH_TASK_COMPLETE.equals(action)) {
-	    	String srcId = intent.getStringExtra(EXTRA_SOURCE_NAME);
-	    	Log.d(LOGNAME, "Location refresh task for source ["+srcId+"] complete");
-	    	
-	    	if (null == srcId || "".equals(srcId.trim())) {
-	    		Log.e(LOGNAME, "Location Refresh Task Complete reported with null/empty source name ["+srcId+"]");
-	    	} else {
-	    		LocationRefreshTask lrt = lrts.get(srcId);
-	    		if (!lrt.isFinished()) {
-	    			Log.w(LOGNAME, "Requested LRT is NOT finished! removing anyway...");
-	    		}
-	    		Log.d(LOGNAME, "Removing LRT for source ["+srcId+"] from collection");
-	    		lrts.remove(srcId);
-	    		
-	    		Intent toSend = new Intent();
-	    		toSend.setAction(ACTION_LOCATION_REFRESH_TASK_COMPLETE);
-	    		toSend.putExtra(EXTRA_MAX_VALUE, lrt.getMaxProgress());
-	    		toSend.putExtra(EXTRA_CURRENT_VALUE, lrt.getCurrentProgress());
-	    		toSend.putExtra(EXTRA_PROGRESS_LABEL, lrt.getCurrentProgressLabel());
-	    		toSend.putExtra(EXTRA_SOURCE_NAME, lrt.getSourceId());
-	    		this.sendBroadcast(toSend);
-	    	}
+			updateProgressStatus(lrt);
 	    }
 	    super.onStart(intent, startId);
 	}
 	
-	private void terminateRunningRefresh(String sourceId) {
-		Log.d(LOGNAME, "Request to terminate LRT for Source: "+sourceId);
-		LocationRefreshTask lrt = lrts.get(sourceId);
-		if (null == lrt) return;
-		if (lrt.isCancelled()) return;
-		lrt.cancel(true);
+	private void terminateRunningRefresh() {
+		if (null != lrt) {
+			Log.d(LOGNAME, "Calling 'Cancel' on current LRT instance");
+			lrt.cancel();
+		}
 	}
 	
 	@Override
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	protected void onHandleIntent(Intent intent) {
+	protected void onHandleIntent(Intent intent) {		
 		String action = intent.getAction();
 		Log.d(LOGNAME, "Handling intent. Action: "+action);
 		if (ACTION_REFRESH_LOCATION_DATA.equals(action)) {
@@ -99,43 +66,55 @@ public class LocationRefreshService extends IntentService {
 				return;
 			}
 
-			if (lrts.containsKey(srcName)) {
-				Log.w(LOGNAME, "Request to refresh locations for source ["+srcName+"], but refresh already running - ignoring");
-				return;
-			}
-			
 			Source src = SourceManager.getSource(srcName);
 			if (null == src) {
 				Log.e(LOGNAME, "Request to refresh location data, but no matching Source for id ["+srcName+"]");
 				return;
 			}
 			
-			LocationRefreshTask lrt = src.getLocationRefreshTask();
-			lrt.init(this);
-			lrts.put(srcName, lrt);
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) lrt.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-		    else lrt.execute();
+			lrt = src.getLocationRefreshTask();
+			lrt.init(this, this);
+			lrtId = lrt.hashCode();
+			try {
+				lrt.execute();
+			} catch (Exception e) {
+				setNotification(lrt.getSourceName(), e);
+			}
+
+		    //once execute() returns, refresh is complete - null local reference
+		    lrt = null;
+		    lrtId = 0;
 		}
 	}
 	
-	private void updateProgressStatusForAllTasks() {
-		Set<String> srcs = lrts.keySet();
-		for (String src: srcs) {
-			LocationRefreshTask lrt = lrts.get(src);
-			if (lrt.isCancelled()) continue;
-			if (lrt.isFinished()) continue;
-			updateProgressStatus(lrt);
-		}
-	}
-	
-	private void updateProgressStatus(String srcName) {
-		if (null == srcName || "".equals(srcName.trim())) {
-			Log.e(LOGNAME, "Request to update status for invalid source id ["+srcName+"]");
-			return;
-		}
+	public void setNotification(String title, String msg) {
+		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
+        .setSmallIcon(android.R.drawable.stat_sys_download_done)
+        .setContentTitle(title)
+        .setContentText(msg);
+
+		// Creates an explicit intent for an Activity in your app
+		Intent resultIntent = new Intent(this, ConfigurationActivity.class);
 		
-		LocationRefreshTask lrt = lrts.get(srcName);
-		updateProgressStatus(lrt);
+		// The stack builder object will contain an artificial back stack for the
+		// started Activity.
+		// This ensures that navigating backward from the Activity leads out of
+		// your application to the Home screen.
+		TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+		// Adds the back stack for the Intent (but not the Intent itself)
+		stackBuilder.addParentStack(ConfigurationActivity.class);
+		// Adds the Intent that starts the Activity to the top of the stack
+		stackBuilder.addNextIntent(resultIntent);
+		PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+		mBuilder.setContentIntent(resultPendingIntent);
+		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		
+		// mId allows you to update the notification later on.
+		mNotificationManager.notify(lrtId, mBuilder.build());	
+	}
+	
+	public void setNotification(String srcName, Exception e) {
+        setNotification(srcName + " location refresh failed", "Exception: "+e);
 	}
 	
 	public void updateProgressStatus(LocationRefreshTask lrt) {
@@ -143,9 +122,13 @@ public class LocationRefreshService extends IntentService {
 			Log.w(LOGNAME, "Request to generate a progress update for a null LRT.");
 			return;
 		}
+
+		Log.d(LOGNAME, "Updating notification for source ["+lrt.getSourceName()+"]");
+		String title = lrt.getSourceName()+" location refresh";
+		String progressMessage = "In progress ("+lrt.getCurrentProgress()+" / "+lrt.getMaxProgress()+")";
+		setNotification(title, progressMessage);
 		
-		Log.d(LOGNAME, "Sending progress update intent for source ["+lrt.getSourceId()+"]");
-		
+		Log.d(LOGNAME, "Sending progress update intent for source ["+lrt.getSourceName()+"]");		
 		Intent intent = new Intent();
 		intent.setAction(ACTION_UPDATE_DATA_REFRESH_PROGRESS);
 		intent.putExtra(EXTRA_MAX_VALUE, lrt.getMaxProgress());

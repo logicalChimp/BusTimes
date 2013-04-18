@@ -20,7 +20,7 @@
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
 
     <!-- Permission to enable app to autostart when phone is rebooted -->
-   	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <uses-feature
         android:glEsVersion="0x00020000"
@@ -46,12 +46,11 @@
             </intent-filter>
         </activity>
 
-        <receiver 
-            android:name="uk.co.mentalspace.android.bustimes.displays.metawatch.MetaWatchReceiver" 
+        <receiver
+            android:name="uk.co.mentalspace.android.bustimes.displays.metawatch.MetaWatchReceiver"
             android:permission="android.permission.RECEIVE_BOOT_COMPLETED" >
-
-			<intent-filter>
-				<action android:name="android.intent.action.BOOT_COMPLETED" />
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="org.metawatch.manager.APPLICATION_DISCOVERY" />
                 <action android:name="org.metawatch.manager.APPLICATION_ACTIVATE" />
                 <action android:name="org.metawatch.manager.APPLICATION_DEACTIVATE" />
@@ -62,10 +61,8 @@
 
         <service android:name="uk.co.mentalspace.android.bustimes.displays.metawatch.MetaWatchService" >
         </service>
-
         <service android:name="uk.co.mentalspace.android.bustimes.LocationRefreshService" >
         </service>
-
         <service android:name="uk.co.mentalspace.android.bustimes.BusTimeRefreshService" >
         </service>
 

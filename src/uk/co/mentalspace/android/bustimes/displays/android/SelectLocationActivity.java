@@ -1,19 +1,18 @@
 package uk.co.mentalspace.android.bustimes.displays.android;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 
 import uk.co.mentalspace.android.bustimes.Location;
 import uk.co.mentalspace.android.bustimes.LocationManager;
 import uk.co.mentalspace.android.bustimes.R;
-import uk.co.mentalspace.android.bustimes.utils.LocationPopupWindow;
 import uk.co.mentalspace.android.bustimes.utils.LocationTracker;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
-import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -23,18 +22,20 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ToggleButton;
 import android.os.Bundle;
 
-public class SelectLocationActivity extends FragmentActivity implements OnCameraChangeListener, OnMyLocationChangeListener, OnInfoWindowClickListener {
+public class SelectLocationActivity extends FragmentActivity implements OnCameraChangeListener, OnMyLocationChangeListener, OnMarkerClickListener {
 	private static final String LOGNAME = "SelectLocationActivity";
 	private static final float MARKER_MAX_ZOOM_LEVEL = 15.0f;
 	private static final float DEFAULT_ZOOM_LEVEL = 16.0f;
 	
 	private HashMap<Location,Marker> markers = new HashMap<Location,Marker>();
+	private HashMap<Marker,Location> locations = new HashMap<Marker,Location>();
 	
 	/**
      * Note that this may be null if the Google Play services APK is not available.
@@ -53,8 +54,12 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
 
     @Override
     protected void onResume() {
+    	Log.d(LOGNAME, "resuming...");
         super.onResume();
         setUpMapIfNeeded();
+        
+        //force map to redraw for the same position
+        onCameraChange(mMap.getCameraPosition());
     }
     
     @Override
@@ -109,13 +114,8 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
     	//listen for camera changes, and use it to draw stop locations
     	mMap.setOnCameraChangeListener(this);
     	mMap.setOnMyLocationChangeListener(this);
-    	mMap.setOnInfoWindowClickListener(this);
-    	
-//    	posTracker = new LocationTracker(this);
-//    	if (posTracker.canGetLocation()) {
-//	    	LatLng userLatLng = new LatLng(posTracker.getLatitude(), posTracker.getLongitude());    	
-//			mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, DEFAULT_ZOOM_LEVEL));
-//    	}
+    	mMap.setOnMarkerClickListener(this);
+//    	mMap.setOnInfoWindowClickListener(this);
     }
     
     public void onCameraChange(CameraPosition position) {
@@ -171,7 +171,9 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
     private void removeMarker(Location loc) {
     	if (markers.containsKey(loc)) {
     		markers.get(loc).remove();
+    		Marker marker = markers.get(loc);
         	markers.remove(loc);
+        	locations.remove(marker);
     	}
     }
     
@@ -179,6 +181,7 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
      	MarkerOptions mo = getMarkerOptions(loc);
     	Marker marker = mMap.addMarker(mo);
     	markers.put(loc, marker);
+    	locations.put(marker,loc);
     }
     
     private MarkerOptions getMarkerOptions(Location loc) {
@@ -222,52 +225,20 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
 	}
 
 	@Override
-	public void onInfoWindowClick(Marker marker) {
-    	String stopCode = marker.getSnippet().trim();
-		Log.d(LOGNAME, "Info Window clicked. Stop Code: "+stopCode);
-    	Location loc = LocationManager.getLocationByStopCode(this, stopCode);
-    	if (null == loc) {
-    		Log.w(LOGNAME, "Failed to retrieve Location for stopCode");
-    		return;
-    	}
-    	
-//    	if (loc.getChosen() == 1) LocationManager.deselectLocation(this, loc.getId());
-//    	else LocationManager.selectLocation(this, loc.getId());
-//    	
-//    	//invert the current 'chosen' flag
-//    	loc.setChosen(1-loc.getChosen());
-//    	
-//    	//remove the old (wrong coloured) marker from the map
-//    	removeMarker(loc);
-//    	
-//    	//and replace it with a fresh (right coloured) marker
-//    	addMarker(loc);
-//
-//    	//trigger re-display of marker window, with 'chosen' indicator updated
-////    	newMarker.showInfoWindow();
-    	
-//    	View popupView = getLayoutInflater().inflate(R.layout.map_info_window_popup, null);
-//    	((TextView)popupView.findViewById(R.id.map_info_window_stop_code_value)).setText(loc.getStopCode());
-//    	((TextView)popupView.findViewById(R.id.map_info_window_stop_name_value)).setText(loc.getLocationName());
-//    	((EditText)popupView.findViewById(R.id.map_info_window_nick_name_value)).setText(loc.getNickName());
-//    	Button chosenButton = ((Button)popupView.findViewById(R.id.map_info_window_monitored_button)); 
-//    	chosenButton.setOnClickListener(this);
-//    	if (loc.getChosen() == 1) {
-//    		chosenButton.setText(R.string.map_info_window_monitored_on);
-//    	} else {
-//    		chosenButton.setText(R.string.map_info_window_monitored_off);
-//    	}
-//    	Button dismissButton = ((Button)popupView.findViewById(R.id.map_info_window_dismiss_button));
-//    	dismissButton.setOnClickListener(this);
-//    	
-//    	popup = new PopupWindow(popupView, this.getWindow().getAttributes().width, this.getWindow().getAttributes().height, true);
-////    	popup.setContentView(popupView);
-//    	popup.setHeight(popup.getMaxAvailableHeight(this.getCurrentFocus()));
-//    	popup.update();
-//    	popup.showAtLocation(this.getCurrentFocus(), Gravity.BOTTOM, 10, 10);
-//    	popup.update();
-//    	Log.d(LOGNAME, "Displaying popup window");
-    	new LocationPopupWindow(this, this, loc);
+	public boolean onMarkerClick(Marker arg0) {
+		Location loc = locations.get(arg0);
+
+		//center the map on the marker that was clicked
+		mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(arg0.getPosition(), DEFAULT_ZOOM_LEVEL));
+
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		EditLocationPopup elp = EditLocationPopup.newInstance(loc);
+		
+		//show dialog
+		elp.show(fragmentManager, "EditLocationDialog");
+
+		//return true to indicate we have handled the event
+		return true;
 	}
 
 }

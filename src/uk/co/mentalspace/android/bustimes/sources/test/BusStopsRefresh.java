@@ -10,50 +10,44 @@ public class BusStopsRefresh extends LocationRefreshTask {
 	private LocationsDBAdapter ldba = null;
 	
 	@Override
-	protected String doInBackground(Void... strings) {
-		if (null == ldba) {
-			failure = new IllegalArgumentException("Database connection not initialised");
-			return null;
+	public void performRefresh() {
+		publishProgress("Generating Test Data", 0);
+		ldba.open();
+		
+		String stopCode = "tsStopCode1";
+		String stopName = "Test Source Stop";
+		int lat = 513000;
+		int lng = -1000;
+		String srcPosA = "51.3";
+		String srcPosB = "-0.1";
+		String heading = "0";
+		Location loc = ldba.getLocationByStopCode(stopCode);
+		if (null == loc) {
+			ldba.createLocation(stopCode, stopName, "", lat, lng, srcPosA, srcPosB, heading, getSourceId());
+		} else {
+			ldba.updateLocation(loc.getId(), stopCode, stopName, loc.getDescription(), loc.getLat(), loc.getLon(), srcPosA, srcPosB, heading, loc.getNickName(), loc.getChosen(), loc.getSourceId());
 		}
 
-		try {
-			publishProgress(PROGRESS_POSITION_PROCESSING_DATA, 0);
-			ldba.open();
-			
-			String stopCode = "tsStopCode1";
-			String stopName = "Test Source Stop";
-			int lat = 513000;
-			int lng = -1000;
-			String srcPosA = "51.3";
-			String srcPosB = "-0.1";
-			String heading = "0";
-			Location loc = ldba.getLocationByStopCode(stopCode);
-			if (null == loc) {
-				ldba.createLocation(stopCode, stopName, "", lat, lng, srcPosA, srcPosB, heading, getSourceId());
-			} else {
-				ldba.updateLocation(loc.getId(), stopCode, stopName, loc.getDescription(), loc.getLat(), loc.getLon(), srcPosA, srcPosB, heading, loc.getNickName(), loc.getChosen(), loc.getSourceId());
-			}
-
-			publishProgress(PROGRESS_POSITION_PROCESSING_DATA, 1);
-			Log.d(LOGNAME, "Finished processing response.");
-			
-		} catch (Exception e) {
-			Log.e(LOGNAME, "Unexception IOException occured: "+e);
-			failure = e;
-			return null;
-		} finally {
-			if (null != ldba) {
-				try { ldba.close(); } catch (Exception e) { Log.e(LOGNAME, "Unknown exception", e); }
-			}
-		}
+		publishProgress("Test Data Generated", 1);
+		Log.d(LOGNAME, "Finished processing response.");
+		
 		
 		finish();
-		return null;
 	}
 
 	@Override
 	public String getSourceId() {
 		return "TestSource";
+	}
+
+	@Override
+	public int getMaxProgress() {
+		return 1;
+	}
+
+	@Override
+	public String getSourceName() {
+		return "Test Source";
 	}
 
 }

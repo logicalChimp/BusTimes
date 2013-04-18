@@ -75,6 +75,8 @@ public class BusTimeActivity extends Activity implements Renderer, OnItemSelecte
 	
 	private void populateListOfSelectedLocations() {
 		List<Location> locations = LocationManager.getSelectedLocations(this);
+		if (null == locations) locations = new ArrayList<Location>();
+		
 		Location[] locsArray = locations.toArray(new Location[]{});
 		
 		ChosenLocationsArrayAdapter claa = new ChosenLocationsArrayAdapter(this, locsArray);

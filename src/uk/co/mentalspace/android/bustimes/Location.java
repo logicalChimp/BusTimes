@@ -78,7 +78,16 @@ public class Location implements Serializable {
 		else {
 			if (other.getId() != -1) return false;
 			if (null == this.getStopCode()) return null == other.getStopCode();
-			return this.getStopCode().equals(other.getStopCode()) && this.getSourceId().equals(other.getSourceId());
+			
+			//use pattern 'boolean && <test>' = if boolean is false, test will be skipped
+			//this avoids running tests once objects have been proved not equal 
+			boolean isEqual = true;
+			isEqual = isEqual && this.getStopCode().equals(other.getStopCode());
+			isEqual = isEqual && this.getSourceId().equals(other.getSourceId());
+			isEqual = isEqual && this.getNickName().equals(other.getNickName());
+			isEqual = isEqual && this.getChosen() == other.getChosen();
+			
+			return isEqual;
 		}
 	}
 	
