@@ -81,7 +81,9 @@ public class LocationRefreshService extends IntentService {
 				setNotification(lrt.getSourceName(), e);
 			}
 
-		    //once execute() returns, refresh is complete - null local reference
+			updateNotificationProgressComplete(lrt);
+
+			//once execute() returns, refresh is complete - null local reference
 		    lrt = null;
 		    lrtId = 0;
 		}
@@ -117,16 +119,27 @@ public class LocationRefreshService extends IntentService {
         setNotification(srcName + " location refresh failed", "Exception: "+e);
 	}
 	
+	public void updateNotificationProgressMade(LocationRefreshTask lrt) {
+		Log.d(LOGNAME, "Updating notification (in progress) for source ["+lrt.getSourceName()+"]");
+		String title = lrt.getSourceName()+" location refresh";
+		String progressMessage = "In progress ("+lrt.getCurrentProgress()+" / ~"+lrt.getMaxProgress()+")";
+		setNotification(title, progressMessage);
+	}
+	
+	public void updateNotificationProgressComplete(LocationRefreshTask lrt) {
+		Log.d(LOGNAME, "Updating notification (complete) for source ["+lrt.getSourceName()+"]");
+		String title = lrt.getSourceName()+" location refresh";
+		String progressMessage = "Complete ("+lrt.getCurrentProgress()+" processed)";
+		setNotification(title, progressMessage);
+	}
+
 	public void updateProgressStatus(LocationRefreshTask lrt) {
 		if (null == lrt) {
 			Log.w(LOGNAME, "Request to generate a progress update for a null LRT.");
 			return;
 		}
 
-		Log.d(LOGNAME, "Updating notification for source ["+lrt.getSourceName()+"]");
-		String title = lrt.getSourceName()+" location refresh";
-		String progressMessage = "In progress ("+lrt.getCurrentProgress()+" / "+lrt.getMaxProgress()+")";
-		setNotification(title, progressMessage);
+		updateNotificationProgressMade(lrt);
 		
 		Log.d(LOGNAME, "Sending progress update intent for source ["+lrt.getSourceName()+"]");		
 		Intent intent = new Intent();

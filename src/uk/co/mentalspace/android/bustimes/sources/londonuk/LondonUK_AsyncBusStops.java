@@ -65,10 +65,10 @@ public class LondonUK_AsyncBusStops extends LocationRefreshTask {
 			line = br.readLine();
 
 			//keep a counter for the progress bar
-			int count = 0;
+			currentProgress = 0;
 			
 			//open the DB connection now, instead of inside the loop
-			publishProgress(PROGRESS_POSITION_PROCESSING_DATA, count);
+			publishProgress(PROGRESS_POSITION_PROCESSING_DATA, currentProgress);
 			Map<String,String> keys = ldba.getComboKeys(getSourceId());
 			while (null != line && !("".equals(line.trim())) && !this.isCancelled()) {
 
@@ -79,13 +79,13 @@ public class LondonUK_AsyncBusStops extends LocationRefreshTask {
 				}
 
 				line = br.readLine();
-				count++;
-				if (count%100 == 0) {
-					publishProgress(PROGRESS_POSITION_PROCESSING_DATA, count);
+				currentProgress++;
+				if (currentProgress%100 == 0) {
+					publishProgress(PROGRESS_POSITION_PROCESSING_DATA, currentProgress);
 				}
 			}
 
-			Log.d(LOGNAME, "Finished processing ["+count+"] rows in the response.");
+			Log.d(LOGNAME, "Finished processing ["+currentProgress+"] rows in the response.");
 			
 		} catch (IOException ioe) {
 			Log.e(LOGNAME, "Unexception IOException occured: "+ioe);
