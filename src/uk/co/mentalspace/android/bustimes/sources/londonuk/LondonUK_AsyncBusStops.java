@@ -149,14 +149,21 @@ public class LondonUK_AsyncBusStops extends LocationRefreshTask {
 		String comboKey = ldba.getComboKey(cols[1], cols[4], cols[5]);
 		String stopCode = keys.get(comboKey);
 
+		if ("50340".equals(cols[1])) {
+			boolean isCodeKnown = keys.entrySet().contains(cols[1]);
+			Log.i(LOGNAME, "cols1 ["+cols[1]+"], cols4 ["+cols[4]+"], cols5 ["+cols[5]+"], comboKey ["+comboKey+"], stopCode ["+stopCode+"], isCodeKnown ["+isCodeKnown+"]");
+		}
+
 		if (null == stopCode) {
 			if (keys.entrySet().contains(cols[1])) {
+				Log.i(LOGNAME, "Stop Code ["+cols[1]+"] exists - but location doesn't match. deleting and re-creating.");
 				//stop code exists but srcPosA or srcPosB don't match - has moved location - delete old one and re-create
 				ldba.deleteLocationByStopCode(cols[1]);
 			}
 			createNewLocation(cols);
 		}
 		else {
+			Log.v(LOGNAME, "Location ["+stopCode+"] exists - updating");
 			Location loc = ldba.getLocationByStopCode(stopCode);
 			ldba.updateLocation(loc.getId(), cols[1], cols[3], loc.getDescription(), loc.getLat(), loc.getLon(), cols[4], cols[5], cols[6], loc.getNickName(), loc.getChosen(), this.getSourceId());
 		}
