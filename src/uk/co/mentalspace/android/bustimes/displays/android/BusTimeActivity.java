@@ -9,6 +9,7 @@ import uk.co.mentalspace.android.bustimes.Location;
 import uk.co.mentalspace.android.bustimes.LocationManager;
 import uk.co.mentalspace.android.bustimes.R;
 import uk.co.mentalspace.android.bustimes.Renderer;
+import uk.co.mentalspace.android.bustimes.displays.metawatch.MetaWatchReceiver;
 import uk.co.mentalspace.android.bustimes.utils.ChosenLocationsArrayAdapter;
 import uk.co.mentalspace.android.bustimes.utils.LocationTracker;
 
@@ -49,6 +50,9 @@ public class BusTimeActivity extends Activity implements Renderer, OnItemSelecte
 		findViewById(R.id.bus_times_results).setVisibility(View.GONE);
 		findViewById(R.id.bus_times_message).setVisibility(View.GONE);
 		((Spinner)findViewById(R.id.bus_times_location)).setOnItemSelectedListener(this);
+		
+		//TODO handle metawatch registration more cleanly
+		MetaWatchReceiver.metaWatchAnnounce(this);
     }
 
 	@Override

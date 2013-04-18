@@ -73,7 +73,7 @@ public class MetaWatchReceiver extends BroadcastReceiver {
 		}
 	}
 
-	public void metaWatchAnnounce(Context ctx) {
+	public static void metaWatchAnnounce(Context ctx) {
 		Intent announce = new Intent(MW_ANNOUNCE);
 		Bundle b = new Bundle();
 		b.putString("id", ctx.getResources().getString(R.string.app_id));
