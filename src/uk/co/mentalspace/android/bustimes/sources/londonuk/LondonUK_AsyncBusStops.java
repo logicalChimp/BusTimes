@@ -152,7 +152,7 @@ public class LondonUK_AsyncBusStops extends LocationRefreshTask {
 		if (null == stopCode) {
 			if (keys.entrySet().contains(cols[1])) {
 				//stop code exists but srcPosA or srcPosB don't match - has moved location - delete old one and re-create
-				ldba.deleteLocationByStopCode(stopCode);
+				ldba.deleteLocationByStopCode(cols[1]);
 			}
 			createNewLocation(cols);
 		}
