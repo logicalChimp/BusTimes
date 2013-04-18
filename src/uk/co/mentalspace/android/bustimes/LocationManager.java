@@ -1,6 +1,8 @@
 package uk.co.mentalspace.android.bustimes;
 
 import android.content.Context;
+
+import java.util.ArrayList;
 import java.util.List;
 import android.database.sqlite.SQLiteDatabaseLockedException;
 import android.util.Log;
@@ -89,7 +91,7 @@ public class LocationManager {
         } catch (SQLiteDatabaseLockedException sdle) {
         	Log.e(LOGNAME, "Failed to open Database: ", sdle);
         	Toast.makeText(ctx, "Failed to retrieve selected locations", Toast.LENGTH_SHORT).show();
-        	return null;
+    		return new ArrayList<Location>();
         } finally {
         	if (null != ldba) try {ldba.close(); } catch (Exception e) {Log.e(LOGNAME, "Unknown exception", e); }
         }
@@ -102,6 +104,7 @@ public class LocationManager {
 			if (locs.contains(loc)) {
 				int nextPosition = locs.indexOf(loc)+1;
 				if (nextPosition == locs.size()) nextPosition = 0;
+				if (-1 == nextPosition) nextPosition = 0;
 				return locs.get(nextPosition);
 			} else {
 				return locs.get(0);
@@ -121,7 +124,7 @@ public class LocationManager {
         } catch (SQLiteDatabaseLockedException sdle) {
         	Log.e(LOGNAME, "Database locked", sdle);
         	Toast.makeText(ctx, "Failed to load locations in area", Toast.LENGTH_SHORT).show();
-        	return null;
+        	return new ArrayList<Location>();
         } finally {
         	if (null != ldba) try {ldba.close(); } catch (Exception e) {Log.e(LOGNAME, "Unknown exception", e); }
         }
