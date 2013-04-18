@@ -311,7 +311,7 @@ public class LocationsDBAdapter {
     	return stopCode+"_"+srcPosA+"_"+srcPosB;
     }
     public Map<String, String> getComboKeys(String sourceId) {
-    	String sql = "select stopCode, stopCode+'_'+srcPosA+'_'+srcPosB as combokey from "+BusTimesDBHelper.LOCATIONS_TABLE+" where sourceId = '"+sourceId+"'";
+    	String sql = "select stopCode, srcPosA, srcPosB from "+BusTimesDBHelper.LOCATIONS_TABLE+" where sourceId = '"+sourceId+"'";
     	Log.d(LOGNAME, "Getting combo keys.  SQL: "+sql);
 
     	Cursor c = mDb.rawQuery(sql, null);
@@ -321,7 +321,10 @@ public class LocationsDBAdapter {
     	try {
 	    	while (!c.isAfterLast()) {
 	    		String stopCode = c.getString(c.getColumnIndex(KEY_STOP_CODE));
-	    		String comboKey = c.getString(c.getColumnIndex("combokey"));
+	    		String srcPosA = c.getString(c.getColumnIndex(KEY_SRC_POS_A));
+	    		String srcPosB = c.getString(c.getColumnIndex(KEY_SRC_POS_B));
+
+	    		String comboKey = getComboKey(stopCode, srcPosA, srcPosB);
 	    		
 	    		keys.put(comboKey, stopCode);
 		    	c.moveToNext();
