@@ -1,8 +1,7 @@
 package uk.co.mentalspace.android.bustimes;
 
-
-import java.util.List;
 import android.content.Context;
+import java.util.List;
 import android.database.sqlite.SQLiteDatabaseLockedException;
 import android.util.Log;
 import android.widget.Toast;
@@ -87,7 +86,7 @@ public class LocationManager {
 	        ldba.openReadable();
 	        List<Location> locs = ldba.getSelectedLocations();
 	        return locs;
-        } catch (SQLiteDatabaseLockedException sdle) {
+        } catch (android.database.sqlite.SQLiteDatabaseLockedException sdle) {
         	Log.e(LOGNAME, "Failed to open Database: ", sdle);
         	Toast.makeText(ctx, "Failed to retrieve selected locations", Toast.LENGTH_SHORT).show();
         	return null;

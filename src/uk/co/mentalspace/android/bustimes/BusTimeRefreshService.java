@@ -1,16 +1,15 @@
 package uk.co.mentalspace.android.bustimes;
 
-import java.io.Serializable;
 import java.util.Collections;
+import java.io.Serializable;
 import java.util.List;
 
 import uk.co.mentalspace.android.bustimes.utils.BusTimeComparator;
 
-import android.app.IntentService;
 import android.content.Intent;
 import android.util.Log;
 
-public class BusTimeRefreshService extends IntentService {
+public class BusTimeRefreshService extends WakefulIntentService {
 	private static final String LOGNAME = "BusTimeRefreshService";
 	
 	public static final String ACTION_REFRESH_BUS_TIMES = "uk.co.mentalspace.bustimes.REFRESH";
@@ -30,7 +29,8 @@ public class BusTimeRefreshService extends IntentService {
 	}
 	
 	@Override
-	protected void onHandleIntent(Intent arg0) {
+//	protected void onHandleIntent(Intent arg0) {
+	public void processIntent(Intent arg0) {
 		String action = arg0.getAction();
 		Log.d(LOGNAME, "Handling action: "+action);
 		

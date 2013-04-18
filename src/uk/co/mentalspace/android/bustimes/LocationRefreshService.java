@@ -1,8 +1,7 @@
 package uk.co.mentalspace.android.bustimes;
 
-import uk.co.mentalspace.android.bustimes.displays.android.ConfigurationActivity;
 import android.annotation.TargetApi;
-import android.app.IntentService;
+import uk.co.mentalspace.android.bustimes.displays.android.ConfigurationActivity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -12,7 +11,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
-public class LocationRefreshService extends IntentService {
+public class LocationRefreshService extends WakefulIntentService {
 
 	public static final String ACTION_UPDATE_DATA_REFRESH_PROGRESS = "uk.co.mentalspace.bustimes.UpdateDataRefreshProgress";
 	public static final String ACTION_REFRESH_LOCATION_DATA = "uk.co.mentalspace.bustimes.RefreshLocationData";
@@ -56,7 +55,8 @@ public class LocationRefreshService extends IntentService {
 	
 	@Override
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	protected void onHandleIntent(Intent intent) {		
+//	protected void onHandleIntent(Intent intent) {
+	public void processIntent(Intent intent) {
 		String action = intent.getAction();
 		Log.d(LOGNAME, "Handling intent. Action: "+action);
 		if (ACTION_REFRESH_LOCATION_DATA.equals(action)) {
