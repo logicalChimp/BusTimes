@@ -80,7 +80,8 @@ public class EditLocationPopup extends DialogFragment implements OnClickListener
 	
 	public void dismissWindow() {
 		Log.d(LOGNAME, "checking Nick Name before dismissing");
-		String nickName = ((EditText)getActivity().findViewById(R.id.map_info_window_nick_name_value)).getText().toString();
+		EditText et = ((EditText)getDialog().findViewById(R.id.map_info_window_nick_name_value));
+		String nickName = (null == et.getText()) ? "" : et.getText().toString();
 		if (nickName != null && !nickName.equals(loc.getNickName())) {
 			LocationManager.updateNickName(getActivity(), loc.getId(), nickName);
 		}
