@@ -15,7 +15,7 @@ public class LocationManager {
 		Log.d(LOGNAME, "Testing location selection status. loc id: "+stopId);
         LocationsDBAdapter ldba = new LocationsDBAdapter(ctx);
         try {
-	        ldba.open();
+	        ldba.openReadable();
 	        Location loc = ldba.getLocationByID(stopId);
 	        if (null == loc) return false;
 	        return (loc.getChosen() == 1);
@@ -84,7 +84,7 @@ public class LocationManager {
 		Log.d(LOGNAME, "Getting selected locations");
         LocationsDBAdapter ldba = new LocationsDBAdapter(ctx);
         try {
-	        ldba.open();
+	        ldba.openReadable();
 	        List<Location> locs = ldba.getSelectedLocations();
 	        return locs;
         } catch (SQLiteDatabaseLockedException sdle) {
@@ -116,7 +116,7 @@ public class LocationManager {
 		Log.d(LOGNAME, "Getting locations in area t ["+top+"], r ["+right+"], b ["+bottom+"], l ["+left+"]");
         LocationsDBAdapter ldba = new LocationsDBAdapter(ctx);
         try {
-	        ldba.open();
+	        ldba.openReadable();
 	        List<Location> locations = ldba.getLocationsInArea(top, right, bottom, left);
 	        return locations;
         } catch (SQLiteDatabaseLockedException sdle) {
@@ -132,7 +132,7 @@ public class LocationManager {
 		Log.d(LOGNAME, "Getting nearest selected location to lat ["+lat+"], lon ["+lon+"]");
         LocationsDBAdapter ldba = new LocationsDBAdapter(ctx);
         try {
-	        ldba.open();
+	        ldba.openReadable();
 	        Location loc = ldba.getClosestSelectedLocation(lat, lon);
 	        return loc;
         } catch (SQLiteDatabaseLockedException sdle) {
@@ -148,7 +148,7 @@ public class LocationManager {
 		Log.d(LOGNAME, "Getting location by Id: "+stopId);
         LocationsDBAdapter ldba = new LocationsDBAdapter(ctx);
         try {
-	        ldba.open();
+	        ldba.openReadable();
 	        Location loc = ldba.getLocationByID(stopId);
 	        return loc;
         } catch (SQLiteDatabaseLockedException sdle) {
@@ -164,7 +164,7 @@ public class LocationManager {
 		Log.d(LOGNAME, "Getting location by stop code: "+stopCode);
         LocationsDBAdapter ldba = new LocationsDBAdapter(ctx);
         try {
-	        ldba.open();
+	        ldba.openReadable();
 	        Location loc = ldba.getLocationByStopCode(stopCode);
 	        return loc;
         } catch (SQLiteDatabaseLockedException sdle) {

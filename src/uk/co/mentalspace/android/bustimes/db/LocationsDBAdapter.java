@@ -47,11 +47,23 @@ public class LocationsDBAdapter {
     }
 
     /**
+     * Get a read-only reference.  This should be safe to use even if
+     * another thread is writing to the DB.
+     * @return this (self reference, allowing this to be chained in an initialisation call)
+     * @throws SQLException if the database could be neither opened or created
+     */
+    public LocationsDBAdapter openReadable() throws SQLException {
+        mDbHelper = new BusTimesDBHelper(mCtx);
+        mDb = mDbHelper.getReadableDatabase();
+        return this;
+    }
+
+    /**
      * Opens the database. If it cannot be opened, try to create a new
      * instance of the database. If it cannot be created, throw an exception to
      * signal the failure
      * 
-     * @return this (self reference, allowing this to be chained in an initialization call)
+     * @return this (self reference, allowing this to be chained in an initialisation call)
      * @throws SQLException if the database could be neither opened or created
      */
     public LocationsDBAdapter open() throws SQLException {
