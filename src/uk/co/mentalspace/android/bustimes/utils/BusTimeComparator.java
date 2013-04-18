@@ -38,8 +38,8 @@ public class BusTimeComparator implements Comparator<BusTime> {
     	if (!bt1IsValue && bt2IsValue) return -1; //value (bt2) comes first
     	if (!bt1IsValue && !bt2IsValue) return 0; //both non-values - doesn't matter in order (but return here to avoid next tests
 
-    	if (bt1IsNumber && !bt2IsNumber) return -1; //non-number (e.g. 'Due') comes first
-    	if (!bt1IsNumber && bt2IsNumber) return 1; // non-number (e.g. 'Due') comes first
+    	if (bt1IsNumber && !bt2IsNumber) return 1; //non-number (e.g. 'Due') comes first
+    	if (!bt1IsNumber && bt2IsNumber) return -1; //non-number (e.g. 'Due') comes first
     	
     	//both have values, and both are numeric - so use standard integer comparison
     	if (bt1IsNumber && bt2IsNumber) return bt1Value.compareTo(bt2Value);
