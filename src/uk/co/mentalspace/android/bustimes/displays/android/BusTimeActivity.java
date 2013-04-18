@@ -49,12 +49,20 @@ public class BusTimeActivity extends Activity implements Renderer, OnItemSelecte
 		findViewById(R.id.bus_times_results).setVisibility(View.GONE);
 		findViewById(R.id.bus_times_message).setVisibility(View.GONE);
 		((Spinner)findViewById(R.id.bus_times_location)).setOnItemSelectedListener(this);
+
+		List<Location> locations = LocationManager.getSelectedLocations(this);		
+		if (null == locations || locations.isEmpty()) {
+			Intent config = new Intent(this, ConfigurationActivity.class);
+			this.startActivity(config);
+			return;
+		}
     }
     
 	@Override
 	public void onResume() {
 		super.onResume();
 		Log.d(LOGNAME, "Resuming activity - starting fresh Coordinator");
+
 		if (null == posTracker) {
 			posTracker = new LocationTracker(this);
 			if (!posTracker.isGPSEnabled) {
@@ -66,14 +74,13 @@ public class BusTimeActivity extends Activity implements Renderer, OnItemSelecte
 		    registerReceiver(btReceiver, new IntentFilter(BusTimeRefreshService.ACTION_LATEST_BUS_TIMES));
 		    btReceiverIsRegistered = true;
 		}
+
 		//populateListOfSelectedLocations will populate list, and then trigger onListItemSelected
 		populateListOfSelectedLocations();
 	}
 	
 	private void populateListOfSelectedLocations() {
-		List<Location> locations = LocationManager.getSelectedLocations(this);
-		if (null == locations) locations = new ArrayList<Location>();
-		
+		List<Location> locations = LocationManager.getSelectedLocations(this);		
 		Location[] locsArray = locations.toArray(new Location[]{});
 		
 		ChosenLocationsArrayAdapter claa = new ChosenLocationsArrayAdapter(this, locsArray);
