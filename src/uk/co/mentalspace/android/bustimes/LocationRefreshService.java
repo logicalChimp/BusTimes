@@ -26,7 +26,7 @@ public class LocationRefreshService extends WakefulIntentService {
 	public static final String EXTRA_PROGRESS_LABEL = "label";
 	public static final String EXTRA_SOURCE_NAME = "source";	
 
-	private static final String LOGNAME = "DataRefreshService";
+	private static final String LOGNAME = "LocationRefreshService";
 	
 	private static LocationRefreshTask lrt = null;
 	private static int lrtId = 0;
@@ -85,6 +85,7 @@ public class LocationRefreshService extends WakefulIntentService {
 				LocationManager.createRefreshRecord(getApplicationContext(), srcName, startTime, endTime);
 				updateNotificationProgressComplete(lrt);
 			} catch (Exception e) {
+				Log.e(LOGNAME, "Unknown exception", e);
 				setNotification(lrt.getSourceName(), e);
 				return;
 			} finally {

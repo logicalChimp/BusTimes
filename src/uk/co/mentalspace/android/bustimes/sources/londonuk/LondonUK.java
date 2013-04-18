@@ -5,24 +5,14 @@ import uk.co.mentalspace.android.bustimes.BusTimeRefreshTask;
 import uk.co.mentalspace.android.bustimes.LocationRefreshTask;
 import uk.co.mentalspace.android.bustimes.Source;
 
-public class LondonUK implements Source {
-
+public class LondonUK extends Source {
 	private static final String LOGNAME = "Source:LondonUK";
-	
-	@Override
-	public String getName() {
-		return "London, UK (TFL)";
+
+	public LondonUK() {
+		super("londonuk-tfl", "London, UK (TFL)", 19600, "uk.co.mentalspace.android.bustimes.sources.londonuk.LondonUK_AsyncBusStops", "uk.co.mentalspace.android.bustimes.sources.londonuk.LondonUK_AsyncBusTimes", "");
 	}
 
-	@Override
-	public String getID() {
-		return "londonuk-tfl";
-	}
 	
-	public int getEstimatedLocationCount() {
-		return 20000;
-	}
-
 	public LocationRefreshTask getLocationRefreshTask() {
 		Log.d(LOGNAME, "Creating new Location Refresh Task");
 		return new LondonUK_AsyncBusStops();
@@ -30,6 +20,7 @@ public class LondonUK implements Source {
 	
 	@Override
 	public BusTimeRefreshTask getBusTimesTask() {
+		Log.d(LOGNAME, "Creating new Bus Time Refresh Task");
     	BusTimeRefreshTask task = new LondonUK_AsyncBusTimes();
     	return task;
 	}

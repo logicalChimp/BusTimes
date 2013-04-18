@@ -9,7 +9,9 @@ import uk.co.mentalspace.android.bustimes.Location;
 import uk.co.mentalspace.android.bustimes.LocationManager;
 import uk.co.mentalspace.android.bustimes.R;
 import uk.co.mentalspace.android.bustimes.Renderer;
-import uk.co.mentalspace.android.bustimes.utils.ChosenLocationsArrayAdapter;
+import uk.co.mentalspace.android.bustimes.Source;
+import uk.co.mentalspace.android.bustimes.SourceManager;
+import uk.co.mentalspace.android.bustimes.utils.LocationsListAdapter;
 import uk.co.mentalspace.android.bustimes.utils.LocationTracker;
 
 import android.os.Bundle;
@@ -83,8 +85,8 @@ public class BusTimeActivity extends Activity implements Renderer, OnItemSelecte
 		List<Location> locations = LocationManager.getSelectedLocations(this);		
 		Location[] locsArray = locations.toArray(new Location[]{});
 		
-		ChosenLocationsArrayAdapter claa = new ChosenLocationsArrayAdapter(this, locsArray);
-		claa.setDropDownViewResource(R.layout.chosen_location_row_layout);
+		LocationsListAdapter claa = new LocationsListAdapter(this, locsArray);
+		claa.setDropDownViewResource(R.layout.location_list_row_layout);
 		Spinner spinner = (Spinner)findViewById(R.id.bus_times_location);
 		spinner.setAdapter(claa);
 	}
@@ -146,6 +148,12 @@ public class BusTimeActivity extends Activity implements Renderer, OnItemSelecte
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
     	switch (item.getItemId()) {
+    	case R.id.menu_update_sources:
+    		Source tflSrc = SourceManager.getSource("londonuk-tfl");
+    		SourceManager.createSource(this, tflSrc);
+    		Source testSrc = SourceManager.getSource("TestSource");
+    		SourceManager.createSource(this, testSrc);
+    		return true;
     	case R.id.menu_map:
     		startActivity(new Intent(this, SelectLocationActivity.class));
     		return true;

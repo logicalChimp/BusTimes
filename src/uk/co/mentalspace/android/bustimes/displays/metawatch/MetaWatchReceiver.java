@@ -15,7 +15,7 @@ public class MetaWatchReceiver extends BroadcastReceiver {
 	public static final String MW_ACTIVATED = "org.metawatch.manager.APPLICATION_ACTIVATE";
 	public static final String MW_DEACTIVATED = "org.metawatch.manager.APPLICATION_DEACTIVATE";
 	public static final String MW_BUTTON = "org.metawatch.manager.BUTTON_PRESS";
-	public static final String MW_ANNOUNCE = "org.metawatch.manager.APPLICATION_ANNOUCE";
+	public static final String MW_ANNOUNCE = "org.metawatch.manager.APPLICATION_ANNOUNCE";
 	public static final String MW_UPDATE = "org.metawatch.manager.APPLICATION_UPDATE";
 	public static final String MW_START = "org.metawatch.manager.APPLICATION_START";
 	public static final String MW_STOP = "org.metawatch.manager.APPLICATION_STOP";
@@ -34,6 +34,9 @@ public class MetaWatchReceiver extends BroadcastReceiver {
 		final String action = intent.getAction();
 		Log.d(LOGNAME, "Received Intent.  Action: " + action);
 
+		final String appId = intent.getStringExtra("id");
+		Log.d(LOGNAME, "Intent intended for app ["+appId+"]");
+		
 		if (MW_DISCOVERY.equals(action)) {
 			metaWatchAnnounce(context);
 		}
@@ -74,13 +77,15 @@ public class MetaWatchReceiver extends BroadcastReceiver {
 	}
 
 	public static void metaWatchAnnounce(Context ctx) {
-		Intent announce = new Intent(MW_ANNOUNCE);
+		Intent announce = new Intent();
+		announce.setAction(MW_ANNOUNCE);
 		Bundle b = new Bundle();
 		b.putString("id", ctx.getResources().getString(R.string.app_id));
 		b.putString("name", ctx.getResources().getString(R.string.app_name));
 		announce.putExtras(b);
+		announce.setFlags(Intent.FLAG_DEBUG_LOG_RESOLUTION);
 		ctx.sendBroadcast(announce);
-		Log.d(LOGNAME, "Sending Metawatch Start");
+		Log.d(LOGNAME, "Sending Metawatch announce");
 	}
 	
 	public static void metaWatchStart(Context ctx) {
@@ -89,6 +94,7 @@ public class MetaWatchReceiver extends BroadcastReceiver {
 		b.putString("id", ctx.getResources().getString(R.string.app_id));
 		b.putString("name", ctx.getResources().getString(R.string.app_name));
 		announce.putExtras(b);
+		announce.setFlags(Intent.FLAG_DEBUG_LOG_RESOLUTION);
 		ctx.sendBroadcast(announce);
 		Log.d(LOGNAME, "Sending Metawatch Start");
 	}
@@ -100,7 +106,7 @@ public class MetaWatchReceiver extends BroadcastReceiver {
 		b.putString("name", ctx.getResources().getString(R.string.app_name));
 		announce.putExtras(b);
 		ctx.sendBroadcast(announce);
-		Log.d(LOGNAME, "Sending Metawatch Start");
+		Log.d(LOGNAME, "Sending Metawatch stop");
 	}
 	
 }

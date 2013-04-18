@@ -10,14 +10,14 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-public class ChosenLocationsArrayAdapter extends ArrayAdapter<Location> {
+public class LocationsListAdapter extends ArrayAdapter<Location> {
+	private static final String LOGNAME = "LocationListAdapter";
 
 	private final Context ctx;
 	private final Location[] selectedLocations;
-	private static final String LOGNAME = "ChosenLocationArrayAdapter";
 	
-	public ChosenLocationsArrayAdapter(Context context, Location[] selectedLocations) {
-		super(context, R.layout.chosen_location_row_layout, selectedLocations);
+	public LocationsListAdapter(Context context, Location[] selectedLocations) {
+		super(context, R.layout.location_list_row_layout, selectedLocations);
 		ctx = context;
 		this.selectedLocations = selectedLocations;
 	}
@@ -32,7 +32,7 @@ public class ChosenLocationsArrayAdapter extends ArrayAdapter<Location> {
 	
 	protected View getCustomView(int position, View convertView, ViewGroup parent) {
 		LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View rowView = inflater.inflate(R.layout.chosen_location_row_layout,  parent, false);
+		View rowView = inflater.inflate(R.layout.location_list_row_layout,  parent, false);
 		
 		Location loc = selectedLocations[position];
 		if (null == loc) {

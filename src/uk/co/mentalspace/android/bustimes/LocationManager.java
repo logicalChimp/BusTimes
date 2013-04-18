@@ -88,6 +88,7 @@ public class LocationManager {
         try {
 	        ldba.openReadable();
 	        List<Location> locs = ldba.getSelectedLocations();
+	        if (null == locs) locs = new ArrayList<Location>();
 	        return locs;
         } catch (SQLiteDatabaseLockedException sdle) {
         	Log.e(LOGNAME, "Failed to open Database: ", sdle);
@@ -121,6 +122,7 @@ public class LocationManager {
         try {
 	        ldba.openReadable();
 	        List<Location> locations = ldba.getLocationsInArea(top, right, bottom, left);
+	        if (null == locations) locations = new ArrayList<Location>();
 	        return locations;
         } catch (SQLiteDatabaseLockedException sdle) {
         	Log.e(LOGNAME, "Database locked", sdle);

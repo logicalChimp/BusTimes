@@ -1,23 +1,136 @@
 package uk.co.mentalspace.android.bustimes;
 
-public interface Source {
+import android.util.Log;
 
-	public String getName();
-	public String getID();
+public class Source {
+	private static final String LOGNAME = "Source";
+
+	private long rowId = -1;
+	private String srcId = null;
+	private String srcName = null;
+	private int estLocCount = 0;
+	private String locRefreshClassName = null;
+	private String btRefreshClassName = null;
+	private String polygonPointsJson = null;
 	
-//	public Location getNearestStop(Renderer display, int lat, int lon);
-//	public Location getSpecificStop(Renderer display, String locationID);
-
-	public LocationRefreshTask getLocationRefreshTask();
-//	public void loadLocations(Context ctx);
-//	public void loadLocations(Context ctx, ProgressDisplay pd);
-	public int getEstimatedLocationCount();
+	private transient LocationRefreshTask lrt = null;
+	private transient BusTimeRefreshTask btrt = null;
 	
-	public BusTimeRefreshTask getBusTimesTask();
-//	public BusTimeRefreshTask getBusTimesTask(Renderer display, Location location);
-//	public void getBusTimes(Renderer display, Location location);
-//	public void getBusTimesAsync(Renderer display, Location location);
+	public Source(String srcId, String srcName, int estLocCount, String locRefreshClassname, String btRefreshClassname, String polygonPointsJson) {
+		this(-1, srcId, srcName, estLocCount, locRefreshClassname, btRefreshClassname, polygonPointsJson);
+	}
+	
+	public Source(long rowId, String srcId, String srcName, int estLocCount, String locRefreshClassname, String btRefreshClassname, String polygonPointsJson) {
+		this.rowId = rowId;
+		this.srcId = srcId;
+		this.srcName = srcName;
+		this.estLocCount = estLocCount;
+		this.locRefreshClassName = locRefreshClassname;
+		this.btRefreshClassName = btRefreshClassname;
+		this.polygonPointsJson = polygonPointsJson;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("RowID [");
+		sb.append(rowId);
+		sb.append("], srcId [");
+		sb.append(srcId);
+		sb.append("], srcName [");
+		sb.append(srcName);
+		sb.append("], estLocCount [");
+		sb.append(estLocCount);
+		sb.append("], locRefreshClassname [");
+		sb.append(locRefreshClassName);
+		sb.append("], btRefreshClassname [");
+		sb.append(btRefreshClassName);
+		sb.append("], polygonPointsJson [");
+		sb.append(polygonPointsJson);
+		sb.append("]");
+		return sb.toString();
+	}
+	
+	public boolean isEqual(Object o) {
+		if (null == o) return false;
+		if (this == o) return true;
+		if (!this.getClass().equals(o.getClass())) return false;
+		
+		Source other = (Source)o;
+		if (this.getRowId() != -1) return this.getRowId() == other.getRowId();
+		else {
+			if (other.getRowId() != -1) return false;
+			return this.getID().equals(other.getID());
+		}
+	}
+	
+	public long getRowId() {
+		return rowId;
+	}
+	
+	public String getName() {
+		return srcName;
+	}
+	
+	public String getID() {
+		return srcId;
+	}
+	
+	public int getEstimatedLocationCount() {
+		return estLocCount;
+	}
+	
+	public String getLocationRefreshClassName() {
+		return locRefreshClassName;
+	}
+	
+	public String getBTRefreshClassName() {
+		return btRefreshClassName;
+	}
+	
+	public String getPolygonPointsJson() {
+		return polygonPointsJson;
+	}
+	
+	public LocationRefreshTask getLocationRefreshTask() {
+		if (null != lrt) return lrt;
+		if (null == locRefreshClassName) return null;
 
-	//function-handle for async task to callback to
-//	public ArrayList<BusTime> getBusTimeData(Renderer display, Location location);
+		try {
+			Class<?> cls = Class.forName(locRefreshClassName);
+			Object o = cls.newInstance();
+			if (o instanceof LocationRefreshTask) {
+				lrt = (LocationRefreshTask)o;
+				return lrt;
+			}
+		} catch (ClassNotFoundException cnfe) {
+			Log.e(LOGNAME, "Failed to load location refresh task ["+locRefreshClassName+"]", cnfe);
+		} catch (IllegalAccessException iae) {
+			Log.e(LOGNAME, "Failed to load location refresh task ["+locRefreshClassName+"]", iae);
+		} catch (InstantiationException ie) {
+			Log.e(LOGNAME, "Failed to load location refresh task ["+locRefreshClassName+"]", ie);
+		}
+		return null;
+	}
+	
+	public BusTimeRefreshTask getBusTimesTask() {
+		if (null != btrt) return btrt;
+		if (null == btRefreshClassName) return null;
+
+		try {
+			Class<?> cls = Class.forName(btRefreshClassName);
+			Object o = cls.newInstance();
+			if (o instanceof BusTimeRefreshTask) {
+				btrt = (BusTimeRefreshTask)o;
+				return btrt;
+			}
+		} catch (ClassNotFoundException cnfe) {
+			Log.e(LOGNAME, "Failed to load Bus Time refresh task ["+btRefreshClassName+"]", cnfe);
+		} catch (IllegalAccessException iae) {
+			Log.e(LOGNAME, "Failed to load Bus Time refresh task ["+btRefreshClassName+"]", iae);
+		} catch (InstantiationException ie) {
+			Log.e(LOGNAME, "Failed to load Bus Time refresh task ["+btRefreshClassName+"]", ie);
+		}
+		return null;
+	}
 }

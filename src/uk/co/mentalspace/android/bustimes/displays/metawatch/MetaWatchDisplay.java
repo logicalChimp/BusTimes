@@ -112,6 +112,7 @@ public class MetaWatchDisplay implements Renderer {
 		b.putString("id", ctx.getResources().getString(R.string.app_id));
 		b.putIntArray("array", array);
 		intent.putExtras(b);
+		intent.setFlags(Intent.FLAG_DEBUG_LOG_RESOLUTION);
 		ctx.sendBroadcast(intent);
 	}
 

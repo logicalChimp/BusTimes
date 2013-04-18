@@ -1,18 +1,15 @@
 package uk.co.mentalspace.android.bustimes.sources.test;
 
-import android.util.Log;
 import uk.co.mentalspace.android.bustimes.Location;
+import android.util.Log;
 import uk.co.mentalspace.android.bustimes.LocationRefreshTask;
-import uk.co.mentalspace.android.bustimes.db.LocationsDBAdapter;
 
 public class BusStopsRefresh extends LocationRefreshTask {
 	private static final String LOGNAME = "TestSource";
-	private LocationsDBAdapter ldba = null;
 	
 	@Override
 	public void performRefresh() {
 		publishProgress("Generating Test Data", 0);
-		ldba.open();
 		
 		String stopCode = "tsStopCode1";
 		String stopName = "Test Source Stop";

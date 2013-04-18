@@ -9,7 +9,8 @@ import uk.co.mentalspace.android.bustimes.LocationRefreshService;
 import uk.co.mentalspace.android.bustimes.R;
 import uk.co.mentalspace.android.bustimes.Source;
 import uk.co.mentalspace.android.bustimes.SourceManager;
-import uk.co.mentalspace.android.bustimes.utils.ChosenLocationsArrayAdapter;
+import uk.co.mentalspace.android.bustimes.utils.LocationsListAdapter;
+import uk.co.mentalspace.android.bustimes.utils.SourcesListAdapter;
 
 import android.os.Bundle;
 import android.content.BroadcastReceiver;
@@ -24,16 +25,21 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ConfigurationActivity extends FragmentActivity implements OnClickListener, OnItemClickListener {
+public class ConfigurationActivity extends FragmentActivity implements OnClickListener, OnItemClickListener, OnItemSelectedListener {
 
 	private static final String LOGNAME = "ConfigurationActivity";
+	
+	private List<Source> srcs = null;
+	private Source selectedSource = null;
 	
 	private BroadcastReceiver drsReceiver = new BroadcastReceiver() {
         @Override
@@ -87,10 +93,15 @@ public class ConfigurationActivity extends FragmentActivity implements OnClickLi
 		//TODO removed hardcoded source
 		String sourceId = "londonuk-tfl"; //Preferences.getPreference(this, Preferences.KEY_SOURCE_ID);
 		if (null != sourceId && !"".equals(sourceId.trim())) {
-			Source src = SourceManager.getSource(sourceId);
-			TextView srcLabel = (TextView)this.findViewById(R.id.configure_source_chosen_source);
-			srcLabel.setText(src.getName());
+			srcs = SourceManager.getAllSources(this);		
+			Source[] srcsArray = srcs.toArray(new Source[]{});
 			
+			((Spinner)findViewById(R.id.configure_select_source)).setOnItemSelectedListener(this);
+			SourcesListAdapter sla = new SourcesListAdapter(this, srcsArray);
+			sla.setDropDownViewResource(R.layout.sources_list_row_layout);
+			Spinner spinner = (Spinner)findViewById(R.id.configure_select_source);
+			spinner.setAdapter(sla);
+
 			LinearLayout refreshLocationsGroup = (LinearLayout)this.findViewById(R.id.configure_source_force_download_group);
 			refreshLocationsGroup.setVisibility(View.VISIBLE);
 			
@@ -100,13 +111,10 @@ public class ConfigurationActivity extends FragmentActivity implements OnClickLi
 		
 		List<Location> selectedLocations = LocationManager.getSelectedLocations(this);
 		if (null == selectedLocations) selectedLocations = new ArrayList<Location>(); 
-		ChosenLocationsArrayAdapter claa = new ChosenLocationsArrayAdapter(this, selectedLocations.toArray(new Location[]{}));
+		LocationsListAdapter claa = new LocationsListAdapter(this, selectedLocations.toArray(new Location[]{}));
 		ListView lv = (ListView)findViewById(R.id.configure_chosen_locations_list);
 		lv.setAdapter(claa);
 		lv.setOnItemClickListener(this);
-		
-		LinearLayout sourceSelectorGroup = (LinearLayout)this.findViewById(R.id.configure_source_group);
-		sourceSelectorGroup.setOnClickListener(this);
 		
 		Button refreshLocationsButton = (Button)this.findViewById(R.id.configure_source_refresh_data_button);
 		refreshLocationsButton.setOnClickListener(this);
@@ -120,19 +128,14 @@ public class ConfigurationActivity extends FragmentActivity implements OnClickLi
 		// TODO Auto-generated method stub
 		int viewId = arg0.getId();
 		switch (viewId) {
-		case R.id.configure_source_group:
-			//display popup-list of possible sources
-			return;
 		case R.id.configure_source_refresh_data_button:
 			//trigger download of stops
-			//TODO remove hard-coded source
-			String sourceId = "londonuk-tfl"; //Preferences.getPreference(this, Preferences.KEY_SOURCE_ID);
-			if (null == sourceId || "".equals(sourceId.trim())) return;
+			if (null == selectedSource) return;
 			
 			Log.d(LOGNAME, "Sending intent to start Data Refresh Service");
 			Intent intent = new Intent(this, LocationRefreshService.class);
 			intent.setAction(LocationRefreshService.ACTION_REFRESH_LOCATION_DATA);
-			intent.putExtra(LocationRefreshService.EXTRA_SOURCE_NAME, sourceId);
+			intent.putExtra(LocationRefreshService.EXTRA_SOURCE_NAME, selectedSource.getID());
 			this.startService(intent);
 			
 //			Source src = SourceManager.getSource(sourceId);
@@ -186,5 +189,21 @@ public class ConfigurationActivity extends FragmentActivity implements OnClickLi
 			Toast.makeText(this, "Locations download complete", Toast.LENGTH_SHORT).show();
     	}
     }
+
+	@Override
+	public void onItemSelected(AdapterView<?> parentView, View view, int position, long id) {
+		if (null == srcs || srcs.size() <= position) {
+			((Button)this.findViewById(R.id.configure_source_refresh_data_button)).setEnabled(false);
+			return;
+		}
+		
+		selectedSource = srcs.get(position);
+		((Button)this.findViewById(R.id.configure_source_refresh_data_button)).setEnabled(true);
+	}
+
+	@Override
+	public void onNothingSelected(AdapterView<?> arg0) {
+		//do nothing
+	}
 
 }

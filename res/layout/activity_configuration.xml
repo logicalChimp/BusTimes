@@ -4,52 +4,15 @@
     android:layout_height="match_parent"
     tools:context=".ConfigurationActivity" >
 
-    <LinearLayout
-        android:id="@+id/configure_source_group"
-        android:layout_width="fill_parent"
-        android:layout_height="52dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:showDividers="end" >
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.8"
-            android:orientation="vertical" >
-
-            <TextView
-                android:id="@+id/configure_source_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="5dp"
-                android:text="@string/configure_source_label"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-
-            <TextView
-                android:id="@+id/configure_source_chosen_source"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:text=""
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-        </LinearLayout>
-
-        <ImageView
-            android:id="@+id/configure_source_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="8dp"
-            android:contentDescription="@string/configure_source_icon_desc"
-            android:src="@android:drawable/ic_menu_more" />
-    </LinearLayout>
-
+    <Spinner
+        android:id="@+id/configure_select_source"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    
+    
     <LinearLayout
         android:id="@+id/configure_source_force_download_group"
-        android:layout_below="@id/configure_source_group"
+        android:layout_below="@id/configure_select_source"
         android:layout_width="fill_parent"
         android:layout_height="52dp"
         android:layout_alignParentLeft="true"
@@ -61,6 +24,7 @@
             android:id="@+id/configure_source_refresh_data_button"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:enabled="false"
             android:text="@string/configure_source_refresh_data_button" 
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp" />

@@ -113,7 +113,7 @@ public class LocationsDBAdapter {
      * Return a Cursor over the list of all locations in the database
      * @return Cursor over all notes
      */
-    public Cursor fetchAllLLocations() {
+    public Cursor fetchAllLocations() {
         return mDb.query(BusTimesDBHelper.LOCATIONS_TABLE, ALL_COLUMNS, null, null, null, null, null);
     }
     
