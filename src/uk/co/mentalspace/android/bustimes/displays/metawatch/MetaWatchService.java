@@ -1,7 +1,6 @@
 package uk.co.mentalspace.android.bustimes.displays.metawatch;
 
 import java.util.List;
-
 import uk.co.mentalspace.android.bustimes.BusTime;
 import uk.co.mentalspace.android.bustimes.BusTimeRefreshService;
 import uk.co.mentalspace.android.bustimes.Location;
@@ -77,6 +76,18 @@ public class MetaWatchService extends WakefulIntentService {
 				} else {
 					if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Wrong button. "+BUTTON_NEXT_LOCATION+" != "+btnId);
 				}
+			}
+			if (BusTimeRefreshService.ACTION_REFRESH_FAILED.equals(action)) {
+				String msg = intent.getStringExtra(BusTimeRefreshService.EXTRA_MESSAGE);
+				if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Message: "+msg);
+				MetaWatchDisplay mwd = new MetaWatchDisplay(getApplicationContext());
+				mwd.displayMessage(loc, msg, Renderer.MESSAGE_ERROR);
+			}
+			if (BusTimeRefreshService.ACTION_INVALID_REFRESH_REQUEST.equals(action)) {
+				String msg = intent.getStringExtra(BusTimeRefreshService.EXTRA_MESSAGE);
+				if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Invalid refresh request.  Message: "+msg);
+				MetaWatchDisplay mwd = new MetaWatchDisplay(getApplicationContext());
+				mwd.displayMessage(loc, "Cannot refresh. Please pick another location.", Renderer.MESSAGE_ERROR);
 			}
 			else if (BusTimeRefreshService.ACTION_LATEST_BUS_TIMES.equals(action)) {
 				if (null == loc) {

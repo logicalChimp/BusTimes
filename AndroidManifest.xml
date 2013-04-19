@@ -61,6 +61,12 @@
             <intent-filter>
                 <action android:name="uk.co.mentalspace.bustimes.LATEST_BUS_TIMES" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="uk.co.mentalspace.bustimes.INVALID_REQUEST" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="uk.co.mentalspace.bustimes.REFRESH_FAILED" />
+            </intent-filter>
         </receiver>
 
         <service android:name="uk.co.mentalspace.android.bustimes.displays.metawatch.MetaWatchService" ></service>

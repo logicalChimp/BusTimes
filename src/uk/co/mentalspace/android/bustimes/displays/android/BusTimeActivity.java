@@ -33,6 +33,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class BusTimeActivity extends Activity implements Renderer, OnItemSelectedListener {
 	private static final String LOGNAME = "BusTimeActivity";
@@ -78,6 +79,8 @@ public class BusTimeActivity extends Activity implements Renderer, OnItemSelecte
 
 		if (!btReceiverIsRegistered) {
 		    registerReceiver(btReceiver, new IntentFilter(BusTimeRefreshService.ACTION_LATEST_BUS_TIMES));
+		    registerReceiver(btReceiver, new IntentFilter(BusTimeRefreshService.ACTION_REFRESH_FAILED));
+		    registerReceiver(btReceiver, new IntentFilter(BusTimeRefreshService.ACTION_INVALID_REFRESH_REQUEST));
 		    btReceiverIsRegistered = true;
 		}
 
@@ -238,7 +241,17 @@ public class BusTimeActivity extends Activity implements Renderer, OnItemSelecte
 
 		String action = intent.getAction();
 		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Received broadcast. action: "+action);
-		
+	
+		if (BusTimeRefreshService.ACTION_REFRESH_FAILED.equals(action)) {
+			String msg = intent.getStringExtra(BusTimeRefreshService.EXTRA_MESSAGE);
+			if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Message: "+msg);
+			Toast.makeText(this, "Refresh failed.", Toast.LENGTH_SHORT).show();
+		}
+		if (BusTimeRefreshService.ACTION_INVALID_REFRESH_REQUEST.equals(action)) {
+			String msg = intent.getStringExtra(BusTimeRefreshService.EXTRA_MESSAGE);
+			if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Invalid refresh request.  Message: "+msg);
+			Toast.makeText(this, "Cannot refresh. Please pick another location.", Toast.LENGTH_SHORT).show();
+		}
 		if (BusTimeRefreshService.ACTION_LATEST_BUS_TIMES.equals(action)) {
 			long locId = intent.getLongExtra(BusTimeRefreshService.EXTRA_LOCATION_ID, -1);
 			String srcId = intent.getStringExtra(BusTimeRefreshService.EXTRA_SOURCE_ID);
