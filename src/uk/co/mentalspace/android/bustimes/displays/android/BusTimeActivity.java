@@ -12,9 +12,10 @@ import uk.co.mentalspace.android.bustimes.R;
 import uk.co.mentalspace.android.bustimes.Renderer;
 import uk.co.mentalspace.android.bustimes.Source;
 import uk.co.mentalspace.android.bustimes.SourceManager;
+import uk.co.mentalspace.android.bustimes.displays.android.listadapters.BusTimeListAdapter;
+import uk.co.mentalspace.android.bustimes.displays.android.listadapters.LocationsListAdapter;
 import uk.co.mentalspace.android.bustimes.sources.londonuk.LondonUK;
 import uk.co.mentalspace.android.bustimes.sources.test.TestSource;
-import uk.co.mentalspace.android.bustimes.utils.LocationsListAdapter;
 import uk.co.mentalspace.android.bustimes.utils.LocationTracker;
 
 import android.os.Bundle;

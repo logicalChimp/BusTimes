@@ -1,4 +1,4 @@
-package uk.co.mentalspace.android.bustimes.utils;
+package uk.co.mentalspace.android.bustimes.displays.android.listadapters;
 
 import uk.co.mentalspace.android.bustimes.Preferences;
 import uk.co.mentalspace.android.bustimes.R;

@@ -10,8 +10,8 @@ import uk.co.mentalspace.android.bustimes.Preferences;
 import uk.co.mentalspace.android.bustimes.R;
 import uk.co.mentalspace.android.bustimes.Source;
 import uk.co.mentalspace.android.bustimes.SourceManager;
-import uk.co.mentalspace.android.bustimes.utils.LocationsListAdapter;
-import uk.co.mentalspace.android.bustimes.utils.SourcesListAdapter;
+import uk.co.mentalspace.android.bustimes.displays.android.listadapters.LocationsListAdapter;
+import uk.co.mentalspace.android.bustimes.displays.android.listadapters.SourcesListAdapter;
 
 import android.os.Bundle;
 import android.content.BroadcastReceiver;
