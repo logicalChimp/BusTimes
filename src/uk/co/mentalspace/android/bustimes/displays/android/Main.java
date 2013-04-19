@@ -38,14 +38,14 @@ public class Main extends Activity {
 			if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Unable to read selected locations count from database - aborting startup");
 			finish();
 			return;
-		} else if (0 == selected && !Preferences.INCLUDE_CLOSEST_NON_FAVOURITE_LOCATION) {
+		} else if (0 == selected && !Preferences.GET_NEAREST_INCLUDES_NON_FAVOURITES) {
 			//locations, but no favourites selected - show stage two welcome message
 			Intent intent = new Intent(this, FavouriteLocationsActivity.class);
 			intent.setAction(FavouriteLocationsActivity.ACTION_SHOW_STAGE_TWO_WELCOME);
 			this.startActivity(intent);
 			finish();
 			return;
-		} else if (0 < selected || Preferences.INCLUDE_CLOSEST_NON_FAVOURITE_LOCATION) {
+		} else if (0 < selected || Preferences.GET_NEAREST_INCLUDES_NON_FAVOURITES) {
 			//either have selected favourites, or can use GPS to select nearest location - show bus times
 			Intent intent = new Intent(this, BusTimeActivity.class);
 			this.startActivity(intent);

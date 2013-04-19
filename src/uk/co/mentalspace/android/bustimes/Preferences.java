@@ -6,7 +6,7 @@ public class Preferences {
 	public static enum RefreshRate {SOURCE_DEFAULT, THIRTY_SECONDS, SIXTY_SECONDS};
 	
 	public static boolean ENABLE_LOGGING = true;
-	public static boolean INCLUDE_CLOSEST_NON_FAVOURITE_LOCATION = false;
+	public static boolean GET_NEAREST_INCLUDES_NON_FAVOURITES = false;
 	public static Firmware FW_VERSION = Firmware.PRODUCTION;
 	public static boolean AUTO_REFRESH_BUS_TIMES = true;
 	public static RefreshRate AUTO_REFRESH_RATE = RefreshRate.SOURCE_DEFAULT;

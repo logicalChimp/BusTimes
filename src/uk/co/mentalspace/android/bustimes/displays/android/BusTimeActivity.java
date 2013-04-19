@@ -100,7 +100,7 @@ public class BusTimeActivity extends Activity implements Renderer, OnItemSelecte
 			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "No location yet chosen - requesting load of nearest chosen location");
 			int lat = (int)(posTracker.getLatitude()*10000);
 			int lon = (int)(posTracker.getLongitude()*10000);
-			loc = LocationManager.getNearestSelectedLocation(getDisplayContext(), lat, lon);
+			loc = LocationManager.getNearestSelectedLocation(getDisplayContext(), lat, lon, !Preferences.GET_NEAREST_INCLUDES_NON_FAVOURITES);
 		}
 		if (null == loc) {
 			if (Preferences.ENABLE_LOGGING) Log.w(LOGNAME, "Cannot get 'nearest' location - maybe none chosen?");
@@ -108,7 +108,6 @@ public class BusTimeActivity extends Activity implements Renderer, OnItemSelecte
 			return;
 		}
 		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Fetching bus times for location ["+loc+"]");
-//		Coordinator.getBusTimes(this, loc);
 		
 		Intent intent = new Intent(this, BusTimeRefreshService.class);
 		intent.setAction(BusTimeRefreshService.ACTION_REFRESH_BUS_TIMES);

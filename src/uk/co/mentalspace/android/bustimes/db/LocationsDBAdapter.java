@@ -61,9 +61,12 @@ public class LocationsDBAdapter extends BaseDBAdapter<Location> {
     	return fetch(BusTimesDBHelper.LOCATIONS_TABLE, ALL_COLUMNS, null);
     }
     
-    public Cursor fetchClosestSelectedLocation(int lat, int lon) {
+    public Cursor fetchClosestSelectedLocation(int lat, int lon, boolean limitToSelectedLocations) {
     	String sql = "select _id, stopCode, name, desc, lat, lng, srcPosA, srcPosB, heading, nickName, chosen, sourceId, " +
-    			"abs(lat - "+lat+") + abs(lng - "+lon+") as distance from "+BusTimesDBHelper.LOCATIONS_TABLE+" where chosen = 1 order by distance asc";
+    			"abs(lat - "+lat+") + abs(lng - "+lon+") as distance from "+BusTimesDBHelper.LOCATIONS_TABLE;
+    	if (limitToSelectedLocations) sql += " where chosen = 1";
+    	sql += " order by distance asc";
+    	
     	//Math.abs(lat - "+lat+") + 
     	Cursor c = mDb.rawQuery(sql, null);
     	if (null != c) c.moveToFirst();
@@ -71,8 +74,8 @@ public class LocationsDBAdapter extends BaseDBAdapter<Location> {
     	return c;
     }
     
-    public Location getClosestSelectedLocation(int lat, int lon) {
-		Cursor c = fetchClosestSelectedLocation(lat, lon);
+    public Location getClosestSelectedLocation(int lat, int lon, boolean limitToSelectedLocations) {
+		Cursor c = fetchClosestSelectedLocation(lat, lon, limitToSelectedLocations);
 		return getSingle(c);
     }
 

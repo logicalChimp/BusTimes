@@ -131,11 +131,11 @@ public class LocationManager extends BaseManager<Location> {
 		return locTask.run(ctx);
 	}
 	
-	public static Location getNearestSelectedLocation(Context ctx, final int lat, final int lon) {
+	public static Location getNearestSelectedLocation(Context ctx, final int lat, final int lon, final boolean limitToSelectedLocations) {
 		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Getting nearest selected location to lat ["+lat+"], lon ["+lon+"]");
 		Task<Location> locTask = new LocTask<Location>() {
 			protected Location doWork() {
-		        return ldba.getClosestSelectedLocation(lat, lon);
+		        return ldba.getClosestSelectedLocation(lat, lon, limitToSelectedLocations);
 			}
 		};
 		return locTask.run(ctx);

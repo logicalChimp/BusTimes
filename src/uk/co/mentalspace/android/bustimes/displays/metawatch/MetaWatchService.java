@@ -48,9 +48,14 @@ public class MetaWatchService extends WakefulIntentService {
 					LocationTracker pt = getPosTracker();
 					int lat = (int)(pt.getLatitude()*10000);
 					int lon = (int)(pt.getLongitude()*10000);
-					loc = LocationManager.getNearestSelectedLocation(getApplicationContext(), lat, lon);
+					loc = LocationManager.getNearestSelectedLocation(getApplicationContext(), lat, lon, !Preferences.GET_NEAREST_INCLUDES_NON_FAVOURITES);
 				}
-
+				if (null == loc) {
+					if (Preferences.ENABLE_LOGGING) Log.w(LOGNAME, "Cannot get 'nearest' location - maybe none chosen?");
+					mwd.displayMessage(null, "Please select one or more locations to monitor.", Renderer.MESSAGE_ERROR);
+					return;
+				}
+				
 				getBusTimes(mwd, loc); 
 			}
 			else if (MetaWatchReceiver.MW_DEACTIVATED.equals(action)) {
@@ -105,6 +110,12 @@ public class MetaWatchService extends WakefulIntentService {
 	}
 	
 	public void getBusTimes(Renderer display, Location loc) {
+		if (null == loc) {
+			if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Cannot get bus times for <null> location");
+			display.displayMessage(null, "Error: invalid location.  Please select another location", Renderer.MESSAGE_ERROR);
+			return;
+		}
+		
 		Intent service = new Intent(this, BusTimeRefreshService.class);
 		service.setAction(BusTimeRefreshService.ACTION_REFRESH_BUS_TIMES);
 		service.putExtra(BusTimeRefreshService.EXTRA_LOCATION_ID, loc.getId());
