@@ -15,6 +15,8 @@ import uk.co.mentalspace.android.bustimes.utils.SourcesListAdapter;
 import android.os.Bundle;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.app.FragmentActivity;
@@ -34,7 +36,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ConfigurationActivity extends FragmentActivity implements OnClickListener, OnItemClickListener, OnItemSelectedListener {
+public class ConfigurationActivity extends FragmentActivity implements OnClickListener, OnItemClickListener, OnItemSelectedListener, OnDismissListener {
 
 	private static final String LOGNAME = "ConfigurationActivity";
 	
@@ -90,37 +92,39 @@ public class ConfigurationActivity extends FragmentActivity implements OnClickLi
 	}
 
 	private void configureLayout() {
-		//TODO removed hardcoded source
-		String sourceId = "londonuk-tfl"; //Preferences.getPreference(this, Preferences.KEY_SOURCE_ID);
-		if (null != sourceId && !"".equals(sourceId.trim())) {
-			srcs = SourceManager.getAllSources(this);		
-			Source[] srcsArray = srcs.toArray(new Source[]{});
-			
-			((Spinner)findViewById(R.id.configure_select_source)).setOnItemSelectedListener(this);
-			SourcesListAdapter sla = new SourcesListAdapter(this, srcsArray);
-			sla.setDropDownViewResource(R.layout.sources_list_row_layout);
-			Spinner spinner = (Spinner)findViewById(R.id.configure_select_source);
-			spinner.setAdapter(sla);
-
-			LinearLayout refreshLocationsGroup = (LinearLayout)this.findViewById(R.id.configure_source_force_download_group);
-			refreshLocationsGroup.setVisibility(View.VISIBLE);
-			
-			LinearLayout addLocationsGroup = (LinearLayout)this.findViewById(R.id.configure_add_location_group);
-			addLocationsGroup.setVisibility(View.VISIBLE);
-		}
+		Log.d(LOGNAME, "Configuring layout...");
+		srcs = SourceManager.getAllSources(this);		
+		Source[] srcsArray = srcs.toArray(new Source[]{});
 		
-		List<Location> selectedLocations = LocationManager.getSelectedLocations(this);
-		if (null == selectedLocations) selectedLocations = new ArrayList<Location>(); 
-		LocationsListAdapter claa = new LocationsListAdapter(this, selectedLocations.toArray(new Location[]{}));
-		ListView lv = (ListView)findViewById(R.id.configure_chosen_locations_list);
-		lv.setAdapter(claa);
-		lv.setOnItemClickListener(this);
+		((Spinner)findViewById(R.id.configure_select_source)).setOnItemSelectedListener(this);
+		SourcesListAdapter sla = new SourcesListAdapter(this, srcsArray);
+		sla.setDropDownViewResource(R.layout.sources_list_row_layout);
+		Spinner spinner = (Spinner)findViewById(R.id.configure_select_source);
+		spinner.setAdapter(sla);
+
+		LinearLayout refreshLocationsGroup = (LinearLayout)this.findViewById(R.id.configure_source_force_download_group);
+		refreshLocationsGroup.setVisibility(View.VISIBLE);
+		
+		LinearLayout addLocationsGroup = (LinearLayout)this.findViewById(R.id.configure_add_location_group);
+		addLocationsGroup.setVisibility(View.VISIBLE);
 		
 		Button refreshLocationsButton = (Button)this.findViewById(R.id.configure_source_refresh_data_button);
 		refreshLocationsButton.setOnClickListener(this);
 		
 		Button addLocationButton = (Button)this.findViewById(R.id.configure_browse_locations_button);
 		addLocationButton.setOnClickListener(this);
+		
+		configureFavouriteLocationsList();
+	}
+	
+	private void configureFavouriteLocationsList() {
+		Log.d(LOGNAME, "Configuring favourite locations list");
+		List<Location> selectedLocations = LocationManager.getSelectedLocations(this);
+		if (null == selectedLocations) selectedLocations = new ArrayList<Location>(); 
+		LocationsListAdapter claa = new LocationsListAdapter(this, selectedLocations.toArray(new Location[]{}));
+		ListView lv = (ListView)findViewById(R.id.configure_chosen_locations_list);
+		lv.setAdapter(claa);
+		lv.setOnItemClickListener(this);		
 	}
 
 	@Override
@@ -167,6 +171,8 @@ public class ConfigurationActivity extends FragmentActivity implements OnClickLi
 		
 		//show dialog
 		elp.show(fragmentManager, "EditLocationDialog");
+		fragmentManager.executePendingTransactions();
+		elp.getDialog().setOnDismissListener(this);
 	}
 
     public void receiveBroadcast(Intent intent) {
@@ -204,6 +210,11 @@ public class ConfigurationActivity extends FragmentActivity implements OnClickLi
 	@Override
 	public void onNothingSelected(AdapterView<?> arg0) {
 		//do nothing
+	}
+
+	@Override
+	public void onDismiss(DialogInterface dialog) {
+		configureFavouriteLocationsList();
 	}
 
 }
