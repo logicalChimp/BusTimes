@@ -36,9 +36,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ConfigurationActivity extends FragmentActivity implements OnClickListener, OnItemClickListener, OnItemSelectedListener, OnDismissListener {
+public class FavouriteLocationsActivity extends FragmentActivity implements OnClickListener, OnItemClickListener, OnItemSelectedListener, OnDismissListener {
 
-	private static final String LOGNAME = "ConfigurationActivity";
+	private static final String LOGNAME = "FavLocsActivity";
+
+	public static final String ACTION_SHOW_STAGE_ONE_WELCOME = "showStageOneWelcome";
+	public static final String ACTION_SHOW_STAGE_TWO_WELCOME = "showStageTwoWelcome";
+	public static final String ACTION_NORMAL = "actionNormal";
 	
 	private List<Source> srcs = null;
 	private Source selectedSource = null;
@@ -46,7 +50,7 @@ public class ConfigurationActivity extends FragmentActivity implements OnClickLi
 	private BroadcastReceiver drsReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-        	ConfigurationActivity.this.receiveBroadcast(intent);
+        	FavouriteLocationsActivity.this.receiveBroadcast(intent);
         }
     };
     private boolean drsReceiverIsRegistered = false;
@@ -54,7 +58,7 @@ public class ConfigurationActivity extends FragmentActivity implements OnClickLi
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_configuration);
+		setContentView(R.layout.activity_favourite_locations);
 //		configureLayout();
 	}
 	

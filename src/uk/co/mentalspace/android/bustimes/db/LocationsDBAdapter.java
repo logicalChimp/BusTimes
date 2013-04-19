@@ -196,6 +196,40 @@ public class LocationsDBAdapter extends BaseDBAdapter<Location> {
     	return stopCode+"_"+srcPosA+"_"+srcPosB;
     }
 
+    public int getLocationCount() {
+    	String sql = "select count(_id) as count from "+BusTimesDBHelper.LOCATIONS_TABLE;
+    	Cursor c = null;
+    	try {
+    		c = mDb.rawQuery(sql, null);
+    		if (null == c) return 0;
+
+    		c.moveToFirst();
+    		int count = c.getInt(c.getColumnIndex("count"));
+    		return count;
+    	} catch (Exception e) {
+    		return -1;
+    	} finally {
+	    	if (null != c) c.close();
+    	}
+    }
+    
+    public int getSelectedLocationCount() {
+    	String sql = "select count(_id) as count from "+BusTimesDBHelper.LOCATIONS_TABLE+" where chosen = 1";
+    	Cursor c = null;
+    	try {
+    		c = mDb.rawQuery(sql, null);
+    		if (null == c) return 0;
+
+    		c.moveToFirst();
+    		int count = c.getInt(c.getColumnIndex("count"));
+    		return count;
+    	} catch (Exception e) {
+    		return -1;
+    	} finally {
+	    	if (null != c) c.close();
+    	}
+    }
+    
     public Map<String, String> getComboKeys(String sourceId) {
     	String sql = "select stopCode, srcPosA, srcPosB from "+BusTimesDBHelper.LOCATIONS_TABLE+" where sourceId = '"+sourceId+"'";
     	Log.d(LOGNAME, "Getting combo keys.  SQL: "+sql);

@@ -204,13 +204,14 @@ containing a value of this type.
     }
     public static final class layout {
         public static final int activity_bus_time=0x7f030000;
-        public static final int activity_configuration=0x7f030001;
-        public static final int activity_meta_watch=0x7f030002;
-        public static final int activity_select_location=0x7f030003;
-        public static final int bus_times_row_layout=0x7f030004;
-        public static final int edit_location_popup=0x7f030005;
-        public static final int location_list_row_layout=0x7f030006;
-        public static final int sources_list_row_layout=0x7f030007;
+        public static final int activity_favourite_locations=0x7f030001;
+        public static final int activity_main=0x7f030002;
+        public static final int activity_meta_watch=0x7f030003;
+        public static final int activity_select_location=0x7f030004;
+        public static final int bus_times_row_layout=0x7f030005;
+        public static final int edit_location_popup=0x7f030006;
+        public static final int location_list_row_layout=0x7f030007;
+        public static final int sources_list_row_layout=0x7f030008;
     }
     public static final class menu {
         public static final int a=0x7f0a0000;
@@ -219,6 +220,7 @@ containing a value of this type.
         public static final int activity_select_location=0x7f0a0003;
         public static final int configuration=0x7f0a0004;
         public static final int edit_location=0x7f0a0005;
+        public static final int main=0x7f0a0006;
     }
     public static final class string {
         public static final int action_settings=0x7f050044;
@@ -333,6 +335,7 @@ containing a value of this type.
         public static final int settings_stops_title=0x7f05002e;
         public static final int title_activity_configuration=0x7f050043;
         public static final int title_activity_edit_location=0x7f050045;
+        public static final int title_activity_main=0x7f050046;
         public static final int title_activity_meta_watch=0x7f050041;
         public static final int title_activity_select_location=0x7f050042;
         public static final int title_activity_settings=0x7f05001a;

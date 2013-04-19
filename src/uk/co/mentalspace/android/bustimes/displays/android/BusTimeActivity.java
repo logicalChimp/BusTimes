@@ -56,7 +56,7 @@ public class BusTimeActivity extends Activity implements Renderer, OnItemSelecte
 
 		List<Location> locations = LocationManager.getSelectedLocations(this);		
 		if (null == locations || locations.isEmpty()) {
-			Intent config = new Intent(this, ConfigurationActivity.class);
+			Intent config = new Intent(this, FavouriteLocationsActivity.class);
 			this.startActivity(config);
 			return;
 		}
@@ -160,7 +160,7 @@ public class BusTimeActivity extends Activity implements Renderer, OnItemSelecte
     		startActivity(new Intent(this, SelectLocationActivity.class));
     		return true;
     	case R.id.menu_configure:
-    		startActivity(new Intent(this, ConfigurationActivity.class));
+    		startActivity(new Intent(this, FavouriteLocationsActivity.class));
     		return true;
     	default:
     		return super.onOptionsItemSelected(item);

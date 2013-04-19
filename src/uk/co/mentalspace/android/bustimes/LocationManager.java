@@ -19,6 +19,26 @@ public class LocationManager extends BaseManager<Location> {
 		}
 	}
 	
+	public static int getLocationsCount(Context ctx) {
+		Log.d(LOGNAME, "Getting locations count");
+		Task<Integer> locTask = new LocTask<Integer>() {
+			protected Integer doWork() {
+		        return ldba.getLocationCount();
+			}
+		};
+		return locTask.run(ctx);
+	}
+	
+	public static int getSelectedLocationsCount(Context ctx) {
+		Log.d(LOGNAME, "Getting selected locations count");
+		Task<Integer> locTask = new LocTask<Integer>() {
+			protected Integer doWork() {
+		        return ldba.getSelectedLocationCount();
+			}
+		};
+		return locTask.run(ctx);
+	}
+	
 	public static boolean isLocationSelected(Context ctx, final int stopId) {
 		Log.d(LOGNAME, "Testing location selection status. loc id: "+stopId);
 		

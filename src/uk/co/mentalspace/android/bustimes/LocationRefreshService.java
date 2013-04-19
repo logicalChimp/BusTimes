@@ -3,7 +3,7 @@ package uk.co.mentalspace.android.bustimes;
 import java.util.Date;
 
 import android.annotation.TargetApi;
-import uk.co.mentalspace.android.bustimes.displays.android.ConfigurationActivity;
+import uk.co.mentalspace.android.bustimes.displays.android.FavouriteLocationsActivity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -103,7 +103,7 @@ public class LocationRefreshService extends WakefulIntentService {
         .setContentText(msg);
 
 		// Creates an explicit intent for an Activity in your app
-		Intent resultIntent = new Intent(this, ConfigurationActivity.class);
+		Intent resultIntent = new Intent(this, FavouriteLocationsActivity.class);
 		
 		// The stack builder object will contain an artificial back stack for the
 		// started Activity.
@@ -111,7 +111,7 @@ public class LocationRefreshService extends WakefulIntentService {
 		// your application to the Home screen.
 		TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
 		// Adds the back stack for the Intent (but not the Intent itself)
-		stackBuilder.addParentStack(ConfigurationActivity.class);
+		stackBuilder.addParentStack(FavouriteLocationsActivity.class);
 		// Adds the Intent that starts the Activity to the top of the stack
 		stackBuilder.addNextIntent(resultIntent);
 		PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
