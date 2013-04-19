@@ -72,7 +72,7 @@ public class MetaWatchDisplay implements Renderer {
 		int startPos = 16;
 		if (null != loc) {
 			this.renderLocation(canvas, loc, tp);
-			startPos = 40;
+			startPos = 42;
 			maxRows = 5;
 			tp.setTextAlign(Align.LEFT);
 		}
@@ -83,7 +83,7 @@ public class MetaWatchDisplay implements Renderer {
 			int end = start+17;
 			end = (end >= msg.length()) ? -1 : end;
 			String line = (end == -1) ? msg.substring(start) : msg.substring(start, end);
-			int displayRow = startPos+(row*8);
+			int displayRow = startPos+(row*10);
 			
 			Log.v(LOGNAME, "String ["+line+"], x ["+3+"], y ["+displayRow+"], ");
 			canvas.drawText(line, 3, displayRow, tp);
