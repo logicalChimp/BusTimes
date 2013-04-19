@@ -75,19 +75,22 @@ public class EditLocationPopup extends DialogFragment implements OnClickListener
 				@Override
 				public void onClick(DialogInterface dialog, int id) {
 					Log.d(LOGNAME, "Dismiss button clicked");
-					dismiss();
+					checkValuesAndDismiss();
 				}
 			});
 		
 		return builder.create();
 	}
 	
-	public void onDismiss() {
+	public void checkValuesAndDismiss() {
 		Log.d(LOGNAME, "checking Nick Name before dismissing");
 		EditText et = ((EditText)getDialog().findViewById(R.id.map_info_window_nick_name_value));
 		String nickName = (null == et.getText()) ? "" : et.getText().toString();
 		if (nickName != null && !nickName.equals(loc.getNickName())) {
+			Log.d(LOGNAME, "Updating nickname ["+nickName+"] for stop code ["+loc.getStopCode()+"]");
 			LocationManager.updateNickName(getActivity(), loc.getId(), nickName);
+		} else {
+			Log.d(LOGNAME, "Not updating nickname ["+nickName+"] for stop code ["+loc.getStopCode()+"]");
 		}
 		EditLocationPopup.this.getDialog().dismiss();
 	}
