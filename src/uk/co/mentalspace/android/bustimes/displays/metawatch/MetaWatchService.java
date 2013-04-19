@@ -82,14 +82,16 @@ public class MetaWatchService extends WakefulIntentService {
 					if (loc.getId() != locId || !loc.getSourceId().equals(srcId)) {
 						Log.w(LOGNAME, "Received updated bus times, but for a different location than selected.  Ignoring.");
 					} else {
-						@SuppressWarnings("unchecked")
-						List<BusTime> busTimes = (List<BusTime>)intent.getSerializableExtra(BusTimeRefreshService.EXTRA_BUS_TIMES);
-						
-						int busTimesSize = (null == busTimes) ? -1 : busTimes.size();
-						Log.d(LOGNAME, "Received ["+busTimesSize+"] bus times");
+						if (intent.hasExtra(BusTimeRefreshService.EXTRA_BUS_TIMES)) {
+							@SuppressWarnings("unchecked")
+							List<BusTime> busTimes = (List<BusTime>)intent.getSerializableExtra(BusTimeRefreshService.EXTRA_BUS_TIMES);
+							
+							int busTimesSize = (null == busTimes) ? -1 : busTimes.size();
+							Log.d(LOGNAME, "Received ["+busTimesSize+"] bus times");
 
-						MetaWatchDisplay mwd = new MetaWatchDisplay(getApplicationContext());
-						mwd.displayBusTimes(loc, busTimes);
+							MetaWatchDisplay mwd = new MetaWatchDisplay(getApplicationContext());
+							mwd.displayBusTimes(loc, busTimes);
+						}
 					}
 				}
 			}
@@ -109,7 +111,7 @@ public class MetaWatchService extends WakefulIntentService {
 		this.startService(service);
 
 		Log.d(LOGNAME, "Initiating request of bus times for location: "+loc);
-		display.displayMessage(loc, "fetching bus times...", Renderer.MESSAGE_NORMAL);
+		display.displayMessage(loc, "Getting bus times", Renderer.MESSAGE_NORMAL);
 	}
 
 	public void terminate() {
