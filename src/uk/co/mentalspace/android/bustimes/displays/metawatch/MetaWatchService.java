@@ -1,19 +1,18 @@
 package uk.co.mentalspace.android.bustimes.displays.metawatch;
 
-
 import java.util.List;
-import android.app.IntentService;
 
 import uk.co.mentalspace.android.bustimes.BusTime;
 import uk.co.mentalspace.android.bustimes.BusTimeRefreshService;
 import uk.co.mentalspace.android.bustimes.Location;
 import uk.co.mentalspace.android.bustimes.LocationManager;
 import uk.co.mentalspace.android.bustimes.Renderer;
+import uk.co.mentalspace.android.bustimes.WakefulIntentService;
 import uk.co.mentalspace.android.bustimes.utils.LocationTracker;
 import android.content.Intent;
 import android.util.Log;
 
-public class MetaWatchService extends IntentService {
+public class MetaWatchService extends WakefulIntentService {
 	private static final String LOGNAME = "MetaWatchService";
 	
 	private static final int BUTTON_NEXT_LOCATION = 5;
@@ -32,7 +31,7 @@ public class MetaWatchService extends IntentService {
 		return posTracker;
 	}
 	
-	protected void onHandleIntent(Intent intent) {
+	public void processIntent(Intent intent) {
 		if (null == posTracker) {
 			Log.d(LOGNAME, "Location Tracker not yet initialised - initialising...");
 			posTracker = new LocationTracker(getApplicationContext());

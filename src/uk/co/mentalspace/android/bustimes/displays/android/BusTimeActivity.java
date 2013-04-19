@@ -1,7 +1,7 @@
 package uk.co.mentalspace.android.bustimes.displays.android;
 
-import uk.co.mentalspace.android.bustimes.BusTime;
 import java.util.ArrayList;
+import uk.co.mentalspace.android.bustimes.BusTime;
 import java.util.List;
 
 import uk.co.mentalspace.android.bustimes.BusTimeRefreshService;
@@ -11,6 +11,8 @@ import uk.co.mentalspace.android.bustimes.R;
 import uk.co.mentalspace.android.bustimes.Renderer;
 import uk.co.mentalspace.android.bustimes.Source;
 import uk.co.mentalspace.android.bustimes.SourceManager;
+import uk.co.mentalspace.android.bustimes.sources.londonuk.LondonUK;
+import uk.co.mentalspace.android.bustimes.sources.test.TestSource;
 import uk.co.mentalspace.android.bustimes.utils.LocationsListAdapter;
 import uk.co.mentalspace.android.bustimes.utils.LocationTracker;
 
@@ -149,9 +151,9 @@ public class BusTimeActivity extends Activity implements Renderer, OnItemSelecte
     public boolean onOptionsItemSelected(MenuItem item) {
     	switch (item.getItemId()) {
     	case R.id.menu_update_sources:
-    		Source tflSrc = SourceManager.getSource("londonuk-tfl");
+    		Source tflSrc = new LondonUK();
     		SourceManager.createSource(this, tflSrc);
-    		Source testSrc = SourceManager.getSource("TestSource");
+    		Source testSrc = new TestSource();
     		SourceManager.createSource(this, testSrc);
     		return true;
     	case R.id.menu_map:

@@ -31,48 +31,52 @@ public class MetaWatchReceiver extends BroadcastReceiver {
 	
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		final String action = intent.getAction();
-		Log.d(LOGNAME, "Received Intent.  Action: " + action);
-
-		final String appId = intent.getStringExtra("id");
-		Log.d(LOGNAME, "Intent intended for app ["+appId+"]");
-		
-		if (MW_DISCOVERY.equals(action)) {
-			metaWatchAnnounce(context);
-		}
-		else if (MW_BUTTON.equals(action)) {
-//			String msg = "Btn Press: button ["+intent.getIntExtra("button", -1)+"] type ["+intent.getIntExtra("type", -1)+"]";
-//			Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
-			Bundle b = intent.getExtras();
-			int btnId = b.getInt("button");
-			int btnType = b.getInt("type");
-			Log.d(LOGNAME, "Button press. btn id ["+btnId+"], type ["+btnType+"]");
-			if (BUTTON_TYPE_NO_HOLD == btnType) {
+		try {
+			final String action = intent.getAction();
+			Log.d(LOGNAME, "Received Intent.  Action: " + action);
+	
+			final String appId = intent.getStringExtra("id");
+			Log.d(LOGNAME, "Intent intended for app ["+appId+"]");
+			
+			if (MW_DISCOVERY.equals(action)) {
+				metaWatchAnnounce(context);
+			}
+			else if (MW_BUTTON.equals(action)) {
+	//			String msg = "Btn Press: button ["+intent.getIntExtra("button", -1)+"] type ["+intent.getIntExtra("type", -1)+"]";
+	//			Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+				Bundle b = intent.getExtras();
+				int btnId = b.getInt("button");
+				int btnType = b.getInt("type");
+				Log.d(LOGNAME, "Button press. btn id ["+btnId+"], type ["+btnType+"]");
+				if (BUTTON_TYPE_NO_HOLD == btnType) {
+					Intent service = new Intent(context, MetaWatchService.class);
+					service.setAction(action);
+					service.putExtra("button", btnId);
+					service.putExtra("type", btnType);
+					context.startService(service);
+				}
+			}
+			else if (MW_ACTIVATED.equals(action)) {
 				Intent service = new Intent(context, MetaWatchService.class);
 				service.setAction(action);
-				service.putExtra("button", btnId);
-				service.putExtra("type", btnType);
 				context.startService(service);
 			}
-		}
-		else if (MW_ACTIVATED.equals(action)) {
-			Intent service = new Intent(context, MetaWatchService.class);
-			service.setAction(action);
-			context.startService(service);
-		}
-		else if (MW_DEACTIVATED.equals(action)) {
-			Intent service = new Intent(context, MetaWatchService.class);
-			service.setAction(action);
-			context.startService(service);
-		}
-		else if (BusTimeRefreshService.ACTION_LATEST_BUS_TIMES.equals(action)) {
-			Intent service = new Intent(context, MetaWatchService.class);
-			service.setAction(BusTimeRefreshService.ACTION_LATEST_BUS_TIMES);
-			service.putExtras(intent.getExtras());
-			context.startService(service);
-		}
-		else {
-			Log.d(LOGNAME, "Unrecognised intent action: "+action);
+			else if (MW_DEACTIVATED.equals(action)) {
+				Intent service = new Intent(context, MetaWatchService.class);
+				service.setAction(action);
+				context.startService(service);
+			}
+			else if (BusTimeRefreshService.ACTION_LATEST_BUS_TIMES.equals(action)) {
+				Intent service = new Intent(context, MetaWatchService.class);
+				service.setAction(BusTimeRefreshService.ACTION_LATEST_BUS_TIMES);
+				service.putExtras(intent.getExtras());
+				context.startService(service);
+			}
+			else {
+				Log.w(LOGNAME, "Unrecognised intent action: "+action);
+			}
+		} catch (Exception e) {
+			Log.e(LOGNAME, "Unexpected exception", e);
 		}
 	}
 
@@ -105,6 +109,7 @@ public class MetaWatchReceiver extends BroadcastReceiver {
 		b.putString("id", ctx.getResources().getString(R.string.app_id));
 		b.putString("name", ctx.getResources().getString(R.string.app_name));
 		announce.putExtras(b);
+		announce.setFlags(Intent.FLAG_DEBUG_LOG_RESOLUTION);
 		ctx.sendBroadcast(announce);
 		Log.d(LOGNAME, "Sending Metawatch stop");
 	}

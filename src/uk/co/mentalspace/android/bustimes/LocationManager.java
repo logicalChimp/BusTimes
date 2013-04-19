@@ -2,101 +2,86 @@ package uk.co.mentalspace.android.bustimes;
 
 import android.content.Context;
 
-import java.util.ArrayList;
 import java.util.List;
-import android.database.sqlite.SQLiteDatabaseLockedException;
 import android.util.Log;
-import android.widget.Toast;
-import uk.co.mentalspace.android.bustimes.db.LocationsRefreshDBAdapter;
+import uk.co.mentalspace.android.bustimes.db.BaseDBAdapter;
 import uk.co.mentalspace.android.bustimes.db.LocationsDBAdapter;
+import uk.co.mentalspace.android.bustimes.db.LocationsRefreshDBAdapter;
 
-public class LocationManager {
-	private static final String LOGNAME = "LocationManager";
+public class LocationManager extends BaseManager<Location> {
+	private static final String LOGNAME = "LocationManager2";
+
+	protected static class LocTask<E> extends Task<E> {
+		protected LocationsDBAdapter ldba = null;
+		protected BaseDBAdapter<?> getDBAdapter(Context ctx) {
+	        if (null == ldba) ldba = new LocationsDBAdapter(ctx);
+	        return ldba;
+		}
+	}
 	
-	public static boolean isLocationSelected(Context ctx, int stopId) {
+	public static boolean isLocationSelected(Context ctx, final int stopId) {
 		Log.d(LOGNAME, "Testing location selection status. loc id: "+stopId);
-        LocationsDBAdapter ldba = new LocationsDBAdapter(ctx);
-        try {
-	        ldba.openReadable();
-	        Location loc = ldba.getLocationByID(stopId);
-	        if (null == loc) return false;
-	        return (loc.getChosen() == 1);
-        } catch (SQLiteDatabaseLockedException sdle) {
-        	Log.e(LOGNAME, "Database Locked");
-        	Toast.makeText(ctx, "Failed to load selected locations", Toast.LENGTH_SHORT).show();
-        	return false;
-        } finally {
-        	if (null != ldba) try {ldba.close(); } catch (Exception e) {Log.e(LOGNAME, "Unknown exception", e); }
-        }
+		
+		Task<Boolean> locTask = new LocTask<Boolean>() {
+			protected Boolean doWork() {
+		        Location loc = ldba.getLocationByID(stopId);
+		        if (null == loc) return false;
+		        return (loc.getChosen() == 1);
+			}
+		};
+		return locTask.run(ctx);
 	}
 	
-	public static void selectLocation(Context ctx, long stopId) {
+	public static void selectLocation(Context ctx, final long stopId) {
 		Log.d(LOGNAME, "Selecting location id: "+stopId);
-        LocationsDBAdapter ldba = new LocationsDBAdapter(ctx);
-        try {
-	        ldba.open();
-	        Location loc = ldba.getLocationByID(stopId);
-	        if (null == loc) return;
-	        loc.setChosen(1);
-	        ldba.updateLocation(loc);
-        } catch (SQLiteDatabaseLockedException sdle) {
-        	Log.e(LOGNAME, "Database Locked", sdle);
-        	Toast.makeText(ctx, "Failed to select location", Toast.LENGTH_SHORT).show();
-        } finally {
-        	if (null != ldba) try {ldba.close(); } catch (Exception e) {Log.e(LOGNAME, "Unknown exception", e); }
-        }
+
+		Task<Boolean> locTask = new LocTask<Boolean>() {
+			protected Boolean doWork() {
+		        Location loc = ldba.getLocationByID(stopId);
+		        if (null == loc) return false;
+		        loc.setChosen(1);
+		        return ldba.updateLocation(loc);
+			}
+		};
+		locTask.run(ctx);
 	}
 	
-	public static void deselectLocation(Context ctx, long stopId) {
+	public static void deselectLocation(Context ctx, final long stopId) {
 		Log.d(LOGNAME, "Deselecting stop: "+stopId);
-        LocationsDBAdapter ldba = new LocationsDBAdapter(ctx);
-        try {
-	        ldba.open();
-	        Location loc = ldba.getLocationByID(stopId);
-	        if (null == loc) return;
-	        loc.setChosen(0);
-	        ldba.updateLocation(loc);
-        } catch (SQLiteDatabaseLockedException sdle) {
-        	Log.e(LOGNAME, "Database Locked", sdle);
-        	Toast.makeText(ctx, "Failed to deselect location", Toast.LENGTH_SHORT).show();
-        } finally {
-        	if (null != ldba) try {ldba.close(); } catch (Exception e) {Log.e(LOGNAME, "Unknown exception", e); }
-        }
+
+		Task<Boolean> locTask = new LocTask<Boolean>() {
+			protected Boolean doWork() {
+		        Location loc = ldba.getLocationByID(stopId);
+		        if (null == loc) return false;
+		        loc.setChosen(0);
+		        return ldba.updateLocation(loc);
+			}
+		};
+		locTask.run(ctx);
 	}
 	
-	public static void updateNickName(Context ctx, long stopId, String nickName) {
+	public static void updateNickName(Context ctx, final long stopId, final String nickName) {
 		Log.d(LOGNAME, "Updating Nick Name");
-        LocationsDBAdapter ldba = new LocationsDBAdapter(ctx);
-        try {
-	        ldba.open();
-	        Location loc = ldba.getLocationByID(stopId);
-	        if (null == loc) return;
-	        loc.setNickName(nickName);
-	        ldba.updateLocation(loc);
-        } catch (SQLiteDatabaseLockedException sdle) {
-        	Log.e(LOGNAME, "Database Locked", sdle);
-        	Toast.makeText(ctx, "Failed to update nick name ["+nickName+"]", Toast.LENGTH_SHORT).show();
-        	return;
-        } finally {
-        	if (null != ldba) try {ldba.close(); } catch (Exception e) {Log.e(LOGNAME, "Unknown exception", e); }
-        }
+
+		Task<Boolean> locTask = new LocTask<Boolean>() {
+			protected Boolean doWork() {
+		        Location loc = ldba.getLocationByID(stopId);
+		        if (null == loc) return false;
+		        loc.setNickName(nickName);
+		        return ldba.updateLocation(loc);
+			}
+		};
+		locTask.run(ctx);
 	}
 	
 	public static List<Location> getSelectedLocations(Context ctx) {
 		Log.d(LOGNAME, "Getting selected locations");
-        LocationsDBAdapter ldba = new LocationsDBAdapter(ctx);
-        try {
-	        ldba.openReadable();
-	        List<Location> locs = ldba.getSelectedLocations();
-	        if (null == locs) locs = new ArrayList<Location>();
-	        return locs;
-        } catch (SQLiteDatabaseLockedException sdle) {
-        	Log.e(LOGNAME, "Failed to open Database: ", sdle);
-        	Toast.makeText(ctx, "Failed to retrieve selected locations", Toast.LENGTH_SHORT).show();
-    		return new ArrayList<Location>();
-        } finally {
-        	if (null != ldba) try {ldba.close(); } catch (Exception e) {Log.e(LOGNAME, "Unknown exception", e); }
-        }
+		Task<List<Location>> locTask = new LocTask<List<Location>>() {
+			protected List<Location> doWork() {
+		        return ldba.getSelectedLocations();
+			}
+		};
+		return locTask.run(ctx);
 	}
 	
 	public static Location getNextLocation(Context ctx, Location loc) {
@@ -116,85 +101,60 @@ public class LocationManager {
 		}
 	}
 	
-	public static List<Location> getLocationsInArea(Context ctx, int top, int right, int bottom, int left) {
+	public static List<Location> getLocationsInArea(Context ctx, final int top, final int right, final int bottom, final int left) {
 		Log.d(LOGNAME, "Getting locations in area t ["+top+"], r ["+right+"], b ["+bottom+"], l ["+left+"]");
-        LocationsDBAdapter ldba = new LocationsDBAdapter(ctx);
-        try {
-	        ldba.openReadable();
-	        List<Location> locations = ldba.getLocationsInArea(top, right, bottom, left);
-	        if (null == locations) locations = new ArrayList<Location>();
-	        return locations;
-        } catch (SQLiteDatabaseLockedException sdle) {
-        	Log.e(LOGNAME, "Database locked", sdle);
-        	Toast.makeText(ctx, "Failed to load locations in area", Toast.LENGTH_SHORT).show();
-        	return new ArrayList<Location>();
-        } finally {
-        	if (null != ldba) try {ldba.close(); } catch (Exception e) {Log.e(LOGNAME, "Unknown exception", e); }
-        }
+		Task<List<Location>> locTask = new LocTask<List<Location>>() {
+			protected List<Location> doWork() {
+		        return ldba.getLocationsInArea(top, right, bottom, left);
+			}
+		};
+		return locTask.run(ctx);
 	}
 	
-	public static Location getNearestSelectedLocation(Context ctx, int lat, int lon) {
+	public static Location getNearestSelectedLocation(Context ctx, final int lat, final int lon) {
 		Log.d(LOGNAME, "Getting nearest selected location to lat ["+lat+"], lon ["+lon+"]");
-        LocationsDBAdapter ldba = new LocationsDBAdapter(ctx);
-        try {
-	        ldba.openReadable();
-	        Location loc = ldba.getClosestSelectedLocation(lat, lon);
-	        return loc;
-        } catch (SQLiteDatabaseLockedException sdle) {
-        	Log.e(LOGNAME, "Database Locked", sdle);
-        	Toast.makeText(ctx, "Failed to locate nearest location", Toast.LENGTH_SHORT).show();
-        	return null;
-        } finally {
-        	if (null != ldba) try {ldba.close(); } catch (Exception e) {Log.e(LOGNAME, "Unknown exception", e); }
-        }
+		Task<Location> locTask = new LocTask<Location>() {
+			protected Location doWork() {
+		        return ldba.getClosestSelectedLocation(lat, lon);
+			}
+		};
+		return locTask.run(ctx);
 	}
 	
-	public static Location getLocationById(Context ctx, long stopId) {
+	public static Location getLocationById(Context ctx, final long stopId) {
 		Log.d(LOGNAME, "Getting location by Id: "+stopId);
-        LocationsDBAdapter ldba = new LocationsDBAdapter(ctx);
-        try {
-	        ldba.openReadable();
-	        Location loc = ldba.getLocationByID(stopId);
-	        return loc;
-        } catch (SQLiteDatabaseLockedException sdle) {
-        	Log.e(LOGNAME, "Database Locked", sdle);
-        	Toast.makeText(ctx, "Failed to load specified location", Toast.LENGTH_SHORT).show();
-        	return null;
-        } finally {
-        	if (null != ldba) try {ldba.close(); } catch (Exception e) {Log.e(LOGNAME, "Unknown exception", e); }
-        }
+		Task<Location> locTask = new LocTask<Location>() {
+			protected Location doWork() {
+		        return ldba.getLocationByID(stopId);
+			}
+		};
+		return locTask.run(ctx);
 	}
 	
-	public static Location getLocationByStopCode(Context ctx, String stopCode) {
+	public static Location getLocationByStopCode(Context ctx, final String stopCode) {
 		Log.d(LOGNAME, "Getting location by stop code: "+stopCode);
-        LocationsDBAdapter ldba = new LocationsDBAdapter(ctx);
-        try {
-	        ldba.openReadable();
-	        Location loc = ldba.getLocationByStopCode(stopCode);
-	        return loc;
-        } catch (SQLiteDatabaseLockedException sdle) {
-        	Log.e(LOGNAME, "Database Locked", sdle);
-        	Toast.makeText(ctx, "Failed to load Location ["+stopCode+"]", Toast.LENGTH_SHORT).show();
-        	return null;
-        } finally {
-        	if (null != ldba) try {ldba.close(); } catch (Exception e) {Log.e(LOGNAME, "Unknown exception", e); }
-        }
+		Task<Location> locTask = new LocTask<Location>() {
+			protected Location doWork() {
+		        return ldba.getLocationByStopCode(stopCode);
+			}
+		};
+		return locTask.run(ctx);
 	}
 	
-	public static boolean createRefreshRecord(Context ctx, String sourceId, long startTime, long endTime) {
+	public static boolean createRefreshRecord(Context ctx, final String sourceId, final long startTime, final long endTime) {
 		Log.d(LOGNAME, "Creating locations refresh record for source: "+sourceId);
-        LocationsRefreshDBAdapter lrdba = new LocationsRefreshDBAdapter(ctx);
-        try {
-	        lrdba.open();
-	        long rowId = lrdba.createBTRefreshRecord(sourceId, startTime, endTime);
-	        return rowId != -1;
-        } catch (SQLiteDatabaseLockedException sdle) {
-        	Log.e(LOGNAME, "Database Locked");
-        	Toast.makeText(ctx, "Failed to create log record", Toast.LENGTH_SHORT).show();
-        	return false;
-        } finally {
-        	if (null != lrdba) try {lrdba.close(); } catch (Exception e) {Log.e(LOGNAME, "Unknown exception", e); }
-        }
+		Task<Boolean> locTask = new LocTask<Boolean>() {
+			protected LocationsRefreshDBAdapter lrdba = null;
+			protected BaseDBAdapter<?> getDBAdapter(Context ctx) {
+		        if (null == lrdba) lrdba = new LocationsRefreshDBAdapter(ctx);
+		        return lrdba;
+			}
+			protected Boolean doWork() {
+		        long rowId = lrdba.createBTRefreshRecord(sourceId, startTime, endTime);
+		        return rowId != -1;
+			}
+		};
+		return locTask.run(ctx);
 	}
 	
 }

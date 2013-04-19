@@ -135,7 +135,7 @@ public class ConfigurationActivity extends FragmentActivity implements OnClickLi
 			Log.d(LOGNAME, "Sending intent to start Data Refresh Service");
 			Intent intent = new Intent(this, LocationRefreshService.class);
 			intent.setAction(LocationRefreshService.ACTION_REFRESH_LOCATION_DATA);
-			intent.putExtra(LocationRefreshService.EXTRA_SOURCE_NAME, selectedSource.getID());
+			intent.putExtra(LocationRefreshService.EXTRA_SOURCE_ID, selectedSource.getID());
 			this.startService(intent);
 			
 //			Source src = SourceManager.getSource(sourceId);

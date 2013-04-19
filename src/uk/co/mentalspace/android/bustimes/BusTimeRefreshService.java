@@ -41,7 +41,7 @@ public class BusTimeRefreshService extends WakefulIntentService {
 				return;
 			}
 			
-			Source src = SourceManager.getSource(sourceId);
+			Source src = SourceManager.getSourceBySourceId(getApplicationContext(), sourceId);
 			if (null == src) {
 				Log.e(LOGNAME, "No matching source for source id ["+sourceId+"]. aborting.");
 				return;

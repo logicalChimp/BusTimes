@@ -1,6 +1,5 @@
 package uk.co.mentalspace.android.bustimes.db;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,10 +9,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-public class LocationsDBAdapter {
+public class LocationsDBAdapter extends BaseDBAdapter<Location> {
 	private static final String LOGNAME = "LocationsDBAdapter";
 	
     public static final String KEY_ROWID = "_id";
@@ -32,50 +30,119 @@ public class LocationsDBAdapter {
 	private static final String[] ALL_COLUMNS = new String[] {KEY_ROWID, KEY_STOP_CODE, KEY_NAME, KEY_DESC, KEY_WGS84_LAT, KEY_WGS84_LONG, 
 		KEY_SRC_POS_A, KEY_SRC_POS_B, KEY_HEADING, KEY_NICK_NAME, KEY_CHOSEN, KEY_SOURCE_ID};
 
-	private BusTimesDBHelper mDbHelper;
-    private SQLiteDatabase mDb;
-
-    private final Context mCtx;
-
 
     /**
      * Constructor - takes the context to allow the database to be opened/created
      * @param ctx the Context within which to work
      */
     public LocationsDBAdapter(Context ctx) {
-        this.mCtx = ctx;
+    	super(ctx);
     }
 
     /**
-     * Get a read-only reference.  This should be safe to use even if
-     * another thread is writing to the DB.
-     * @return this (self reference, allowing this to be chained in an initialisation call)
-     * @throws SQLException if the database could be neither opened or created
+     * Delete the location with the given rowId
+     * @param rowId id of the location to delete
+     * @return true if deleted, false otherwise
      */
-    public LocationsDBAdapter openReadable() throws SQLException {
-        mDbHelper = new BusTimesDBHelper(mCtx);
-        mDb = mDbHelper.getReadableDatabase();
-        return this;
+    public boolean deleteLocation(long rowId) {
+    	return delete(KEY_ROWID + "=" + rowId);
+    }
+
+    public boolean deleteLocationByStopCode(String stopCode) {
+    	return delete(KEY_STOP_CODE + "=" + stopCode);
     }
 
     /**
-     * Opens the database. If it cannot be opened, try to create a new
-     * instance of the database. If it cannot be created, throw an exception to
-     * signal the failure
-     * 
-     * @return this (self reference, allowing this to be chained in an initialisation call)
-     * @throws SQLException if the database could be neither opened or created
+     * Return a Cursor over the list of all locations in the database
+     * @return Cursor over all notes
      */
-    public LocationsDBAdapter open() throws SQLException {
-        mDbHelper = new BusTimesDBHelper(mCtx);
-        mDb = mDbHelper.getWritableDatabase();
-        return this;
+    public Cursor fetchAllLocations() {
+    	return fetch(BusTimesDBHelper.LOCATIONS_TABLE, ALL_COLUMNS, null);
     }
     
-    public void close() {
-        mDbHelper.close();
+    public Cursor fetchClosestSelectedLocation(int lat, int lon) {
+    	String sql = "select _id, stopCode, name, desc, lat, lng, srcPosA, srcPosB, heading, nickName, chosen, sourceId, " +
+    			"abs(lat - "+lat+") + abs(lng - "+lon+") as distance from "+BusTimesDBHelper.LOCATIONS_TABLE+" where chosen = 1 order by distance asc";
+    	//Math.abs(lat - "+lat+") + 
+    	Cursor c = mDb.rawQuery(sql, null);
+    	if (null != c) c.moveToFirst();
+    	
+    	return c;
+    }
+    
+    public Location getClosestSelectedLocation(int lat, int lon) {
+		Cursor c = fetchClosestSelectedLocation(lat, lon);
+		return getSingle(c);
     }
 
+    /**
+     * Return a Cursor positioned at the location that matches the given rowId
+     * 
+     * @param rowId id of note to retrieve
+     * @return Cursor positioned to matching location, if found
+     * @throws SQLException if location could not be found/retrieved
+     */
+    public Cursor fetchLocationByID(long rowId) throws SQLException {
+    	return fetch(BusTimesDBHelper.LOCATIONS_TABLE, ALL_COLUMNS, KEY_ROWID + "=" + rowId);
+    }
+    
+    public Location getLocationByID(long rowId) {
+		Cursor c = fetchLocationByID(rowId);
+		return getSingle(c);
+    }
+    
+    /**
+     * Return a Cursor positioned at the location that matches the given stop code
+     * @param stopCode the StopCode of the location to be retrieved
+     * @return Cursor positioned to the matching location, if found
+     * @throws SQLException if a matching location could not be found / retrieved
+     */
+    public Cursor fetchLocationByStopCode(String stopCode) throws SQLException {
+    	return fetch(BusTimesDBHelper.LOCATIONS_TABLE, ALL_COLUMNS, KEY_STOP_CODE + "= '"+stopCode+"'");
+    }
+    
+    public Location getLocationByStopCode(String stopCode) {
+		Cursor c = fetchLocationByStopCode(stopCode);
+		return getSingle(c);
+    }
+    
+    public Cursor fetchLocationsInArea(int top, int right, int bottom, int left) throws SQLException {
+    	return fetch(BusTimesDBHelper.LOCATIONS_TABLE, ALL_COLUMNS, 
+                		KEY_WGS84_LAT+" <= "+top+" AND "+KEY_WGS84_LAT+" >= "+bottom+" AND "+KEY_WGS84_LONG+" >= "+left+" AND "+KEY_WGS84_LONG+" <= "+right);
+    }
+    
+    public List<Location> getLocationsInArea(int top, int right, int bottom, int left) throws SQLException {
+    	Log.d(LOGNAME, "Getting locations in area ["+top+", "+right+", "+bottom+", "+left+"]");
+    	Cursor c = fetchLocationsInArea(top, right, bottom, left);
+    	return getList(c);
+    }
+    
+    public Cursor fetchSelectedLocations() throws SQLException {
+    	return fetch(BusTimesDBHelper.LOCATIONS_TABLE, ALL_COLUMNS, KEY_CHOSEN+" = 1");
+    }
+    
+    public List<Location> getSelectedLocations() throws SQLException {
+    	Log.d(LOGNAME, "Getting all Selected locations");
+    	Cursor c = fetchSelectedLocations();
+    	return getList(c);
+    }
+    
+    protected Location populateFromCursor(Cursor c) {
+    	Location loc = new Location(c.getLong(c.getColumnIndex(KEY_ROWID)),
+                c.getString(c.getColumnIndex(KEY_STOP_CODE)),
+                c.getString(c.getColumnIndex(KEY_NAME)), 
+                c.getString(c.getColumnIndex(KEY_DESC)),
+                c.getString(c.getColumnIndex(KEY_SRC_POS_A)),
+                c.getString(c.getColumnIndex(KEY_SRC_POS_B)),
+                c.getString(c.getColumnIndex(KEY_HEADING)),
+                c.getInt(c.getColumnIndex(KEY_WGS84_LAT)),
+                c.getInt(c.getColumnIndex(KEY_WGS84_LONG)),
+                c.getString(c.getColumnIndex(KEY_NICK_NAME)),
+                c.getInt(c.getColumnIndex(KEY_CHOSEN)),
+                c.getString(c.getColumnIndex(KEY_SOURCE_ID)));
+		return loc;
+    }
+    
     /**
      * @return rowId or -1 if failed
      */
@@ -95,188 +162,6 @@ public class LocationsDBAdapter {
 
         return mDb.insert(BusTimesDBHelper.LOCATIONS_TABLE, null, initialValues);
     }
-
-    /**
-     * Delete the location with the given rowId
-     * @param rowId id of the location to delete
-     * @return true if deleted, false otherwise
-     */
-    public boolean deleteLocation(long rowId) {
-        return mDb.delete(BusTimesDBHelper.LOCATIONS_TABLE, KEY_ROWID + "=" + rowId, null) > 0;
-    }
-
-    public boolean deleteLocationByStopCode(String stopCode) {
-        return mDb.delete(BusTimesDBHelper.LOCATIONS_TABLE, KEY_STOP_CODE + "=" + stopCode, null) > 0;
-    }
-
-    /**
-     * Return a Cursor over the list of all locations in the database
-     * @return Cursor over all notes
-     */
-    public Cursor fetchAllLocations() {
-        return mDb.query(BusTimesDBHelper.LOCATIONS_TABLE, ALL_COLUMNS, null, null, null, null, null);
-    }
-    
-    public Cursor fetchClosestSelectedLocation(int lat, int lon) {
-    	String sql = "select _id, stopCode, name, desc, lat, lng, srcPosA, srcPosB, heading, nickName, chosen, sourceId, " +
-    			"abs(lat - "+lat+") + abs(lng - "+lon+") as distance from "+BusTimesDBHelper.LOCATIONS_TABLE+" where chosen = 1 order by distance asc";
-    	//Math.abs(lat - "+lat+") + 
-    	Cursor c = mDb.rawQuery(sql, null);
-    	if (null != c) c.moveToFirst();
-    	
-    	return c;
-    }
-    
-    public Location getClosestSelectedLocation(int lat, int lon) {
-    	Cursor c = null;
-    	try {
-    		c = fetchClosestSelectedLocation(lat, lon);
-        	if (null == c || c.getCount() == 0) return null;        	
-        	return generateLocation(c);
-    	} catch (SQLException sqle) {
-    		Log.e(LOGNAME, "Failed to locate closest selected location", sqle);
-    		return null;
-    	} finally {
-    		if (null != c) c.close();
-    	}
-    }
-
-    /**
-     * Return a Cursor positioned at the location that matches the given rowId
-     * 
-     * @param rowId id of note to retrieve
-     * @return Cursor positioned to matching location, if found
-     * @throws SQLException if location could not be found/retrieved
-     */
-    public Cursor fetchLocationByID(long rowId) throws SQLException {
-        Cursor mCursor =
-                mDb.query(true, BusTimesDBHelper.LOCATIONS_TABLE, ALL_COLUMNS, KEY_ROWID + "=" + rowId, null,
-                        null, null, null, null);
-        if (mCursor != null) {
-            mCursor.moveToFirst();
-        }
-        return mCursor;
-    }
-    
-    public Location getLocationByID(long rowId) {
-    	Cursor c = null;
-    	try {
-    		c = fetchLocationByID(rowId);
-        	if (null == c || c.getCount() == 0) return null;        	
-        	return generateLocation(c);
-    	} catch (SQLException sqle) {
-    		return null;
-    	} finally {
-    		if (null != c) c.close();
-    	}
-    }
-    
-    public Location getLocationByStopCode(String stopCode) {
-    	Cursor c = null;
-    	try {
-    		c = fetchLocationByStopCode(stopCode);
-        	if (null == c || c.getCount() == 0) return null;        	
-        	return generateLocation(c);
-    	} catch (SQLException sqle) {
-    		return null;
-    	} finally {
-    		if (null != c) c.close();
-    	}
-    }
-    
-    private Location generateLocation(Cursor c) {
-    	Location loc = new Location(c.getLong(c.getColumnIndex(KEY_ROWID)),
-                c.getString(c.getColumnIndex(KEY_STOP_CODE)),
-                c.getString(c.getColumnIndex(KEY_NAME)), 
-                c.getString(c.getColumnIndex(KEY_DESC)),
-                c.getString(c.getColumnIndex(KEY_SRC_POS_A)),
-                c.getString(c.getColumnIndex(KEY_SRC_POS_B)),
-                c.getString(c.getColumnIndex(KEY_HEADING)),
-                c.getInt(c.getColumnIndex(KEY_WGS84_LAT)),
-                c.getInt(c.getColumnIndex(KEY_WGS84_LONG)),
-                c.getString(c.getColumnIndex(KEY_NICK_NAME)),
-                c.getInt(c.getColumnIndex(KEY_CHOSEN)),
-                c.getString(c.getColumnIndex(KEY_SOURCE_ID)));
-		return loc;
-    }
-    
-    /**
-     * Return a Cursor positioned at the location that matches the given stop code
-     * @param stopCode the StopCode of the location to be retrieved
-     * @return Cursor positioned to the matching location, if found
-     * @throws SQLException if a matching location could not be found / retrieved
-     */
-    public Cursor fetchLocationByStopCode(String stopCode) throws SQLException {
-
-        Cursor mCursor =
-                mDb.query(true, BusTimesDBHelper.LOCATIONS_TABLE, ALL_COLUMNS, KEY_STOP_CODE + "= ?", new String[]{stopCode}, 
-                        null, null, null, null);
-        if (mCursor != null) {
-            mCursor.moveToFirst();
-        }
-        return mCursor;
-    }
-    
-    public Cursor fetchLocationsInArea(int top, int right, int bottom, int left) throws SQLException {
-        Cursor mCursor =
-                mDb.query(true, BusTimesDBHelper.LOCATIONS_TABLE, ALL_COLUMNS, 
-                		KEY_WGS84_LAT+" <= "+top+" AND "+KEY_WGS84_LAT+" >= "+bottom+" AND "+KEY_WGS84_LONG+" >= "+left+" AND "+KEY_WGS84_LONG+" <= "+right, 
-                		null, null, null, null, null);
-        if (mCursor != null) {
-            mCursor.moveToFirst();
-        }
-        return mCursor;
-    }
-    
-    public List<Location> getLocationsInArea(int top, int right, int bottom, int left) throws SQLException {
-    	Log.d(LOGNAME, "Getting locations in area ["+top+", "+right+", "+bottom+", "+left+"]");
-    	Cursor c = fetchLocationsInArea(top, right, bottom, left);
-    	if (null == c) return null;
-
-    	ArrayList<Location> locs = new ArrayList<Location>();
-    	try {
-	    	c.moveToFirst();
-	    	while (!c.isAfterLast()) {
-		    	Location loc = generateLocation(c);
-		    	locs.add(loc);
-		    	c.moveToNext();
-	    	}
-    	} finally {
-	    	if (null != c) c.close();
-    	}
-    	return locs;
-    }
-    
-    public Cursor fetchSelectedLocations() throws SQLException {
-        Cursor mCursor =
-                mDb.query(true, BusTimesDBHelper.LOCATIONS_TABLE, ALL_COLUMNS, 
-                		KEY_CHOSEN+" = 1", 
-                		null, null, null, null, null);
-        if (mCursor != null) {
-            mCursor.moveToFirst();
-        }
-        return mCursor;
-    }
-    
-    public List<Location> getSelectedLocations() throws SQLException {
-    	Log.d(LOGNAME, "Getting all Selected locations");
-    	Cursor c = fetchSelectedLocations();
-    	if (null == c) return null;
-
-    	ArrayList<Location> locs = new ArrayList<Location>();
-    	try {
-	    	c.moveToFirst();
-	    	while (!c.isAfterLast()) {
-		    	Location loc = generateLocation(c);
-		    	locs.add(loc);
-		    	c.moveToNext();
-	    	}
-    	} finally {
-	    	if (null != c) c.close();
-    	}
-    	return locs;
-    }
-    
     
     /**
      * Update the location using the details provided. The location to be updated is
@@ -310,6 +195,7 @@ public class LocationsDBAdapter {
     public String getComboKey(String stopCode, String srcPosA, String srcPosB) {
     	return stopCode+"_"+srcPosA+"_"+srcPosB;
     }
+
     public Map<String, String> getComboKeys(String sourceId) {
     	String sql = "select stopCode, srcPosA, srcPosB from "+BusTimesDBHelper.LOCATIONS_TABLE+" where sourceId = '"+sourceId+"'";
     	Log.d(LOGNAME, "Getting combo keys.  SQL: "+sql);
@@ -334,4 +220,14 @@ public class LocationsDBAdapter {
 	    	if (null != c) c.close();
     	}
     }
+
+	@Override
+	protected String getTableName() {
+		return BusTimesDBHelper.LOCATIONS_TABLE;
+	}
+
+	@Override
+	protected String[] getAllColumnNames() {
+		return ALL_COLUMNS;
+	}
 }

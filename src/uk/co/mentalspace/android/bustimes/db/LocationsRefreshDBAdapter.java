@@ -1,12 +1,11 @@
 package uk.co.mentalspace.android.bustimes.db;
 
-import android.content.ContentValues;
 import android.content.Context;
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
 
-public class LocationsRefreshDBAdapter {
+public class LocationsRefreshDBAdapter extends BaseDBAdapter<Void> {
 
 	public static final String KEY_ROWID = "_id";
 	public static final String KEY_SOURCE_ID = "sourceId";
@@ -14,47 +13,13 @@ public class LocationsRefreshDBAdapter {
 	public static final String KEY_END_TIME = "endTime";
 
 	private static final String[] ALL_COLUMNS = {KEY_ROWID, KEY_SOURCE_ID, KEY_START_TIME, KEY_END_TIME};
-	private BusTimesDBHelper mDbHelper;
-    private SQLiteDatabase mDb;
-
-    private final Context mCtx;
 
     /**
      * Constructor - takes the context to allow the database to be opened/created
      * @param ctx the Context within which to work
      */
     public LocationsRefreshDBAdapter(Context ctx) {
-        this.mCtx = ctx;
-    }
-
-    /**
-     * Get a read-only reference.  This should be safe to use even if
-     * another thread is writing to the DB.
-     * @return this (self reference, allowing this to be chained in an initialisation call)
-     * @throws SQLException if the database could be neither opened or created
-     */
-    public LocationsRefreshDBAdapter openReadable() throws SQLException {
-        mDbHelper = new BusTimesDBHelper(mCtx);
-        mDb = mDbHelper.getReadableDatabase();
-        return this;
-    }
-
-    /**
-     * Opens the database. If it cannot be opened, try to create a new
-     * instance of the database. If it cannot be created, throw an exception to
-     * signal the failure
-     * 
-     * @return this (self reference, allowing this to be chained in an initialisation call)
-     * @throws SQLException if the database could be neither opened or created
-     */
-    public LocationsRefreshDBAdapter open() throws SQLException {
-        mDbHelper = new BusTimesDBHelper(mCtx);
-        mDb = mDbHelper.getWritableDatabase();
-        return this;
-    }
-    
-    public void close() {
-        mDbHelper.close();
+    	super(ctx);
     }
 
     /**
@@ -75,16 +40,11 @@ public class LocationsRefreshDBAdapter {
      * @return true if deleted, false otherwise
      */
     public boolean deleteBTRefreshRecord(long rowId) {
-        return mDb.delete(BusTimesDBHelper.BUS_TIMES_REFRESH_TABLE, KEY_ROWID + "=" + rowId, null) > 0;
+        return delete(KEY_ROWID + "=" + rowId);
     }
 
     public Cursor fetchMostRecentRefreshRecord(String sourceId) {
-        Cursor mCursor =
-                mDb.query(true, BusTimesDBHelper.LOCATIONS_TABLE, ALL_COLUMNS, KEY_SOURCE_ID + "=" + sourceId, null, null, null, null, null);
-        if (mCursor != null) {
-            mCursor.moveToFirst();
-        }
-        return mCursor;
+    	return fetch(BusTimesDBHelper.LOCATIONS_TABLE, ALL_COLUMNS, KEY_SOURCE_ID + "=" + sourceId);
     }
     
     public long getTimeOfLastRefresh(String sourceId) {
@@ -101,4 +61,20 @@ public class LocationsRefreshDBAdapter {
     		if (null != c) try {c.close(); } catch (Exception e) { /*Ignore because there is nothing to be done here */}
     	}
     }
+
+	@Override
+	protected Void populateFromCursor(Cursor c) {
+		//not used
+		return null;
+	}
+
+	@Override
+	protected String getTableName() {
+		return BusTimesDBHelper.BUS_TIMES_REFRESH_TABLE;
+	}
+
+	@Override
+	protected String[] getAllColumnNames() {
+		return ALL_COLUMNS;
+	}
 }

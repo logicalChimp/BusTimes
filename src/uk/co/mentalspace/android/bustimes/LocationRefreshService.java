@@ -24,7 +24,7 @@ public class LocationRefreshService extends WakefulIntentService {
 	public static final String EXTRA_MAX_VALUE = "max";
 	public static final String EXTRA_CURRENT_VALUE="current";
 	public static final String EXTRA_PROGRESS_LABEL = "label";
-	public static final String EXTRA_SOURCE_NAME = "source";	
+	public static final String EXTRA_SOURCE_ID = "sourceId";	
 
 	private static final String LOGNAME = "LocationRefreshService";
 	
@@ -62,13 +62,13 @@ public class LocationRefreshService extends WakefulIntentService {
 		String action = intent.getAction();
 		Log.d(LOGNAME, "Handling intent. Action: "+action);
 		if (ACTION_REFRESH_LOCATION_DATA.equals(action)) {
-			String srcName = intent.getStringExtra(EXTRA_SOURCE_NAME);
+			String srcName = intent.getStringExtra(EXTRA_SOURCE_ID);
 			if (null == srcName || "".equals(srcName.trim())) {
 				Log.w(LOGNAME, "Request to refresh location data, but invalid source id ["+srcName+"] given");
 				return;
 			}
 
-			Source src = SourceManager.getSource(srcName);
+			Source src = SourceManager.getSourceBySourceId(getApplicationContext(), srcName);
 			if (null == src) {
 				Log.e(LOGNAME, "Request to refresh location data, but no matching Source for id ["+srcName+"]");
 				return;
@@ -96,9 +96,9 @@ public class LocationRefreshService extends WakefulIntentService {
 		}
 	}
 	
-	public void setNotification(String title, String msg) {
+	public void setNotification(String title, String msg, int drawable) {
 		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
-        .setSmallIcon(android.R.drawable.stat_sys_download_done)
+        .setSmallIcon(drawable)
         .setContentTitle(title)
         .setContentText(msg);
 
@@ -123,21 +123,21 @@ public class LocationRefreshService extends WakefulIntentService {
 	}
 	
 	public void setNotification(String srcName, Exception e) {
-        setNotification(srcName + " location refresh failed", "Exception: "+e);
+        setNotification(srcName + " location refresh failed", "Exception: "+e, android.R.drawable.ic_menu_close_clear_cancel);
 	}
 	
 	public void updateNotificationProgressMade(LocationRefreshTask lrt) {
 		Log.d(LOGNAME, "Updating notification (in progress) for source ["+lrt.getSourceName()+"]");
 		String title = lrt.getSourceName()+" location refresh";
 		String progressMessage = "In progress ("+lrt.getCurrentProgress()+" / ~"+lrt.getMaxProgress()+")";
-		setNotification(title, progressMessage);
+		setNotification(title, progressMessage, android.R.drawable.stat_sys_download);
 	}
 	
 	public void updateNotificationProgressComplete(LocationRefreshTask lrt) {
 		Log.d(LOGNAME, "Updating notification (complete) for source ["+lrt.getSourceName()+"]");
 		String title = lrt.getSourceName()+" location refresh";
 		String progressMessage = "Complete ("+lrt.getCurrentProgress()+" processed)";
-		setNotification(title, progressMessage);
+		setNotification(title, progressMessage, android.R.drawable.stat_sys_download_done);
 	}
 
 	public void updateProgressStatus(LocationRefreshTask lrt) {
@@ -154,7 +154,7 @@ public class LocationRefreshService extends WakefulIntentService {
 		intent.putExtra(EXTRA_MAX_VALUE, lrt.getMaxProgress());
 		intent.putExtra(EXTRA_CURRENT_VALUE, lrt.getCurrentProgress());
 		intent.putExtra(EXTRA_PROGRESS_LABEL, lrt.getCurrentProgressLabel());
-		intent.putExtra(EXTRA_SOURCE_NAME, lrt.getSourceId());
+		intent.putExtra(EXTRA_SOURCE_ID, lrt.getSourceId());
 		this.sendBroadcast(intent);
 	}
 
