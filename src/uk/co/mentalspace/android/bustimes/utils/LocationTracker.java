@@ -1,5 +1,6 @@
 package uk.co.mentalspace.android.bustimes.utils;
 
+import uk.co.mentalspace.android.bustimes.Preferences;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -58,20 +59,20 @@ public class LocationTracker implements LocationListener {
 	
 	        // getting GPS status
 	        isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);	
-	        Log.v("isGPSEnabled", "=" + isGPSEnabled);
+	        if (Preferences.ENABLE_LOGGING) Log.v("isGPSEnabled", "=" + isGPSEnabled);
 	
 	        // getting network status
 	        isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-	        Log.v("isNetworkEnabled", "=" + isNetworkEnabled);
+	        if (Preferences.ENABLE_LOGGING) Log.v("isNetworkEnabled", "=" + isNetworkEnabled);
 	
 	        if (isGPSEnabled == false && isNetworkEnabled == false) {
 	            // no network provider is enabled
-	        	Log.w("LocationTracker", "No location service enabled");
+	        	if (Preferences.ENABLE_LOGGING) Log.w("LocationTracker", "No location service enabled");
 	        } else {
 	            this.canGetLocation = true;
 	            if (isNetworkEnabled) {
 	                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-	                Log.d("Network", "Network");
+	                if (Preferences.ENABLE_LOGGING) Log.d("Network", "Network");
 	                if (locationManager != null) {
 	                    location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 	                    if (location != null) {
@@ -84,7 +85,7 @@ public class LocationTracker implements LocationListener {
 	            if (isGPSEnabled) {
 	                if (location == null) {
 	                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-	                    Log.d("GPS Enabled", "GPS Enabled");
+	                    if (Preferences.ENABLE_LOGGING) Log.d("GPS Enabled", "GPS Enabled");
 	                    if (locationManager != null) {
 	                        location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 	                        if (location != null) {
@@ -97,7 +98,7 @@ public class LocationTracker implements LocationListener {
 	        }
 	
 	    } catch (Exception e) {
-	    	Log.e("LocationTracker", "Unknown Exception:", e);
+	    	if (Preferences.ENABLE_LOGGING) Log.e("LocationTracker", "Unknown Exception:", e);
 	        e.printStackTrace();
 	    }
 	

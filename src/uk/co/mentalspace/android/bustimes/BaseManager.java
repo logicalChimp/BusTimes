@@ -15,7 +15,7 @@ public class BaseManager<T> {
 		        bdba.openReadable();
 		        return doWork();
 	        } finally {
-	        	if (null != bdba) try {bdba.close(); } catch (Exception e) {Log.e(LOGNAME, "Unknown exception", e); }
+	        	if (null != bdba) try {bdba.close(); } catch (Exception e) {if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Unknown exception", e); }
 	        }
 		}
 		protected F doWork() {

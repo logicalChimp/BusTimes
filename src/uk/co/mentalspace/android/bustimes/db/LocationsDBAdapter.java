@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import uk.co.mentalspace.android.bustimes.Location;
+import uk.co.mentalspace.android.bustimes.Preferences;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -112,7 +113,7 @@ public class LocationsDBAdapter extends BaseDBAdapter<Location> {
     }
     
     public List<Location> getLocationsInArea(int top, int right, int bottom, int left) throws SQLException {
-    	Log.d(LOGNAME, "Getting locations in area ["+top+", "+right+", "+bottom+", "+left+"]");
+    	if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Getting locations in area ["+top+", "+right+", "+bottom+", "+left+"]");
     	Cursor c = fetchLocationsInArea(top, right, bottom, left);
     	return getList(c);
     }
@@ -122,7 +123,7 @@ public class LocationsDBAdapter extends BaseDBAdapter<Location> {
     }
     
     public List<Location> getSelectedLocations() throws SQLException {
-    	Log.d(LOGNAME, "Getting all Selected locations");
+    	if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Getting all Selected locations");
     	Cursor c = fetchSelectedLocations();
     	return getList(c);
     }
@@ -207,6 +208,7 @@ public class LocationsDBAdapter extends BaseDBAdapter<Location> {
     		int count = c.getInt(c.getColumnIndex("count"));
     		return count;
     	} catch (Exception e) {
+    		if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Unknown exception", e);
     		return -1;
     	} finally {
 	    	if (null != c) c.close();
@@ -224,6 +226,7 @@ public class LocationsDBAdapter extends BaseDBAdapter<Location> {
     		int count = c.getInt(c.getColumnIndex("count"));
     		return count;
     	} catch (Exception e) {
+    		if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Unknown exception", e);
     		return -1;
     	} finally {
 	    	if (null != c) c.close();
@@ -232,7 +235,7 @@ public class LocationsDBAdapter extends BaseDBAdapter<Location> {
     
     public Map<String, String> getComboKeys(String sourceId) {
     	String sql = "select stopCode, srcPosA, srcPosB from "+BusTimesDBHelper.LOCATIONS_TABLE+" where sourceId = '"+sourceId+"'";
-    	Log.d(LOGNAME, "Getting combo keys.  SQL: "+sql);
+    	if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Getting combo keys.  SQL: "+sql);
 
     	Cursor c = mDb.rawQuery(sql, null);
     	if (null != c) c.moveToFirst();

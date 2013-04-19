@@ -17,6 +17,7 @@ import org.json.JSONException;
 import uk.co.mentalspace.android.bustimes.BusTime;
 import uk.co.mentalspace.android.bustimes.BusTimeRefreshTask;
 import uk.co.mentalspace.android.bustimes.Location;
+import uk.co.mentalspace.android.bustimes.Preferences;
 import android.util.Log;
 
 public class LondonUK_AsyncBusTimes implements BusTimeRefreshTask {
@@ -25,45 +26,45 @@ public class LondonUK_AsyncBusTimes implements BusTimeRefreshTask {
 
 	public List<BusTime> getBusTimes(Location location) {
 		if (null == location) {
-			Log.e(LOGNAME, "Attempting to get Bus Times with no Location set");
+			if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Attempting to get Bus Times with no Location set");
 			return null;
 		}
 		
 		String url = BUS_TIMES_URL + "?StopCode1="+location.getStopCode()+"&DirectionID=1&VisitNumber=1&ReturnList=LineName,DestinationText,EstimatedTime";
-		Log.d(LOGNAME, "Data feed url: "+url);
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Data feed url: "+url);
 
 		ArrayList<BusTime> busTimes = new ArrayList<BusTime>();
 		BufferedReader br = null;
 		try {
 			HttpClient client = new DefaultHttpClient();
 			HttpGet request = new HttpGet(url);
-			Log.d(LOGNAME, "Requesting data from Server");
+			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Requesting data from Server");
 			HttpResponse response = client.execute(request);
 			
-			Log.d(LOGNAME, "Request executed - processing response");
+			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Request executed - processing response");
 			InputStreamReader isr = new InputStreamReader(response.getEntity().getContent());
 			br = new BufferedReader(isr);
 			
 			String line = br.readLine();
-			Log.v(LOGNAME, "First line: "+line);
+			if (Preferences.ENABLE_LOGGING) Log.v(LOGNAME, "First line: "+line);
 			long refTime = getRefTime(line);
 
 			line = br.readLine();  //ignore first line - headers
 			while (null != line && !("".equals(line))) {
-				Log.v(LOGNAME, "Line: " + line);
+				if (Preferences.ENABLE_LOGGING) Log.v(LOGNAME, "Line: " + line);
 				BusTime bt = getBusTime(line, refTime);
 				busTimes.add(bt);
 				line = br.readLine();
 			}
 
-			Log.d(LOGNAME, "Finished processing response.");
+			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Finished processing response.");
 			
 		} catch (IOException ioe) {
-			Log.e(LOGNAME, "Unexception IOException occured: "+ioe);
+			if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Unexception IOException occured: "+ioe);
 			return null;
 		} finally {
 			if (null != br) {
-				try { br.close(); } catch (IOException ioe2) { Log.e(LOGNAME, "Failed to close input stream. cause: "+ioe2); }
+				try { br.close(); } catch (IOException ioe2) { if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Failed to close input stream. cause: "+ioe2); }
 			}
 		}
 		
@@ -76,7 +77,7 @@ public class LondonUK_AsyncBusTimes implements BusTimeRefreshTask {
 			if (j.length() != 3) return new Date().getTime();
 			return j.getLong(2);
 		} catch (JSONException e) {
-			Log.e(LOGNAME, "JSON Error parsing header.\nData: "+line+"\nError: ",e);
+			if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "JSON Error parsing header.\nData: "+line+"\nError: ",e);
 		}
 		return new Date().getTime();
 	}
@@ -96,7 +97,7 @@ public class LondonUK_AsyncBusTimes implements BusTimeRefreshTask {
 			return new BusTime(j.getString(1), j.getString(2), est);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
-			Log.e(LOGNAME, "JSON Error parsing bus data.\nData: "+line+"\nError: ", e);
+			if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "JSON Error parsing bus data.\nData: "+line+"\nError: ", e);
 		}
 		return new BusTime("", "", "");
 	}

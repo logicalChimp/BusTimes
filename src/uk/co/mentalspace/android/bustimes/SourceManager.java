@@ -19,7 +19,7 @@ public class SourceManager extends BaseManager<Source> {
 	}
 	
 	public static void createSource(Context ctx, final Source src) {
-		Log.d(LOGNAME, "Writing source ["+src+"] to db");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Writing source ["+src+"] to db");
 		Task<Void> srcTask = new SrcTask<Void>() {
 			protected Void doWork() {
 		        sdba.createSource(src.getID(), src.getName(), src.getEstimatedLocationCount(), src.getLocationRefreshClassName(), src.getBTRefreshClassName(), src.getPolygonPointsJson());
@@ -30,7 +30,7 @@ public class SourceManager extends BaseManager<Source> {
 	}
 	
 	public static Source getSourceBySourceId(Context ctx, final String srcId) {
-		Log.d(LOGNAME, "Getting source for source id ["+srcId+"]");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Getting source for source id ["+srcId+"]");
 		Task<Source> srcTask = new SrcTask<Source>() {
 			protected Source doWork() {
 		        return sdba.getSourceById(srcId);
@@ -40,7 +40,7 @@ public class SourceManager extends BaseManager<Source> {
 	}
 
 	public static List<Source> getAllSources(Context ctx) {
-		Log.d(LOGNAME, "Getting all sources");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Getting all sources");
 		Task<List<Source>> srcTask = new SrcTask<List<Source>>() {
 			protected List<Source> doWork() {
 		        List<Source> srcs = sdba.getAllSources();

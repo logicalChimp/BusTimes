@@ -7,6 +7,7 @@ import java.util.List;
 import uk.co.mentalspace.android.bustimes.BusTimeRefreshService;
 import uk.co.mentalspace.android.bustimes.Location;
 import uk.co.mentalspace.android.bustimes.LocationManager;
+import uk.co.mentalspace.android.bustimes.Preferences;
 import uk.co.mentalspace.android.bustimes.R;
 import uk.co.mentalspace.android.bustimes.Renderer;
 import uk.co.mentalspace.android.bustimes.Source;
@@ -33,7 +34,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 public class BusTimeActivity extends Activity implements Renderer, OnItemSelectedListener {
-	private static final String LOGNAME = "AndroidDisplay";
+	private static final String LOGNAME = "BusTimeActivity";
 	
 	private BroadcastReceiver btReceiver = new BroadcastReceiver() {
         @Override
@@ -65,7 +66,7 @@ public class BusTimeActivity extends Activity implements Renderer, OnItemSelecte
 	@Override
 	public void onResume() {
 		super.onResume();
-		Log.d(LOGNAME, "Resuming activity - starting fresh Coordinator");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Resuming activity - starting fresh Coordinator");
 
 		if (null == posTracker) {
 			posTracker = new LocationTracker(this);
@@ -95,17 +96,17 @@ public class BusTimeActivity extends Activity implements Renderer, OnItemSelecte
 	
 	private void showBusTimes() {
 		if (null == loc) {
-			Log.d(LOGNAME, "No location yet chosen - requesting load of nearest chosen location");
+			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "No location yet chosen - requesting load of nearest chosen location");
 			int lat = (int)(posTracker.getLatitude()*10000);
 			int lon = (int)(posTracker.getLongitude()*10000);
 			loc = LocationManager.getNearestSelectedLocation(getDisplayContext(), lat, lon);
 		}
 		if (null == loc) {
-			Log.w(LOGNAME, "Cannot get 'nearest' location - maybe none chosen?");
+			if (Preferences.ENABLE_LOGGING) Log.w(LOGNAME, "Cannot get 'nearest' location - maybe none chosen?");
 			this.displayMessage(null, "Please select one or more locations to monitor.", Renderer.MESSAGE_ERROR);
 			return;
 		}
-		Log.d(LOGNAME, "Fetching bus times for location ["+loc+"]");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Fetching bus times for location ["+loc+"]");
 //		Coordinator.getBusTimes(this, loc);
 		
 		Intent intent = new Intent(this, BusTimeRefreshService.class);
@@ -124,13 +125,13 @@ public class BusTimeActivity extends Activity implements Renderer, OnItemSelecte
 
 	@Override
 	public void finish() {
-		Log.d(LOGNAME, "Terminating activity - terminating Coordinator timer");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Terminating activity - terminating Coordinator timer");
 		super.finish();
 	}
 	
 	@Override
 	public void onPause() {
-		Log.d(LOGNAME, "Pausing activity - terminating Coordinator timer");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Pausing activity - terminating Coordinator timer");
 		if (null != posTracker) {
 			posTracker.stopTrackingLocation();
 			posTracker = null;
@@ -187,7 +188,7 @@ public class BusTimeActivity extends Activity implements Renderer, OnItemSelecte
 
 	@Override
 	public void displayBusTimes(Location location, List<BusTime> busTimes) {
-		Log.d(LOGNAME, "Displaying ["+busTimes.size()+"] bus times");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Displaying ["+busTimes.size()+"] bus times");
 		findViewById(R.id.bus_times_message).setVisibility(View.GONE);
 		ListView lv = (ListView)findViewById(R.id.bus_times_results);
 		lv.setVisibility(View.VISIBLE);
@@ -205,22 +206,22 @@ public class BusTimeActivity extends Activity implements Renderer, OnItemSelecte
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 		if (null == view) { 
-			Log.w(LOGNAME, "Null view selected - ignoring the item selection.");
+			if (Preferences.ENABLE_LOGGING) Log.w(LOGNAME, "Null view selected - ignoring the item selection.");
 			return;
 		}
 		
-		Log.d(LOGNAME, "Locations drop-down list item selected");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Locations drop-down list item selected");
 		// TODO Auto-generated method stub
 		TextView tv = ((TextView)view.findViewById(R.id.chosen_location_stop_code_label));
 		if (null == tv) return;
 		
 		String stopCode = tv.getText().toString();
 		if (null == stopCode || "".equals(stopCode.trim())) return;
-		Log.d(LOGNAME, "Selected stop code: " + stopCode);
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Selected stop code: " + stopCode);
 		
 		loc = LocationManager.getLocationByStopCode(this, stopCode);
 		if (null == loc) return;
-		Log.d(LOGNAME, "Selected location: " + loc.getLocationName());
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Selected location: " + loc.getLocationName());
 		
 		this.displayMessage(loc, "Fetching bus times...", Renderer.MESSAGE_NORMAL);
 		showBusTimes();
@@ -236,14 +237,14 @@ public class BusTimeActivity extends Activity implements Renderer, OnItemSelecte
 		if (null == loc) return;
 
 		String action = intent.getAction();
-		Log.d(LOGNAME, "Received broadcast. action: "+action);
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Received broadcast. action: "+action);
 		
 		if (BusTimeRefreshService.ACTION_LATEST_BUS_TIMES.equals(action)) {
 			long locId = intent.getLongExtra(BusTimeRefreshService.EXTRA_LOCATION_ID, -1);
 			String srcId = intent.getStringExtra(BusTimeRefreshService.EXTRA_SOURCE_ID);
 			
 			if (loc.getId() != locId || !loc.getSourceId().equals(srcId)) {
-				Log.w(LOGNAME, "Received updated bus times for location other than that selected. Loc id ["+locId+"], Src id ["+srcId+"].  Ignoring.");
+				if (Preferences.ENABLE_LOGGING) Log.w(LOGNAME, "Received updated bus times for location other than that selected. Loc id ["+locId+"], Src id ["+srcId+"].  Ignoring.");
 				return;
 			}
 			
@@ -251,7 +252,7 @@ public class BusTimeActivity extends Activity implements Renderer, OnItemSelecte
 			List<BusTime> busTimes = (List<BusTime>)intent.getSerializableExtra(BusTimeRefreshService.EXTRA_BUS_TIMES);
 			
 			int busTimesSize = (null == busTimes) ? -1 : busTimes.size();
-			Log.d(LOGNAME, "Received ["+busTimesSize+"] bus times");
+			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Received ["+busTimesSize+"] bus times");
 
 			displayBusTimes(loc, busTimes);
 		}

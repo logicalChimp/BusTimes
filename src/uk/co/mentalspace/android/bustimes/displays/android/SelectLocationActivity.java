@@ -6,6 +6,7 @@ import java.util.List;
 
 import uk.co.mentalspace.android.bustimes.Location;
 import uk.co.mentalspace.android.bustimes.LocationManager;
+import uk.co.mentalspace.android.bustimes.Preferences;
 import uk.co.mentalspace.android.bustimes.R;
 import uk.co.mentalspace.android.bustimes.utils.LocationTracker;
 
@@ -58,7 +59,7 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
 
     @Override
     protected void onResume() {
-    	Log.d(LOGNAME, "resuming...");
+    	if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "resuming...");
         super.onResume();
         setUpMapIfNeeded();
     }
@@ -120,35 +121,35 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
     }
     
     public void onCameraChange(CameraPosition position) {
-    	Log.d(LOGNAME, "handling camera change");
+    	if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "handling camera change");
     	if (null == mMap) return;
 
     	//remove all markers (will re-add visible ones once retrieved
-    	Log.d(LOGNAME, "removing existing markers");
+    	if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "removing existing markers");
     	
     	//if too zoomed out, don't display any markers (otherwise map will be cluttered with 1000's!
     	if (position.zoom < MARKER_MAX_ZOOM_LEVEL) {
     		mMap.clear();
     		markers.clear();
-    		Log.d(LOGNAME, "Zoomed out too far - not adding new markers");
+    		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Zoomed out too far - not adding new markers");
     		return;
     	}
     	
         LatLng tl = mMap.getProjection().getVisibleRegion().farLeft;
         LatLng br = mMap.getProjection().getVisibleRegion().nearRight;
-        Log.d(LOGNAME, "Getting locations in box tl ["+tl.latitude+","+br.longitude+"], br ["+br.latitude+", "+tl.longitude+"]");
+        if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Getting locations in box tl ["+tl.latitude+","+br.longitude+"], br ["+br.latitude+", "+tl.longitude+"]");
         List<Location> locations = LocationManager.getLocationsInArea(this, (int)(tl.latitude*10000), (int)(br.longitude*10000), (int)(br.latitude*10000), (int)(tl.longitude*10000));
         if (null == locations) {
-        	Log.i(LOGNAME, "null list of locations returned - initialising an empty list");
+        	if (Preferences.ENABLE_LOGGING) Log.i(LOGNAME, "null list of locations returned - initialising an empty list");
         	locations = new ArrayList<Location>();
         }
-        Log.d(LOGNAME, "Number Locations found: "+locations.size());
+        if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Number Locations found: "+locations.size());
         
         //remove all the markers that are no longer visible, without disturbing the remaining markers
         List<Location> toRemove = new ArrayList<Location>();
         toRemove.addAll(markers.keySet());
         toRemove.removeAll(locations);
-        Log.d(LOGNAME, "Current marker count ["+markers.size()+"], to remove ["+toRemove.size()+"]");
+        if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Current marker count ["+markers.size()+"], to remove ["+toRemove.size()+"]");
         for (Location loc: toRemove) {
         	removeMarker(loc);
         }
@@ -157,16 +158,16 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
         List<Location> reference = new ArrayList<Location>();
         reference.addAll(markers.keySet());
         reference.retainAll(locations);
-        Log.d(LOGNAME, "Current marker count ["+markers.size()+"], to add ["+(locations.size() - reference.size())+"]");
+        if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Current marker count ["+markers.size()+"], to add ["+(locations.size() - reference.size())+"]");
         for (Location loc: locations) {
-        	Log.d(LOGNAME, "Location ["+loc.getStopCode()+"] is already on map: "+reference.contains(loc));
+        	if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Location ["+loc.getStopCode()+"] is already on map: "+reference.contains(loc));
         	if (!reference.contains(loc)) {
-        		Log.d(LOGNAME, "...adding marker");
+        		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "...adding marker");
         		addMarker(loc);        	
         	}
         }
         
-        Log.d(LOGNAME, "Total marker count: "+markers.size());
+        if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Total marker count: "+markers.size());
     }
     
     private void removeMarker(Location loc) {
@@ -210,18 +211,18 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
 	}
 	
 	public void onFindStopCodeClicked(View view) {
-		Log.d(LOGNAME, "Find Stop button clicked");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Find Stop button clicked");
 		EditText stopField = (EditText)this.findViewById(R.id.select_location_stop_code_filter);
 		String stopCode = stopField.getText().toString();
-		Log.d(LOGNAME, "Locating stop for code: "+stopCode);
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Locating stop for code: "+stopCode);
 
 		Location loc = LocationManager.getLocationByStopCode(this, stopCode);
 		if (null != loc) {
-			Log.d(LOGNAME, "Location found: "+loc.getLocationName());
+			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Location found: "+loc.getLocationName());
         	LatLng ll = new LatLng(((double)loc.getLat())/10000,((double)loc.getLon())/10000);
     		mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll, DEFAULT_ZOOM_LEVEL));
 		} else {
-			Log.i(LOGNAME, "No location found");
+			if (Preferences.ENABLE_LOGGING) Log.i(LOGNAME, "No location found");
 			Toast.makeText(this, "No matching stop found", Toast.LENGTH_SHORT).show();
 		}
 	}
@@ -247,7 +248,7 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
 
 	@Override
 	public void onDismiss(DialogInterface arg0) {
-		Log.d(LOGNAME, "Dialog dismissed - removing edited marker");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Dialog dismissed - removing edited marker");
 		Location loc = elp.getLocation();
 		Marker marker = markers.get(loc);
 		markers.remove(loc);
@@ -255,7 +256,7 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
 		
 		elp = null;
 
-		Log.d(LOGNAME, "Removed edited marker - refreshing map");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Removed edited marker - refreshing map");
 		//force map to redraw for the same position
         onCameraChange(mMap.getCameraPosition());
 	}

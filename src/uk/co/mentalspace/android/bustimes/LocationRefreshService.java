@@ -39,7 +39,7 @@ public class LocationRefreshService extends WakefulIntentService {
 	public void onStart(Intent intent, int startId) {
 		String action = intent.getAction();
 	    if (ACTION_CANCEL_DATA_REFRESH.equals(action)) {
-	    	Log.d(LOGNAME, "Terminating current data refresh...");
+	    	if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Terminating current data refresh...");
 	    	terminateRunningRefresh();
 	    }
 	    if (ACTION_GET_REFRESH_PROGRESS.equals(action)) {
@@ -50,7 +50,7 @@ public class LocationRefreshService extends WakefulIntentService {
 	
 	private void terminateRunningRefresh() {
 		if (null != lrt) {
-			Log.d(LOGNAME, "Calling 'Cancel' on current LRT instance");
+			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Calling 'Cancel' on current LRT instance");
 			lrt.cancel();
 		}
 	}
@@ -60,17 +60,17 @@ public class LocationRefreshService extends WakefulIntentService {
 //	protected void onHandleIntent(Intent intent) {
 	public void processIntent(Intent intent) {
 		String action = intent.getAction();
-		Log.d(LOGNAME, "Handling intent. Action: "+action);
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Handling intent. Action: "+action);
 		if (ACTION_REFRESH_LOCATION_DATA.equals(action)) {
 			String srcName = intent.getStringExtra(EXTRA_SOURCE_ID);
 			if (null == srcName || "".equals(srcName.trim())) {
-				Log.w(LOGNAME, "Request to refresh location data, but invalid source id ["+srcName+"] given");
+				if (Preferences.ENABLE_LOGGING) Log.w(LOGNAME, "Request to refresh location data, but invalid source id ["+srcName+"] given");
 				return;
 			}
 
 			Source src = SourceManager.getSourceBySourceId(getApplicationContext(), srcName);
 			if (null == src) {
-				Log.e(LOGNAME, "Request to refresh location data, but no matching Source for id ["+srcName+"]");
+				if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Request to refresh location data, but no matching Source for id ["+srcName+"]");
 				return;
 			}
 			
@@ -85,7 +85,7 @@ public class LocationRefreshService extends WakefulIntentService {
 				LocationManager.createRefreshRecord(getApplicationContext(), srcName, startTime, endTime);
 				updateNotificationProgressComplete(lrt);
 			} catch (Exception e) {
-				Log.e(LOGNAME, "Unknown exception", e);
+				if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Unknown exception", e);
 				setNotification(lrt.getSourceName(), e);
 				return;
 			} finally {
@@ -127,14 +127,14 @@ public class LocationRefreshService extends WakefulIntentService {
 	}
 	
 	public void updateNotificationProgressMade(LocationRefreshTask lrt) {
-		Log.d(LOGNAME, "Updating notification (in progress) for source ["+lrt.getSourceName()+"]");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Updating notification (in progress) for source ["+lrt.getSourceName()+"]");
 		String title = lrt.getSourceName()+" location refresh";
 		String progressMessage = "In progress ("+lrt.getCurrentProgress()+" / ~"+lrt.getMaxProgress()+")";
 		setNotification(title, progressMessage, android.R.drawable.stat_sys_download);
 	}
 	
 	public void updateNotificationProgressComplete(LocationRefreshTask lrt) {
-		Log.d(LOGNAME, "Updating notification (complete) for source ["+lrt.getSourceName()+"]");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Updating notification (complete) for source ["+lrt.getSourceName()+"]");
 		String title = lrt.getSourceName()+" location refresh";
 		String progressMessage = "Complete ("+lrt.getCurrentProgress()+" processed)";
 		setNotification(title, progressMessage, android.R.drawable.stat_sys_download_done);
@@ -142,13 +142,13 @@ public class LocationRefreshService extends WakefulIntentService {
 
 	public void updateProgressStatus(LocationRefreshTask lrt) {
 		if (null == lrt) {
-			Log.w(LOGNAME, "Request to generate a progress update for a null LRT.");
+			if (Preferences.ENABLE_LOGGING) Log.w(LOGNAME, "Request to generate a progress update for a null LRT.");
 			return;
 		}
 
 		updateNotificationProgressMade(lrt);
 		
-		Log.d(LOGNAME, "Sending progress update intent for source ["+lrt.getSourceName()+"]");		
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Sending progress update intent for source ["+lrt.getSourceName()+"]");		
 		Intent intent = new Intent();
 		intent.setAction(ACTION_UPDATE_DATA_REFRESH_PROGRESS);
 		intent.putExtra(EXTRA_MAX_VALUE, lrt.getMaxProgress());

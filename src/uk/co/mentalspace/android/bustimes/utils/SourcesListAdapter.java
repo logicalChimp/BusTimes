@@ -1,5 +1,6 @@
 package uk.co.mentalspace.android.bustimes.utils;
 
+import uk.co.mentalspace.android.bustimes.Preferences;
 import uk.co.mentalspace.android.bustimes.R;
 import uk.co.mentalspace.android.bustimes.Source;
 import android.content.Context;
@@ -38,7 +39,7 @@ public class SourcesListAdapter extends ArrayAdapter<Source> {
 			src = new Source("", "", 0, "", "", "");
 		}
 		
-		Log.d(LOGNAME, "source: "+src);
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "source: "+src);
 		((TextView)rowView.findViewById(R.id.sources_list_row_name)).setText(src.getName());
 		((TextView)rowView.findViewById(R.id.sources_list_row_refresh_time)).setText("");
 		

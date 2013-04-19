@@ -56,7 +56,7 @@ public abstract class LocationRefreshTask {
 	}
 	
 	protected void finish() {
-		Log.d(LOGNAME, "finish called");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "finish called");
 		isFinished = true;
 	}
 
@@ -67,7 +67,7 @@ public abstract class LocationRefreshTask {
 			performRefresh();
 		} finally {
 			if (null != ldba) {
-				try { ldba.close(); } catch (Exception e) { Log.e(LOGNAME, "Unknown exception", e); }
+				try { ldba.close(); } catch (Exception e) { if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Unknown exception", e); }
 			}
 		}
 	}

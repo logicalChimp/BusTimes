@@ -104,11 +104,11 @@ public class Source {
 				return lrt;
 			}
 		} catch (ClassNotFoundException cnfe) {
-			Log.e(LOGNAME, "Failed to load location refresh task ["+locRefreshClassName+"]", cnfe);
+			if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Failed to load location refresh task ["+locRefreshClassName+"]", cnfe);
 		} catch (IllegalAccessException iae) {
-			Log.e(LOGNAME, "Failed to load location refresh task ["+locRefreshClassName+"]", iae);
+			if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Failed to load location refresh task ["+locRefreshClassName+"]", iae);
 		} catch (InstantiationException ie) {
-			Log.e(LOGNAME, "Failed to load location refresh task ["+locRefreshClassName+"]", ie);
+			if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Failed to load location refresh task ["+locRefreshClassName+"]", ie);
 		}
 		return null;
 	}
@@ -125,11 +125,11 @@ public class Source {
 				return btrt;
 			}
 		} catch (ClassNotFoundException cnfe) {
-			Log.e(LOGNAME, "Failed to load Bus Time refresh task ["+btRefreshClassName+"]", cnfe);
+			if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Failed to load Bus Time refresh task ["+btRefreshClassName+"]", cnfe);
 		} catch (IllegalAccessException iae) {
-			Log.e(LOGNAME, "Failed to load Bus Time refresh task ["+btRefreshClassName+"]", iae);
+			if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Failed to load Bus Time refresh task ["+btRefreshClassName+"]", iae);
 		} catch (InstantiationException ie) {
-			Log.e(LOGNAME, "Failed to load Bus Time refresh task ["+btRefreshClassName+"]", ie);
+			if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Failed to load Bus Time refresh task ["+btRefreshClassName+"]", ie);
 		}
 		return null;
 	}

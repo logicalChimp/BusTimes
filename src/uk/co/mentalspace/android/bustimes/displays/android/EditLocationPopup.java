@@ -2,6 +2,7 @@ package uk.co.mentalspace.android.bustimes.displays.android;
 
 import uk.co.mentalspace.android.bustimes.Location;
 import uk.co.mentalspace.android.bustimes.LocationManager;
+import uk.co.mentalspace.android.bustimes.Preferences;
 import uk.co.mentalspace.android.bustimes.R;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -41,10 +42,10 @@ public class EditLocationPopup extends DialogFragment implements OnClickListener
 	}
 	
 	private View getPopupView(LayoutInflater inflater) {
-		Log.d(LOGNAME, "Creating popup window view");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Creating popup window view");
 		View popupView = inflater.inflate(R.layout.edit_location_popup, null);
-		if (null == popupView) Log.e(LOGNAME, "popupView is NULL");
-		if (null == loc) Log.e(LOGNAME, "Location is NULL");
+		if (null == popupView) if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "popupView is NULL");
+		if (null == loc) if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Location is NULL");
 		
 		if (null != popupView && null != loc) {
 	    	((TextView)popupView.findViewById(R.id.map_info_window_stop_name_value)).setText(loc.getLocationName());
@@ -64,7 +65,7 @@ public class EditLocationPopup extends DialogFragment implements OnClickListener
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		Log.d(LOGNAME, "Creating edit location as a dialog");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Creating edit location as a dialog");
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		
 		LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -74,7 +75,7 @@ public class EditLocationPopup extends DialogFragment implements OnClickListener
 			.setNeutralButton("Close", new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int id) {
-					Log.d(LOGNAME, "Dismiss button clicked");
+					if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Dismiss button clicked");
 					checkValuesAndDismiss();
 				}
 			});
@@ -83,20 +84,20 @@ public class EditLocationPopup extends DialogFragment implements OnClickListener
 	}
 	
 	public void checkValuesAndDismiss() {
-		Log.d(LOGNAME, "checking Nick Name before dismissing");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "checking Nick Name before dismissing");
 		EditText et = ((EditText)getDialog().findViewById(R.id.map_info_window_nick_name_value));
 		String nickName = (null == et.getText()) ? "" : et.getText().toString();
 		if (nickName != null && !nickName.equals(loc.getNickName())) {
-			Log.d(LOGNAME, "Updating nickname ["+nickName+"] for stop code ["+loc.getStopCode()+"]");
+			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Updating nickname ["+nickName+"] for stop code ["+loc.getStopCode()+"]");
 			LocationManager.updateNickName(getActivity(), loc.getId(), nickName);
 		} else {
-			Log.d(LOGNAME, "Not updating nickname ["+nickName+"] for stop code ["+loc.getStopCode()+"]");
+			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Not updating nickname ["+nickName+"] for stop code ["+loc.getStopCode()+"]");
 		}
 		EditLocationPopup.this.getDialog().dismiss();
 	}
 
 	public void onMonitorLocationClicked(View view) {
-		Log.d(LOGNAME, "Monitor button toggled");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Monitor button toggled");
 		ToggleButton btn = (ToggleButton)view;
 		
 		if (btn.isChecked()) {

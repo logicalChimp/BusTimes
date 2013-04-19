@@ -16,6 +16,7 @@ import android.text.TextPaint;
 import android.util.Log;
 import uk.co.mentalspace.android.bustimes.BusTime;
 import uk.co.mentalspace.android.bustimes.Location;
+import uk.co.mentalspace.android.bustimes.Preferences;
 import uk.co.mentalspace.android.bustimes.R;
 import uk.co.mentalspace.android.bustimes.Renderer;
 import uk.co.mentalspace.android.bustimes.utils.Utils;
@@ -48,19 +49,19 @@ public class MetaWatchDisplay implements Renderer {
     
 	@Override
 	public void displayMessage(Location loc, String msg, int msgLevel) {
-		Log.d(LOGNAME, "Displaying message: " + msg);
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Displaying message: " + msg);
 		Bitmap bitmap = Bitmap.createBitmap(METAWATCH_WIDTH, METAWATCH_HEIGHT, Bitmap.Config.RGB_565);
 		Canvas canvas = new Canvas(bitmap);
 		
 		if (null == fontface) {
-			Log.d(LOGNAME, "Fontface not yet initialised - loading");
+			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Fontface not yet initialised - loading");
 			fontface = Typeface.createFromAsset(ctx.getAssets(), "metawatch_8pt_7pxl_CAPS.ttf");
 		}
 
 		//set background color of the canvas
 		canvas.drawColor(Color.WHITE);
 
-		Log.d(LOGNAME, "Initialising a TextPaint..");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Initialising a TextPaint..");
 		//create default textpaint for drawing on canvas
 		TextPaint tp = new TextPaint();
 		tp.setColor(Color.BLACK);
@@ -85,28 +86,28 @@ public class MetaWatchDisplay implements Renderer {
 			String line = (end == -1) ? msg.substring(start) : msg.substring(start, end);
 			int displayRow = startPos+(row*10);
 			
-			Log.v(LOGNAME, "String ["+line+"], x ["+3+"], y ["+displayRow+"], ");
+			if (Preferences.ENABLE_LOGGING) Log.v(LOGNAME, "String ["+line+"], x ["+3+"], y ["+displayRow+"], ");
 			canvas.drawText(line, 3, displayRow, tp);
 			row++;
 			start += 17;
 		}
 		
-		Log.d(LOGNAME, "Message converted to screen image...");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Message converted to screen image...");
 		sendApplicationUpdate(bitmap);
 	}
 	
 	@Override
 	public void displayBusTimes(Location location, List<BusTime> busTimes) {
-		Log.d(LOGNAME, "Creating display bitmap");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Creating display bitmap");
 		Bitmap bitmap = createDisplay(location, busTimes);
 		sendApplicationUpdate(bitmap);
 	}
 	
 	private void sendApplicationUpdate(Bitmap bitmap) {
-		Log.d(LOGNAME, "Converting bitmap to byte array");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Converting bitmap to byte array");
 		int[] array = Utils.bitmapToPixelArray(bitmap);
 		
-		Log.d(LOGNAME, "Sending Update intent");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Sending Update intent");
 		Intent intent = new Intent("org.metawatch.manager.APPLICATION_UPDATE");
 		Bundle b = new Bundle();
 		b.putString("id", ctx.getResources().getString(R.string.app_id));
@@ -117,7 +118,7 @@ public class MetaWatchDisplay implements Renderer {
 	}
 
 	private Bitmap createDisplay(Location location, List<BusTime> busTimes) {
-		Log.d(LOGNAME, "Initialising source bitmap");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Initialising source bitmap");
 		Bitmap bitmap = Bitmap.createBitmap(METAWATCH_WIDTH, METAWATCH_HEIGHT, Bitmap.Config.RGB_565);
 		Canvas canvas = new Canvas(bitmap);
 		
@@ -125,11 +126,11 @@ public class MetaWatchDisplay implements Renderer {
 		canvas.drawColor(Color.WHITE);
 
 		if (null == fontface) {
-			Log.d(LOGNAME, "Fontface not yet initialised - loading");
+			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Fontface not yet initialised - loading");
 			fontface = Typeface.createFromAsset(ctx.getAssets(), "metawatch_8pt_7pxl_CAPS.ttf");
 		}
 
-		Log.d(LOGNAME, "Initialising a TextPaint..");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Initialising a TextPaint..");
 		//create default textpaint for drawing on canvas
 		TextPaint tp = new TextPaint();
 		tp.setColor(Color.BLACK);
@@ -137,11 +138,11 @@ public class MetaWatchDisplay implements Renderer {
 		tp.setTextSize(fontsize);
 		tp.setTextAlign(Align.CENTER);
 
-		Log.d(LOGNAME, "Painting location");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Painting location");
 		//add location details to top of display
 		renderLocation(canvas, location, tp);
 		
-		Log.d(LOGNAME, "Painting bus times");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Painting bus times");
 		//add each bus time to the display
 		for (int i=0;i<busTimes.size();i++) {
 			renderBusTime(canvas, busTimes.get(i), i+1, tp); //+1 to make 1-based instead of 0-based
@@ -183,27 +184,27 @@ public class MetaWatchDisplay implements Renderer {
 	
 	private void renderBusTime(Canvas canvas, BusTime busTime, int busPosition, TextPaint tp) {
 		int verticalOffset = (32+(busPosition*12)-2); //-2 = 2px padding bottom
-		Log.v(LOGNAME, "Bus time ["+busPosition+"] vertical offset ["+verticalOffset+"]");
+		if (Preferences.ENABLE_LOGGING) Log.v(LOGNAME, "Bus time ["+busPosition+"] vertical offset ["+verticalOffset+"]");
 		
 		if (verticalOffset >= METAWATCH_HEIGHT) return; //ignore bus times that would render off the bottom of the screen
 		
-		Log.v(LOGNAME, "Generate render points");
+		if (Preferences.ENABLE_LOGGING) Log.v(LOGNAME, "Generate render points");
 		Point num = new Point(20, verticalOffset); //20=20px from left, specify right limit because right aligned
 		Point dest = new Point(22, verticalOffset); //22=22px from left, specify left limit because left aligned
 		Point time = new Point(94, verticalOffset); //94=94px from left, specify right limit because right aligned
 
-		Log.v(LOGNAME, "Render bus number");
+		if (Preferences.ENABLE_LOGGING) Log.v(LOGNAME, "Render bus number");
 		//set text alignment to right (numeric data), and render bus position
 		tp.setTextAlign(Align.RIGHT);
 		canvas.drawText(busTime.getBusNumber(), num.x, num.y, tp);
 
-		Log.v(LOGNAME, "Render bus destination");
+		if (Preferences.ENABLE_LOGGING) Log.v(LOGNAME, "Render bus destination");
 		//set text alignment to left (text data), and render destination (first 10 chars only)
 		tp.setTextAlign(Align.LEFT);
 		String destStr = (busTime.getDestination().length() > 9) ? busTime.getDestination().substring(0,9) : busTime.getDestination();
 		canvas.drawText(destStr, dest.x, dest.y, tp);
 
-		Log.v(LOGNAME, "Render bus time");
+		if (Preferences.ENABLE_LOGGING) Log.v(LOGNAME, "Render bus time");
 		//set text alignment to right (numeric data), and render estimated time of arrival
 		tp.setTextAlign(Align.RIGHT);
 		canvas.drawText(busTime.getEstimatedArrivalTime(), time.x, time.y, tp);

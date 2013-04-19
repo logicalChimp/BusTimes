@@ -1,5 +1,6 @@
 package uk.co.mentalspace.android.bustimes.utils;
 
+import uk.co.mentalspace.android.bustimes.Preferences;
 import uk.co.mentalspace.android.bustimes.R;
 import uk.co.mentalspace.android.bustimes.Location;
 import android.content.Context;
@@ -39,7 +40,7 @@ public class LocationsListAdapter extends ArrayAdapter<Location> {
 			loc = new Location("", "", "", "", "", "", 0,0);
 		}
 		
-		Log.d(LOGNAME, "Selected location: "+loc);
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Selected location: "+loc);
 		((TextView)rowView.findViewById(R.id.chosen_location_nick_name_label)).setText(loc.getNickName());
 		((TextView)rowView.findViewById(R.id.chosen_location_stop_name_label)).setText(loc.getLocationName());
 		((TextView)rowView.findViewById(R.id.chosen_location_stop_code_label)).setText(loc.getStopCode());

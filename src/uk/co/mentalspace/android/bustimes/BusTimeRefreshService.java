@@ -29,33 +29,32 @@ public class BusTimeRefreshService extends WakefulIntentService {
 	}
 	
 	@Override
-//	protected void onHandleIntent(Intent arg0) {
 	public void processIntent(Intent arg0) {
 		String action = arg0.getAction();
-		Log.d(LOGNAME, "Handling action: "+action);
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Handling action: "+action);
 		
 		if (ACTION_REFRESH_BUS_TIMES.equals(action)) {
 			String sourceId = arg0.getStringExtra(EXTRA_SOURCE_ID);
 			if (null == sourceId || "".equals(sourceId.trim())) {
-				Log.e(LOGNAME, "Invalid source id for refresh bus times. aborting.");
+				if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Invalid source id for refresh bus times. aborting.");
 				return;
 			}
 			
 			Source src = SourceManager.getSourceBySourceId(getApplicationContext(), sourceId);
 			if (null == src) {
-				Log.e(LOGNAME, "No matching source for source id ["+sourceId+"]. aborting.");
+				if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "No matching source for source id ["+sourceId+"]. aborting.");
 				return;
 			}
 			
 			long locationId = arg0.getLongExtra(EXTRA_LOCATION_ID, -1);
 			if (-1 == locationId) {
-				Log.e(LOGNAME, "No Location ID specified. aborting.");
+				if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "No Location ID specified. aborting.");
 				return;
 			}
 			
 			Location loc = LocationManager.getLocationById(this.getApplicationContext(), locationId);
 			if (null == loc) {
-				Log.e(LOGNAME, "No match location for location id ["+locationId+"]. aborting.");
+				if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "No match location for location id ["+locationId+"]. aborting.");
 				return;
 			}
 			
@@ -72,7 +71,7 @@ public class BusTimeRefreshService extends WakefulIntentService {
 			intent.putExtra(EXTRA_BUS_TIMES, (Serializable)busTimes);
 
 			int busTimesSize = (null == busTimes) ? -1 : busTimes.size();
-			Log.d(LOGNAME, "Sending ["+busTimesSize+"] bus times back.");
+			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Sending ["+busTimesSize+"] bus times back.");
 			this.sendBroadcast(intent);
 		}
 		

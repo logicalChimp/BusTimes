@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import uk.co.mentalspace.android.bustimes.Location;
 import uk.co.mentalspace.android.bustimes.LocationManager;
 import uk.co.mentalspace.android.bustimes.LocationRefreshService;
+import uk.co.mentalspace.android.bustimes.Preferences;
 import uk.co.mentalspace.android.bustimes.R;
 import uk.co.mentalspace.android.bustimes.Source;
 import uk.co.mentalspace.android.bustimes.SourceManager;
@@ -64,7 +65,7 @@ public class FavouriteLocationsActivity extends FragmentActivity implements OnCl
 	
 	@Override
 	protected void onResume() {
-		Log.d(LOGNAME, "onResume");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "onResume");
 		super.onResume();
 		configureLayout();
 		if (!drsReceiverIsRegistered) {
@@ -80,7 +81,7 @@ public class FavouriteLocationsActivity extends FragmentActivity implements OnCl
 
 	@Override
 	protected void onPause() {
-		Log.d(LOGNAME, "onPause");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "onPause");
 		if (drsReceiverIsRegistered) {
 		    unregisterReceiver(drsReceiver);
 		    drsReceiverIsRegistered = false;
@@ -96,7 +97,7 @@ public class FavouriteLocationsActivity extends FragmentActivity implements OnCl
 	}
 
 	private void configureLayout() {
-		Log.d(LOGNAME, "Configuring layout...");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Configuring layout...");
 		srcs = SourceManager.getAllSources(this);		
 		Source[] srcsArray = srcs.toArray(new Source[]{});
 		
@@ -122,7 +123,7 @@ public class FavouriteLocationsActivity extends FragmentActivity implements OnCl
 	}
 	
 	private void configureFavouriteLocationsList() {
-		Log.d(LOGNAME, "Configuring favourite locations list");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Configuring favourite locations list");
 		List<Location> selectedLocations = LocationManager.getSelectedLocations(this);
 		if (null == selectedLocations) selectedLocations = new ArrayList<Location>(); 
 		LocationsListAdapter claa = new LocationsListAdapter(this, selectedLocations.toArray(new Location[]{}));
@@ -140,7 +141,7 @@ public class FavouriteLocationsActivity extends FragmentActivity implements OnCl
 			//trigger download of stops
 			if (null == selectedSource) return;
 			
-			Log.d(LOGNAME, "Sending intent to start Data Refresh Service");
+			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Sending intent to start Data Refresh Service");
 			Intent intent = new Intent(this, LocationRefreshService.class);
 			intent.setAction(LocationRefreshService.ACTION_REFRESH_LOCATION_DATA);
 			intent.putExtra(LocationRefreshService.EXTRA_SOURCE_ID, selectedSource.getID());
@@ -181,7 +182,7 @@ public class FavouriteLocationsActivity extends FragmentActivity implements OnCl
 
     public void receiveBroadcast(Intent intent) {
     	String action = intent.getAction();
-    	Log.d(LOGNAME, "Received broadcast intent.  Action: " + action);
+    	if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Received broadcast intent.  Action: " + action);
     	if (LocationRefreshService.ACTION_UPDATE_DATA_REFRESH_PROGRESS.equals(action)) {
 			TextView label = (TextView)this.findViewById(R.id.configure_locations_download_progress_label);
 			ProgressBar bar = (ProgressBar)this.findViewById(R.id.configure_locations_download_progress_bar);

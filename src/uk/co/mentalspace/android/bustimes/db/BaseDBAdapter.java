@@ -2,6 +2,8 @@ package uk.co.mentalspace.android.bustimes.db;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import uk.co.mentalspace.android.bustimes.Preferences;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -77,7 +79,7 @@ public abstract class BaseDBAdapter<T> {
         	if (c.isBeforeFirst()) c.moveToFirst();
         	return populateFromCursor(c);
     	} catch (SQLException sle) {
-    		Log.e(LOGNAME, "Database error", sle);
+    		if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Database error", sle);
     		return null;
     	} finally {
     		if (null != c) c.close();
@@ -96,7 +98,7 @@ public abstract class BaseDBAdapter<T> {
 		    	c.moveToNext();
 	    	}
     	} catch (SQLiteException sle) {
-    		Log.e(LOGNAME, "Database error", sle);
+    		if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Database error", sle);
     		return rtn;
     	} finally {
 	    	if (null != c) c.close();

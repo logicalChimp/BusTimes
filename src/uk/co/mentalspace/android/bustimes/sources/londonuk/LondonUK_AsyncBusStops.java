@@ -12,6 +12,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import uk.co.mentalspace.android.bustimes.Location;
 import uk.co.mentalspace.android.bustimes.LocationRefreshTask;
+import uk.co.mentalspace.android.bustimes.Preferences;
 import uk.me.jstott.jcoord.LatLng;
 import uk.me.jstott.jcoord.OSRef;
 import android.util.Log;
@@ -23,7 +24,7 @@ public class LondonUK_AsyncBusStops extends LocationRefreshTask {
 	protected String[] progressLabels = new String[] {"Contacting server", "Downloading data", "Processing records"};
 	
 	protected void publishProgress(int labelIndex, int value) {
-		Log.v(LOGNAME, "Updating progress values");
+		if (Preferences.ENABLE_LOGGING) Log.v(LOGNAME, "Updating progress values");
 		String progressLabel = progressLabels[labelIndex];
 		if (PROGRESS_POSITION_PROCESSING_DATA == labelIndex) progressLabel += " ("+value+" / "+getMaxProgress()+")";
 
@@ -38,28 +39,28 @@ public class LondonUK_AsyncBusStops extends LocationRefreshTask {
 	
 	public void performRefresh() {
 		if (null == ldba) {
-			Log.e(LOGNAME, "get Bus Stops called with no Location DB Adapter set");
+			if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "get Bus Stops called with no Location DB Adapter set");
 			return;
 		}
 
 		String url = BUS_LOCATIONS_URL;
-		Log.d(LOGNAME, "Data feed url: "+url);
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Data feed url: "+url);
 
 		BufferedReader br = null;
 		try {
 			publishProgress(PROGRESS_POSITION_CONTACTING_SERVER, 0);
 			HttpClient client = new DefaultHttpClient();
 			HttpGet request = new HttpGet(url);
-			Log.d(LOGNAME, "Requesting data from Server");
+			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Requesting data from Server");
 			HttpResponse response = client.execute(request);
 			
 			publishProgress(PROGRESS_POSITION_DOWNLOADING_DATA, 0);
-			Log.d(LOGNAME, "Request executed - processing response");
+			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Request executed - processing response");
 			InputStreamReader isr = new InputStreamReader(response.getEntity().getContent());
 			br = new BufferedReader(isr);
 			
 			String line = br.readLine();
-			Log.d(LOGNAME, "First line: "+line);
+			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "First line: "+line);
 			
 			//skip the first line, as it is headers
 			line = br.readLine();
@@ -75,7 +76,7 @@ public class LondonUK_AsyncBusStops extends LocationRefreshTask {
 				try {
 					processLocation(keys, line);
 				} catch (Exception e) {
-					Log.w(LOGNAME, "Unknown exception processing stop data ["+line+"]", e);
+					if (Preferences.ENABLE_LOGGING) Log.w(LOGNAME, "Unknown exception processing stop data ["+line+"]", e);
 				}
 
 				line = br.readLine();
@@ -85,14 +86,14 @@ public class LondonUK_AsyncBusStops extends LocationRefreshTask {
 				}
 			}
 
-			Log.d(LOGNAME, "Finished processing ["+currentProgress+"] rows in the response.");
+			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Finished processing ["+currentProgress+"] rows in the response.");
 			
 		} catch (IOException ioe) {
-			Log.e(LOGNAME, "Unexception IOException occured: "+ioe);
+			if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Unexception IOException occured: "+ioe);
 			return;
 		} finally {
 			if (null != br) {
-				try { br.close(); } catch (IOException ioe2) { Log.e(LOGNAME, "Failed to close input stream. cause: "+ioe2); }
+				try { br.close(); } catch (IOException ioe2) { if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Failed to close input stream. cause: "+ioe2); }
 			}
 		}
 		
@@ -135,7 +136,7 @@ public class LondonUK_AsyncBusStops extends LocationRefreshTask {
 			}
 		}
 		if (hasQuotedCols) {
-			Log.v(LOGNAME, "Quoted Line ["+line+"], token count ["+cols.size()+"]");
+			if (Preferences.ENABLE_LOGGING) Log.v(LOGNAME, "Quoted Line ["+line+"], token count ["+cols.size()+"]");
 		}
 		
 		String[] toReturn = cols.toArray(new String[]{});
@@ -151,19 +152,19 @@ public class LondonUK_AsyncBusStops extends LocationRefreshTask {
 
 		if ("50340".equals(cols[1])) {
 			boolean isCodeKnown = keys.entrySet().contains(cols[1]);
-			Log.i(LOGNAME, "cols1 ["+cols[1]+"], cols4 ["+cols[4]+"], cols5 ["+cols[5]+"], comboKey ["+comboKey+"], stopCode ["+stopCode+"], isCodeKnown ["+isCodeKnown+"]");
+			if (Preferences.ENABLE_LOGGING) Log.i(LOGNAME, "cols1 ["+cols[1]+"], cols4 ["+cols[4]+"], cols5 ["+cols[5]+"], comboKey ["+comboKey+"], stopCode ["+stopCode+"], isCodeKnown ["+isCodeKnown+"]");
 		}
 
 		if (null == stopCode) {
 			if (keys.entrySet().contains(cols[1])) {
-				Log.i(LOGNAME, "Stop Code ["+cols[1]+"] exists - but location doesn't match. deleting and re-creating.");
+				if (Preferences.ENABLE_LOGGING) Log.i(LOGNAME, "Stop Code ["+cols[1]+"] exists - but location doesn't match. deleting and re-creating.");
 				//stop code exists but srcPosA or srcPosB don't match - has moved location - delete old one and re-create
 				ldba.deleteLocationByStopCode(cols[1]);
 			}
 			createNewLocation(cols);
 		}
 		else {
-			Log.v(LOGNAME, "Location ["+stopCode+"] exists - updating");
+			if (Preferences.ENABLE_LOGGING) Log.v(LOGNAME, "Location ["+stopCode+"] exists - updating");
 			Location loc = ldba.getLocationByStopCode(stopCode);
 			ldba.updateLocation(loc.getId(), cols[1], cols[3], loc.getDescription(), loc.getLat(), loc.getLon(), cols[4], cols[5], cols[6], loc.getNickName(), loc.getChosen(), this.getSourceId());
 		}
@@ -177,7 +178,7 @@ public class LondonUK_AsyncBusStops extends LocationRefreshTask {
 			latlng = new OSRef(spa,spb).toLatLng();
 			latlng.toWGS84();
 		} catch (NumberFormatException nfe) {
-			Log.e(LOGNAME, "Failed to parse northing,easting values ["+cols[4]+","+cols[5]+"].  Other values ["+cols[0]+","+cols[1]+","+cols[3]+","+cols[6]+"]");
+			if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Failed to parse northing,easting values ["+cols[4]+","+cols[5]+"].  Other values ["+cols[0]+","+cols[1]+","+cols[3]+","+cols[6]+"]");
 			return;
 		}
 		int lat = (int)(latlng.getLat()*10000);

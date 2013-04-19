@@ -1,6 +1,7 @@
 package uk.co.mentalspace.android.bustimes.sources.test;
 
 import uk.co.mentalspace.android.bustimes.Location;
+import uk.co.mentalspace.android.bustimes.Preferences;
 import android.util.Log;
 import uk.co.mentalspace.android.bustimes.LocationRefreshTask;
 
@@ -26,7 +27,7 @@ public class BusStopsRefresh extends LocationRefreshTask {
 		}
 
 		publishProgress("Test Data Generated", 1);
-		Log.d(LOGNAME, "Finished processing response.");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Finished processing response.");
 		
 		
 		finish();

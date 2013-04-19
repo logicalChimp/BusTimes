@@ -2,6 +2,7 @@ package uk.co.mentalspace.android.bustimes.displays.metawatch;
 
 import android.content.BroadcastReceiver;
 import uk.co.mentalspace.android.bustimes.BusTimeRefreshService;
+import uk.co.mentalspace.android.bustimes.Preferences;
 import uk.co.mentalspace.android.bustimes.R;
 import android.content.Context;
 import android.content.Intent;
@@ -33,10 +34,10 @@ public class MetaWatchReceiver extends BroadcastReceiver {
 	public void onReceive(Context context, Intent intent) {
 		try {
 			final String action = intent.getAction();
-			Log.d(LOGNAME, "Received Intent.  Action: " + action);
+			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Received Intent.  Action: " + action);
 	
 			final String appId = intent.getStringExtra("id");
-			Log.d(LOGNAME, "Intent intended for app ["+appId+"]");
+			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Intent intended for app ["+appId+"]");
 			
 			if (MW_DISCOVERY.equals(action)) {
 				metaWatchAnnounce(context);
@@ -47,7 +48,7 @@ public class MetaWatchReceiver extends BroadcastReceiver {
 				Bundle b = intent.getExtras();
 				int btnId = b.getInt("button");
 				int btnType = b.getInt("type");
-				Log.d(LOGNAME, "Button press. btn id ["+btnId+"], type ["+btnType+"]");
+				if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Button press. btn id ["+btnId+"], type ["+btnType+"]");
 				if (BUTTON_TYPE_NO_HOLD == btnType) {
 					Intent service = new Intent(context, MetaWatchService.class);
 					service.setAction(action);
@@ -73,10 +74,10 @@ public class MetaWatchReceiver extends BroadcastReceiver {
 				context.startService(service);
 			}
 			else {
-				Log.w(LOGNAME, "Unrecognised intent action: "+action);
+				if (Preferences.ENABLE_LOGGING) Log.w(LOGNAME, "Unrecognised intent action: "+action);
 			}
 		} catch (Exception e) {
-			Log.e(LOGNAME, "Unexpected exception", e);
+			if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Unexpected exception", e);
 		}
 	}
 
@@ -89,7 +90,7 @@ public class MetaWatchReceiver extends BroadcastReceiver {
 		announce.putExtras(b);
 		announce.setFlags(Intent.FLAG_DEBUG_LOG_RESOLUTION);
 		ctx.sendBroadcast(announce);
-		Log.d(LOGNAME, "Sending Metawatch announce");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Sending Metawatch announce");
 	}
 	
 	public static void metaWatchStart(Context ctx) {
@@ -100,7 +101,7 @@ public class MetaWatchReceiver extends BroadcastReceiver {
 		announce.putExtras(b);
 		announce.setFlags(Intent.FLAG_DEBUG_LOG_RESOLUTION);
 		ctx.sendBroadcast(announce);
-		Log.d(LOGNAME, "Sending Metawatch Start");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Sending Metawatch Start");
 	}
 	
 	public static void metaWatchStop(Context ctx) {
@@ -111,7 +112,7 @@ public class MetaWatchReceiver extends BroadcastReceiver {
 		announce.putExtras(b);
 		announce.setFlags(Intent.FLAG_DEBUG_LOG_RESOLUTION);
 		ctx.sendBroadcast(announce);
-		Log.d(LOGNAME, "Sending Metawatch stop");
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Sending Metawatch stop");
 	}
 	
 }
