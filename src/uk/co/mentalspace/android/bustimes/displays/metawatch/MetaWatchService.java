@@ -96,10 +96,9 @@ public class MetaWatchService extends WakefulIntentService {
 			else {
 				Log.d(LOGNAME, "Unrecognised intent action: "+action);
 			}
-		} catch (Exception e) {
-			Log.e(LOGNAME, "Unknown exception: ", e);
+		} finally {
+			terminate();	
 		}
-		terminate();
 	}
 	
 	public void getBusTimes(Renderer display, Location loc) {
