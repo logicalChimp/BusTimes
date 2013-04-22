@@ -18,7 +18,7 @@ public class LocationsListAdapter extends ArrayAdapter<Location> {
 	private final Location[] selectedLocations;
 	
 	public LocationsListAdapter(Context context, Location[] selectedLocations) {
-		super(context, R.layout.location_list_row_layout, selectedLocations);
+		super(context, R.layout.row_layout_location_list, selectedLocations);
 		ctx = context;
 		this.selectedLocations = selectedLocations;
 	}
@@ -33,7 +33,7 @@ public class LocationsListAdapter extends ArrayAdapter<Location> {
 	
 	protected View getCustomView(int position, View convertView, ViewGroup parent) {
 		LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View rowView = inflater.inflate(R.layout.location_list_row_layout,  parent, false);
+		View rowView = inflater.inflate(R.layout.row_layout_location_list,  parent, false);
 		
 		Location loc = selectedLocations[position];
 		if (null == loc) {

@@ -17,7 +17,7 @@ public class SourcesListAdapter extends ArrayAdapter<Source> {
 	private Source[] srcs = null;
 	
 	public SourcesListAdapter(Context context, Source[] sources) {
-		super(context, R.layout.sources_list_row_layout, sources);
+		super(context, R.layout.row_layout_sources_list, sources);
 		this.ctx = context;
 		this.srcs = sources;
 	}
@@ -32,11 +32,11 @@ public class SourcesListAdapter extends ArrayAdapter<Source> {
 	
 	protected View getCustomView(int position, View convertView, ViewGroup parent) {
 		LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View rowView = inflater.inflate(R.layout.sources_list_row_layout,  parent, false);
+		View rowView = inflater.inflate(R.layout.row_layout_sources_list,  parent, false);
 		
 		Source src = srcs[position];
 		if (null == src) {
-			src = new Source("", "", 0, "", "", "");
+			src = new Source("", "", 0, "", "", "", false);
 		}
 		
 		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "source: "+src);

@@ -1,4 +1,4 @@
-package uk.co.mentalspace.android.bustimes.displays.android;
+package uk.co.mentalspace.android.bustimes.displays.android.popups;
 
 import uk.co.mentalspace.android.bustimes.Location;
 import uk.co.mentalspace.android.bustimes.LocationManager;
@@ -43,7 +43,7 @@ public class EditLocationPopup extends DialogFragment implements OnClickListener
 	
 	private View getPopupView(LayoutInflater inflater) {
 		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Creating popup window view");
-		View popupView = inflater.inflate(R.layout.edit_location_popup, null);
+		View popupView = inflater.inflate(R.layout.popup_edit_location, null);
 		if (null == popupView) if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "popupView is NULL");
 		if (null == loc) if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Location is NULL");
 		
@@ -71,7 +71,6 @@ public class EditLocationPopup extends DialogFragment implements OnClickListener
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 		View popupView = getPopupView(inflater);
 		builder.setView(popupView)
-			.setTitle("Edit Location")
 			.setNeutralButton("Close", new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int id) {

@@ -14,8 +14,9 @@ public class SourcesDBAdapter extends BaseDBAdapter<Source> {
 	private static final String KEY_LOC_REFRESH_CLASSNAME = "locationRefreshClassName";
 	private static final String KEY_BT_REFRESH_CLASSNAME = "busTimeRefreshClassName";
 	private static final String KEY_POLYGON_POINTS_JSON = "areaPolygonPointsJson";
+	private static final String KEY_IS_INSTALLED = "isInstalled";
 
-	private static final String[] ALL_COLUMNS = {KEY_ROWID, KEY_SOURCE_ID, KEY_SOURCE_NAME, KEY_EST_LOC_COUNT, KEY_LOC_REFRESH_CLASSNAME, KEY_BT_REFRESH_CLASSNAME, KEY_POLYGON_POINTS_JSON}; 
+	private static final String[] ALL_COLUMNS = {KEY_ROWID, KEY_SOURCE_ID, KEY_SOURCE_NAME, KEY_EST_LOC_COUNT, KEY_LOC_REFRESH_CLASSNAME, KEY_BT_REFRESH_CLASSNAME, KEY_POLYGON_POINTS_JSON, KEY_IS_INSTALLED}; 
 
     /**
      * Constructor - takes the context to allow the database to be opened/created
@@ -25,7 +26,7 @@ public class SourcesDBAdapter extends BaseDBAdapter<Source> {
         super(ctx);
     }
 
-    public long createSource(String srcId, String srcName, int estLocCount, String locRefreshClassname, String btRefreshClassname, String polygonPointsJson) {
+    public long createSource(String srcId, String srcName, int estLocCount, String locRefreshClassname, String btRefreshClassname, String polygonPointsJson, boolean isInstalled) {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_SOURCE_ID, srcId);
         initialValues.put(KEY_SOURCE_NAME, srcName);
@@ -33,6 +34,7 @@ public class SourcesDBAdapter extends BaseDBAdapter<Source> {
         initialValues.put(KEY_LOC_REFRESH_CLASSNAME, locRefreshClassname);
         initialValues.put(KEY_BT_REFRESH_CLASSNAME, btRefreshClassname);
         initialValues.put(KEY_POLYGON_POINTS_JSON, polygonPointsJson);
+        initialValues.put(KEY_IS_INSTALLED, (isInstalled) ? 1 : 0);
 
         return mDb.insert(BusTimesDBHelper.SOURCES_TABLE, null, initialValues);
     }
@@ -63,16 +65,24 @@ public class SourcesDBAdapter extends BaseDBAdapter<Source> {
 		Cursor c = fetchSourceById(srcId);
 		return getSingle(c);
     }
+    
+    public boolean markSourceInstalled(String srcId, boolean isInstalled) {
+    	ContentValues args = new ContentValues();
+    	args.put(KEY_IS_INSTALLED, (isInstalled) ? 1 : 0);
+    	return update(BusTimesDBHelper.SOURCES_TABLE, args, KEY_SOURCE_ID+" = '"+srcId+"'");
+    }
 
     @Override
 	protected Source populateFromCursor(Cursor c) {
+    	int isInstalled = c.getInt(c.getColumnIndex(KEY_IS_INSTALLED));
     	Source src = new Source(c.getLong(c.getColumnIndex(KEY_ROWID)),
                 c.getString(c.getColumnIndex(KEY_SOURCE_ID)),
                 c.getString(c.getColumnIndex(KEY_SOURCE_NAME)),
                 c.getInt(c.getColumnIndex(KEY_EST_LOC_COUNT)),
                 c.getString(c.getColumnIndex(KEY_LOC_REFRESH_CLASSNAME)),
                 c.getString(c.getColumnIndex(KEY_BT_REFRESH_CLASSNAME)),
-                c.getString(c.getColumnIndex(KEY_POLYGON_POINTS_JSON)));
+                c.getString(c.getColumnIndex(KEY_POLYGON_POINTS_JSON)),
+                (0 == isInstalled)? false : true);
     	return src;
     }
 

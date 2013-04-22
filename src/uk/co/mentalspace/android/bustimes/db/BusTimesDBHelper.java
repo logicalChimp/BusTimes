@@ -7,11 +7,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class BusTimesDBHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "BusTimesLocationsData.db";
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
 
     private static final String LOCATIONS_TABLE_CREATE = "create table locations (_id integer primary key autoincrement, stopCode text not null, name text not null, desc text not null, lat integer, lng integer, srcPosA text not null, srcPosB text not null, heading text not null, nickName text not null, chosen int not null, sourceId text not null);";
     private static final String BUS_TIMES_REFRESH_TABLE_CREATE = "create table btrefreshlog (_id integer primary key autoincrement, sourceId string not null, startTime long not null, endTime long);";
-    private static final String SOURCES_TABLE_CREATE = "create table sources (_id integer primary key autoincrement, sourceId text not null, name text not null, estLocationCount integer not null, locationRefreshClassName text not null, busTimeRefreshClassName text not null, areaPolygonPointsJson text not null);";
+    private static final String SOURCES_TABLE_CREATE = "create table sources (_id integer primary key autoincrement, sourceId text not null, name text not null, estLocationCount integer not null, locationRefreshClassName text not null, busTimeRefreshClassName text not null, areaPolygonPointsJson text not null, isInstalled int not null);";
     
     public static final String LOCATIONS_TABLE = "locations";
     public static final String BUS_TIMES_REFRESH_TABLE = "btrefreshlog";
@@ -46,6 +46,14 @@ public class BusTimesDBHelper extends SQLiteOpenHelper {
     	if (oldVersion < 5) {
     		upgradeToVersion5(db);
     	}
+    	if (oldVersion < 6) {
+    		upgradeToVersion6(db);
+    	}
+    }
+    
+    private void upgradeToVersion6(SQLiteDatabase db) {
+    	final String alterLocationsAddSourceId = "alter table "+SOURCES_TABLE+" add column isInstalled int not null default 0;";
+        db.execSQL(alterLocationsAddSourceId);
     }
     
     private void upgradeToVersion5(SQLiteDatabase db) {

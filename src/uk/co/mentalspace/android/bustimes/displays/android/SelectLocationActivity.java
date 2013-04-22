@@ -8,6 +8,7 @@ import uk.co.mentalspace.android.bustimes.Location;
 import uk.co.mentalspace.android.bustimes.LocationManager;
 import uk.co.mentalspace.android.bustimes.Preferences;
 import uk.co.mentalspace.android.bustimes.R;
+import uk.co.mentalspace.android.bustimes.displays.android.popups.EditLocationPopup;
 import uk.co.mentalspace.android.bustimes.utils.LocationTracker;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -31,12 +32,16 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
+import android.content.Intent;
 import android.os.Bundle;
 
 public class SelectLocationActivity extends FragmentActivity implements OnCameraChangeListener, OnMyLocationChangeListener, OnMarkerClickListener, OnDismissListener {
 	private static final String LOGNAME = "SelectLocationActivity";
 	private static final float MARKER_MAX_ZOOM_LEVEL = 15.0f;
 	private static final float DEFAULT_ZOOM_LEVEL = 16.0f;
+	
+	public static final String ACTION_SHOW_LOC_ON_MAP = "showOnMap";
+	public static final String EXTRA_LOCATION = "location";
 	
 	private HashMap<Location,Marker> markers = new HashMap<Location,Marker>();
 	private HashMap<Marker,Location> locations = new HashMap<Marker,Location>();
@@ -62,6 +67,17 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
     	if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "resuming...");
         super.onResume();
         setUpMapIfNeeded();
+        
+        Intent intent = this.getIntent();
+        if (ACTION_SHOW_LOC_ON_MAP.equals(intent.getAction())) {
+        	if (intent.hasExtra(EXTRA_LOCATION)) {
+        		Location loc = (Location)intent.getSerializableExtra(EXTRA_LOCATION);
+        		if (null != loc) {
+                	LatLng ll = loc.getLatLng();
+            		mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll, DEFAULT_ZOOM_LEVEL));
+        		}
+        	}
+        }
     }
     
     @Override

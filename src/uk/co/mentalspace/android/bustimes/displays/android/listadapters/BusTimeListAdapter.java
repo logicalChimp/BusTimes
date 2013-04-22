@@ -15,14 +15,14 @@ public class BusTimeListAdapter extends ArrayAdapter<BusTime> {
 	private final BusTime[] busTimes;
 	
 	public BusTimeListAdapter(Context context, BusTime[] times) {
-		super(context, R.layout.bus_times_row_layout, times);
+		super(context, R.layout.row_layout_bus_times, times);
 		ctx = context;
 		busTimes = times;
 	}
 	
 	public View getView(int position, View convertView, ViewGroup parent) {
 		LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View rowView = inflater.inflate(R.layout.bus_times_row_layout,  parent, false);
+		View rowView = inflater.inflate(R.layout.row_layout_bus_times,  parent, false);
 		
 		BusTime bt = busTimes[position];
 //		((TextView)rowView.findViewById(R.id.rowLineNumber)).setText(String.valueOf(position+1));

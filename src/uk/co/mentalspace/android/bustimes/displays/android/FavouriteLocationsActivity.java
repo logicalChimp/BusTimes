@@ -3,41 +3,34 @@ package uk.co.mentalspace.android.bustimes.displays.android;
 import java.util.List;
 import java.util.ArrayList;
 
+import net.londatiga.android.ActionItem;
+import net.londatiga.android.QuickAction;
+import net.londatiga.android.QuickAction.OnActionItemClickListener;
+
 import uk.co.mentalspace.android.bustimes.Location;
 import uk.co.mentalspace.android.bustimes.LocationManager;
-import uk.co.mentalspace.android.bustimes.LocationRefreshService;
 import uk.co.mentalspace.android.bustimes.Preferences;
 import uk.co.mentalspace.android.bustimes.R;
-import uk.co.mentalspace.android.bustimes.Source;
-import uk.co.mentalspace.android.bustimes.SourceManager;
 import uk.co.mentalspace.android.bustimes.displays.android.listadapters.LocationsListAdapter;
-import uk.co.mentalspace.android.bustimes.displays.android.listadapters.SourcesListAdapter;
+import uk.co.mentalspace.android.bustimes.displays.android.popups.EditLocationPopup;
+import uk.co.mentalspace.android.bustimes.utils.BTActionItem;
 
 import android.os.Bundle;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
 
-public class FavouriteLocationsActivity extends FragmentActivity implements OnClickListener, OnItemClickListener, OnItemSelectedListener, OnDismissListener {
+public class FavouriteLocationsActivity extends FragmentActivity implements OnItemClickListener, OnDismissListener, OnActionItemClickListener, QuickAction.OnDismissListener  {
 
 	private static final String LOGNAME = "FavLocsActivity";
 
@@ -45,22 +38,15 @@ public class FavouriteLocationsActivity extends FragmentActivity implements OnCl
 	public static final String ACTION_SHOW_STAGE_TWO_WELCOME = "showStageTwoWelcome";
 	public static final String ACTION_NORMAL = "actionNormal";
 	
-	private List<Source> srcs = null;
-	private Source selectedSource = null;
+	private static final int ACTION_ID_EDIT = 0;
+	private static final int ACTION_ID_SHOW_ON_MAP = 1;
+
+	private List<Location> locations = null;
 	
-	private BroadcastReceiver drsReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-        	FavouriteLocationsActivity.this.receiveBroadcast(intent);
-        }
-    };
-    private boolean drsReceiverIsRegistered = false;
-    
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_favourite_locations);
-//		configureLayout();
 	}
 	
 	@Override
@@ -68,158 +54,110 @@ public class FavouriteLocationsActivity extends FragmentActivity implements OnCl
 		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "onResume");
 		super.onResume();
 		configureLayout();
-		if (!drsReceiverIsRegistered) {
-		    registerReceiver(drsReceiver, new IntentFilter(LocationRefreshService.ACTION_UPDATE_DATA_REFRESH_PROGRESS));
-		    drsReceiverIsRegistered = true;
-
-		    //request update on service progress - after re-registering the broadcast receiver
-			Intent intent = new Intent(this, LocationRefreshService.class);
-			intent.setAction(LocationRefreshService.ACTION_GET_REFRESH_PROGRESS);
-			startService(intent);
-		}		
 	}
 
 	@Override
 	protected void onPause() {
 		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "onPause");
-		if (drsReceiverIsRegistered) {
-		    unregisterReceiver(drsReceiver);
-		    drsReceiverIsRegistered = false;
-		}
 		super.onPause();
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.configuration, menu);
+		getMenuInflater().inflate(R.menu.activity_favourite_locations, menu);
 		return true;
 	}
 
 	private void configureLayout() {
 		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Configuring layout...");
-		srcs = SourceManager.getAllSources(this);		
-		Source[] srcsArray = srcs.toArray(new Source[]{});
-		
-		((Spinner)findViewById(R.id.configure_select_source)).setOnItemSelectedListener(this);
-		SourcesListAdapter sla = new SourcesListAdapter(this, srcsArray);
-		sla.setDropDownViewResource(R.layout.sources_list_row_layout);
-		Spinner spinner = (Spinner)findViewById(R.id.configure_select_source);
-		spinner.setAdapter(sla);
-
-		LinearLayout refreshLocationsGroup = (LinearLayout)this.findViewById(R.id.configure_source_force_download_group);
-		refreshLocationsGroup.setVisibility(View.VISIBLE);
-		
-		LinearLayout addLocationsGroup = (LinearLayout)this.findViewById(R.id.configure_add_location_group);
-		addLocationsGroup.setVisibility(View.VISIBLE);
-		
-		Button refreshLocationsButton = (Button)this.findViewById(R.id.configure_source_refresh_data_button);
-		refreshLocationsButton.setOnClickListener(this);
-		
-		Button addLocationButton = (Button)this.findViewById(R.id.configure_browse_locations_button);
-		addLocationButton.setOnClickListener(this);
-		
 		configureFavouriteLocationsList();
 	}
 	
 	private void configureFavouriteLocationsList() {
 		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Configuring favourite locations list");
-		List<Location> selectedLocations = LocationManager.getSelectedLocations(this);
-		if (null == selectedLocations) selectedLocations = new ArrayList<Location>(); 
-		LocationsListAdapter claa = new LocationsListAdapter(this, selectedLocations.toArray(new Location[]{}));
+		locations = LocationManager.getSelectedLocations(this);
+		if (null == locations) locations = new ArrayList<Location>(); 
+		
+		LocationsListAdapter claa = new LocationsListAdapter(this, locations.toArray(new Location[]{}));
 		ListView lv = (ListView)findViewById(R.id.configure_chosen_locations_list);
 		lv.setAdapter(claa);
 		lv.setOnItemClickListener(this);		
 	}
 
-	@Override
-	public void onClick(View arg0) {
-		// TODO Auto-generated method stub
-		int viewId = arg0.getId();
-		switch (viewId) {
-		case R.id.configure_source_refresh_data_button:
-			//trigger download of stops
-			if (null == selectedSource) return;
-			
-			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Sending intent to start Data Refresh Service");
-			Intent intent = new Intent(this, LocationRefreshService.class);
-			intent.setAction(LocationRefreshService.ACTION_REFRESH_LOCATION_DATA);
-			intent.putExtra(LocationRefreshService.EXTRA_SOURCE_ID, selectedSource.getID());
-			this.startService(intent);
-			
-//			Source src = SourceManager.getSource(sourceId);
-//			View container = (View)this.findViewById(R.id.configure_source_progress_group);
-//			TextView label = (TextView)this.findViewById(R.id.configure_locations_download_progress_label);
-//			ProgressBar bar = (ProgressBar)this.findViewById(R.id.configure_locations_download_progress_bar);
-//			ProgressDisplayImpl pd = new ProgressDisplayImpl(this, container, label, bar);
-//			pd.setMaxValue(src.getEstimatedLocationCount());
-//			src.loadLocations(this, pd);
-			return;
-		case R.id.configure_browse_locations_button:
-			//trigger display of location selector activity
-    		startActivity(new Intent(this, SelectLocationActivity.class));
-			return;
-		default:
-		}
-	}
-
+	//click on item in locations list
 	@Override
 	public void onItemClick(AdapterView<?> listView, View view, int position, long id) {
-		String stopCode = ((TextView)view.findViewById(R.id.chosen_location_stop_code_label)).getText().toString();
-		if (null == stopCode || "".equals(stopCode.trim())) return;
+		if (null == locations || locations.size() <= position) return;
 		
-		Location loc = LocationManager.getLocationByStopCode(this, stopCode);
-		if (null == loc) return;
+		Location loc = locations.get(position);
+		final QuickAction mQuickAction 	= new QuickAction(this);
+
+		ActionItem editItem = new BTActionItem<Location>(ACTION_ID_EDIT, getString(R.string.location_actions_edit), null, loc);
+		mQuickAction.addActionItem(editItem);
+		ActionItem showItem = new BTActionItem<Location>(ACTION_ID_SHOW_ON_MAP, getString(R.string.location_actions_show_on_map), null, loc);
+		mQuickAction.addActionItem(showItem);
 		
-		FragmentManager fragmentManager = getSupportFragmentManager();
-		EditLocationPopup elp = EditLocationPopup.newInstance(loc);
-		
-		//show dialog
-		elp.show(fragmentManager, "EditLocationDialog");
-		fragmentManager.executePendingTransactions();
-		elp.getDialog().setOnDismissListener(this);
+		//setup the action item click listener
+		mQuickAction.setOnActionItemClickListener(this);
+		mQuickAction.setOnDismissListener(this);
+		mQuickAction.show(view);
+		mQuickAction.setAnimStyle(QuickAction.ANIM_AUTO);
 	}
 
-    public void receiveBroadcast(Intent intent) {
-    	String action = intent.getAction();
-    	if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Received broadcast intent.  Action: " + action);
-    	if (LocationRefreshService.ACTION_UPDATE_DATA_REFRESH_PROGRESS.equals(action)) {
-			TextView label = (TextView)this.findViewById(R.id.configure_locations_download_progress_label);
-			ProgressBar bar = (ProgressBar)this.findViewById(R.id.configure_locations_download_progress_bar);
-			
-			bar.setMax(intent.getIntExtra(LocationRefreshService.EXTRA_MAX_VALUE, 0));
-			bar.setProgress(intent.getIntExtra(LocationRefreshService.EXTRA_CURRENT_VALUE, 0));
-			label.setText(intent.getStringExtra(LocationRefreshService.EXTRA_PROGRESS_LABEL));
-			
-			View container = (View)this.findViewById(R.id.configure_source_progress_group);
-			container.setVisibility(View.VISIBLE);
-    	}
-    	if (LocationRefreshService.ACTION_LOCATION_REFRESH_TASK_COMPLETE.equals(action)) {
-			View container = (View)this.findViewById(R.id.configure_source_progress_group);
-			container.setVisibility(View.GONE);
-			Toast.makeText(this, "Locations download complete", Toast.LENGTH_SHORT).show();
-    	}
-    }
-
-	@Override
-	public void onItemSelected(AdapterView<?> parentView, View view, int position, long id) {
-		if (null == srcs || srcs.size() <= position) {
-			((Button)this.findViewById(R.id.configure_source_refresh_data_button)).setEnabled(false);
-			return;
-		}
-		
-		selectedSource = srcs.get(position);
-		((Button)this.findViewById(R.id.configure_source_refresh_data_button)).setEnabled(true);
-	}
-
-	@Override
-	public void onNothingSelected(AdapterView<?> arg0) {
-		//do nothing
-	}
-
+	//dismiss of edit dialog
 	@Override
 	public void onDismiss(DialogInterface dialog) {
 		configureFavouriteLocationsList();
 	}
 
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.menu_add_favourite:
+    		startActivity(new Intent(this, SelectLocationActivity.class));
+			return true;
+		case R.id.menu_manage_sources:
+    		startActivity(new Intent(this, ManageSourcesActivity.class));
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
+	//dismiss of quick actions bar
+	@Override
+	public void onDismiss() {
+		//TODO remove
+		Toast.makeText(this, "Ups..dismissed", Toast.LENGTH_SHORT).show();
+	}
+
+	//click on item in actions bar
+	@Override
+	public void onItemClick(QuickAction source, int pos, int actionId) {
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "QuickAction clicked. Pos ["+pos+"], id ["+actionId+"]");
+		ActionItem ai = source.getActionItem(pos);
+		@SuppressWarnings("unchecked")
+		Location loc = ((BTActionItem<Location>)ai).getData();
+		
+		switch (actionId) {
+		case ACTION_ID_EDIT:
+			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "QuickAction 'Location Edit' clicked");
+			FragmentManager fragmentManager = getSupportFragmentManager();
+			EditLocationPopup elp = EditLocationPopup.newInstance(loc);
+			
+			//show dialog
+			elp.show(fragmentManager, "EditLocationDialog");
+			fragmentManager.executePendingTransactions();
+			elp.getDialog().setOnDismissListener(this);
+			return;
+		case ACTION_ID_SHOW_ON_MAP:
+			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Sending intent to show location ["+loc+"] on map");
+			Intent intent = new Intent(this, SelectLocationActivity.class);
+			intent.setAction(SelectLocationActivity.ACTION_SHOW_LOC_ON_MAP);
+			intent.putExtra(SelectLocationActivity.EXTRA_LOCATION, loc);
+			startActivity(intent);
+			return;
+		}
+	}
 }

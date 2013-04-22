@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uk.co.mentalspace.android.bustimes.Preferences;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -71,6 +72,10 @@ public abstract class BaseDBAdapter<T> {
             mCursor.moveToFirst();
         }
         return mCursor;
+    }
+    
+    public boolean update(String tableName, ContentValues args, String whereClause) {
+        return mDb.update(tableName, args, whereClause, null) > 0;
     }
     
     public T getSingle(Cursor c) {

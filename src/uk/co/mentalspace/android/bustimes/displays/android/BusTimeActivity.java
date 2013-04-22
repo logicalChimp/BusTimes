@@ -1,7 +1,7 @@
 package uk.co.mentalspace.android.bustimes.displays.android;
 
-import java.util.ArrayList;
 import uk.co.mentalspace.android.bustimes.BusTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import uk.co.mentalspace.android.bustimes.BusTimeRefreshService;
@@ -10,12 +10,8 @@ import uk.co.mentalspace.android.bustimes.LocationManager;
 import uk.co.mentalspace.android.bustimes.Preferences;
 import uk.co.mentalspace.android.bustimes.R;
 import uk.co.mentalspace.android.bustimes.Renderer;
-import uk.co.mentalspace.android.bustimes.Source;
-import uk.co.mentalspace.android.bustimes.SourceManager;
 import uk.co.mentalspace.android.bustimes.displays.android.listadapters.BusTimeListAdapter;
 import uk.co.mentalspace.android.bustimes.displays.android.listadapters.LocationsListAdapter;
-import uk.co.mentalspace.android.bustimes.sources.londonuk.LondonUK;
-import uk.co.mentalspace.android.bustimes.sources.test.TestSource;
 import uk.co.mentalspace.android.bustimes.utils.LocationTracker;
 
 import android.os.Bundle;
@@ -93,7 +89,7 @@ public class BusTimeActivity extends Activity implements Renderer, OnItemSelecte
 		Location[] locsArray = locations.toArray(new Location[]{});
 		
 		LocationsListAdapter claa = new LocationsListAdapter(this, locsArray);
-		claa.setDropDownViewResource(R.layout.location_list_row_layout);
+		claa.setDropDownViewResource(R.layout.row_layout_location_list);
 		Spinner spinner = (Spinner)findViewById(R.id.bus_times_location);
 		spinner.setAdapter(claa);
 	}
@@ -122,7 +118,7 @@ public class BusTimeActivity extends Activity implements Renderer, OnItemSelecte
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.activity_main, menu);
+        getMenuInflater().inflate(R.menu.activity_bus_times, menu);
         return true;
     }
 
@@ -154,16 +150,7 @@ public class BusTimeActivity extends Activity implements Renderer, OnItemSelecte
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
     	switch (item.getItemId()) {
-    	case R.id.menu_update_sources:
-    		Source tflSrc = new LondonUK();
-    		SourceManager.createSource(this, tflSrc);
-    		Source testSrc = new TestSource();
-    		SourceManager.createSource(this, testSrc);
-    		return true;
-    	case R.id.menu_map:
-    		startActivity(new Intent(this, SelectLocationActivity.class));
-    		return true;
-    	case R.id.menu_configure:
+    	case R.id.menu_view_favourites:
     		startActivity(new Intent(this, FavouriteLocationsActivity.class));
     		return true;
     	default:

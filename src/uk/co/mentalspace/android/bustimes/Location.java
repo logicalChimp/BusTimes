@@ -2,6 +2,8 @@ package uk.co.mentalspace.android.bustimes;
 
 import java.io.Serializable;
 
+import com.google.android.gms.maps.model.LatLng;
+
 public class Location implements Serializable {
 
 	private static final long serialVersionUID = -6198852740620788874L;
@@ -149,5 +151,9 @@ public class Location implements Serializable {
 	
 	public String getSourceId() {
 		return sourceId;
+	}
+	
+	public LatLng getLatLng() {
+		return new LatLng( ((double)lat)/10000, ((double)lon)/10000 );
 	}
 }

@@ -2,12 +2,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FavouriteLocationsActivity" >
+    tools:context=".ManageSourcesActivity" >
 
     <ListView
-        android:id="@+id/configure_chosen_locations_list"
+        android:id="@+id/manage_sources_source_list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-    </ListView>
-    
+        android:layout_height="wrap_content" />
+
 </RelativeLayout>

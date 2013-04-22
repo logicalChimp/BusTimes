@@ -22,7 +22,7 @@ public class SourceManager extends BaseManager<Source> {
 		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Writing source ["+src+"] to db");
 		Task<Void> srcTask = new SrcTask<Void>() {
 			protected Void doWork() {
-		        sdba.createSource(src.getID(), src.getName(), src.getEstimatedLocationCount(), src.getLocationRefreshClassName(), src.getBTRefreshClassName(), src.getPolygonPointsJson());
+		        sdba.createSource(src.getID(), src.getName(), src.getEstimatedLocationCount(), src.getLocationRefreshClassName(), src.getBTRefreshClassName(), src.getPolygonPointsJson(), src.isInstalled());
 		        return null;
 			}
 		};
@@ -50,4 +50,13 @@ public class SourceManager extends BaseManager<Source> {
 		return srcTask.run(ctx);
 	}
 	
+	public static boolean updateInstallationStatus(Context ctx, final String srcId, final boolean isInstalled) {
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Updating installation status for source ["+srcId+"] to ["+isInstalled+"]");
+		Task<Boolean> srcTask = new SrcTask<Boolean>() {
+			protected Boolean doWork() {
+				return sdba.markSourceInstalled(srcId, isInstalled);
+			}
+		};
+		return srcTask.run(ctx);
+	}
 }

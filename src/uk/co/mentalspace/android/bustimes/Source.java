@@ -1,8 +1,11 @@
 package uk.co.mentalspace.android.bustimes;
 
+import java.io.Serializable;
+
 import android.util.Log;
 
-public class Source {
+public class Source implements Serializable {
+	private static final long serialVersionUID = 5205293391053288165L;
 	private static final String LOGNAME = "Source";
 
 	private long rowId = -1;
@@ -12,15 +15,16 @@ public class Source {
 	private String locRefreshClassName = null;
 	private String btRefreshClassName = null;
 	private String polygonPointsJson = null;
+	private boolean isInstalled = false;
 	
 	private transient LocationRefreshTask lrt = null;
 	private transient BusTimeRefreshTask btrt = null;
 	
-	public Source(String srcId, String srcName, int estLocCount, String locRefreshClassname, String btRefreshClassname, String polygonPointsJson) {
-		this(-1, srcId, srcName, estLocCount, locRefreshClassname, btRefreshClassname, polygonPointsJson);
+	public Source(String srcId, String srcName, int estLocCount, String locRefreshClassname, String btRefreshClassname, String polygonPointsJson, boolean isInstalled) {
+		this(-1, srcId, srcName, estLocCount, locRefreshClassname, btRefreshClassname, polygonPointsJson, isInstalled);
 	}
 	
-	public Source(long rowId, String srcId, String srcName, int estLocCount, String locRefreshClassname, String btRefreshClassname, String polygonPointsJson) {
+	public Source(long rowId, String srcId, String srcName, int estLocCount, String locRefreshClassname, String btRefreshClassname, String polygonPointsJson, boolean isInstalled) {
 		this.rowId = rowId;
 		this.srcId = srcId;
 		this.srcName = srcName;
@@ -28,6 +32,7 @@ public class Source {
 		this.locRefreshClassName = locRefreshClassname;
 		this.btRefreshClassName = btRefreshClassname;
 		this.polygonPointsJson = polygonPointsJson;
+		this.isInstalled = isInstalled;
 	}
 	
 	@Override
@@ -90,6 +95,10 @@ public class Source {
 	
 	public String getPolygonPointsJson() {
 		return polygonPointsJson;
+	}
+	
+	public boolean isInstalled() {
+		return isInstalled;
 	}
 	
 	public LocationRefreshTask getLocationRefreshTask() {
