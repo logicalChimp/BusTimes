@@ -25,8 +25,8 @@ public class Main extends Activity {
 			return;
 		} else if (0 == locations) {
 			//first run - display welcome message
-			Intent intent = new Intent(this, FavouriteLocationsActivity.class);
-			intent.setAction(FavouriteLocationsActivity.ACTION_SHOW_STAGE_ONE_WELCOME);
+			Intent intent = new Intent(this, ManageSourcesActivity.class);
+			intent.setAction(ManageSourcesActivity.ACTION_SHOW_STAGE_ONE_WELCOME);
 			this.startActivity(intent);
 			finish();
 			return;

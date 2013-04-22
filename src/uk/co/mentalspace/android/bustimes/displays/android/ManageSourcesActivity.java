@@ -33,7 +33,7 @@ public class ManageSourcesActivity extends FragmentActivity implements OnItemCli
 	private static final int ACTION_ID_REFRESH_SOURCE = 1;
 	private static final int ACTION_ID_UNINSTALL_SOURCE = 2;
 	
-	public static final String SHOW_WELCOME_INSTALL_SOURCE_MSG = "ShowWelcomeAndInstallSourceMessage";
+	public static final String ACTION_SHOW_STAGE_ONE_WELCOME = "showStageOneWelcome";
 	
 	private List<Source> srcs = null;
 	
@@ -81,12 +81,12 @@ public class ManageSourcesActivity extends FragmentActivity implements OnItemCli
 		final QuickAction mQuickAction 	= new QuickAction(this);
 
 		if (!src.isInstalled()) {
-			ActionItem installItem = new BTActionItem<Source>(ACTION_ID_INSTALL_SOURCE, getString(R.string.source_actions_popup_install), null, src);
+			ActionItem installItem = new BTActionItem<Source>(ACTION_ID_INSTALL_SOURCE, getString(R.string.source_actions_popup_install), getResources().getDrawable(android.R.drawable.stat_sys_download_done), src);
 			mQuickAction.addActionItem(installItem);
 		} else {
-			ActionItem refreshItem = new BTActionItem<Source>(ACTION_ID_REFRESH_SOURCE, getString(R.string.source_actions_popup_refresh), null, src);
+			ActionItem refreshItem = new BTActionItem<Source>(ACTION_ID_REFRESH_SOURCE, getString(R.string.source_actions_popup_refresh), getResources().getDrawable(android.R.drawable.stat_notify_sync_noanim), src);
 			mQuickAction.addActionItem(refreshItem);
-	        ActionItem uninstallItem = new BTActionItem<Source>(ACTION_ID_UNINSTALL_SOURCE, getString(R.string.source_actions_popup_uninstall), null, src);
+	        ActionItem uninstallItem = new BTActionItem<Source>(ACTION_ID_UNINSTALL_SOURCE, getString(R.string.source_actions_popup_uninstall), getResources().getDrawable(android.R.drawable.ic_menu_set_as), src);
 			mQuickAction.addActionItem(uninstallItem);
 		}
 		

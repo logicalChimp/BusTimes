@@ -34,7 +34,6 @@ public class FavouriteLocationsActivity extends FragmentActivity implements OnIt
 
 	private static final String LOGNAME = "FavLocsActivity";
 
-	public static final String ACTION_SHOW_STAGE_ONE_WELCOME = "showStageOneWelcome";
 	public static final String ACTION_SHOW_STAGE_TWO_WELCOME = "showStageTwoWelcome";
 	public static final String ACTION_NORMAL = "actionNormal";
 	
@@ -93,9 +92,9 @@ public class FavouriteLocationsActivity extends FragmentActivity implements OnIt
 		Location loc = locations.get(position);
 		final QuickAction mQuickAction 	= new QuickAction(this);
 
-		ActionItem editItem = new BTActionItem<Location>(ACTION_ID_EDIT, getString(R.string.location_actions_edit), null, loc);
+		ActionItem editItem = new BTActionItem<Location>(ACTION_ID_EDIT, getString(R.string.location_actions_edit), getResources().getDrawable(android.R.drawable.ic_menu_edit), loc);
 		mQuickAction.addActionItem(editItem);
-		ActionItem showItem = new BTActionItem<Location>(ACTION_ID_SHOW_ON_MAP, getString(R.string.location_actions_show_on_map), null, loc);
+		ActionItem showItem = new BTActionItem<Location>(ACTION_ID_SHOW_ON_MAP, getString(R.string.location_actions_show_on_map), getResources().getDrawable(android.R.drawable.ic_menu_mapmode), loc);
 		mQuickAction.addActionItem(showItem);
 		
 		//setup the action item click listener

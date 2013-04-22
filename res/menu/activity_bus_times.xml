@@ -2,11 +2,13 @@
 
     <item 
         android:id="@+id/menu_view_favourites"
+        android:icon="@android:drawable/star_off"
         android:showAsAction="ifRoom|withText"
         android:title="@string/menu_view_favourites" />
 
     <item 
         android:id="@+id/menu_settings"
+        android:icon="@android:drawable/ic_menu_preferences"
         android:showAsAction="never"
         android:title="@string/menu_settings" />
 </menu>
