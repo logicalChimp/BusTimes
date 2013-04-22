@@ -1,7 +1,7 @@
 package uk.co.mentalspace.android.bustimes.displays.android;
 
-import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import uk.co.mentalspace.android.bustimes.Location;
@@ -9,6 +9,7 @@ import uk.co.mentalspace.android.bustimes.LocationManager;
 import uk.co.mentalspace.android.bustimes.Preferences;
 import uk.co.mentalspace.android.bustimes.R;
 import uk.co.mentalspace.android.bustimes.displays.android.popups.EditLocationPopup;
+import uk.co.mentalspace.android.bustimes.displays.android.popups.FindLocationPopup;
 import uk.co.mentalspace.android.bustimes.utils.LocationTracker;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -26,25 +27,34 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
+import android.view.Gravity;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.Toast;
-import android.widget.ToggleButton;
+import android.annotation.TargetApi;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
-public class SelectLocationActivity extends FragmentActivity implements OnCameraChangeListener, OnMyLocationChangeListener, OnMarkerClickListener, OnDismissListener {
+public class SelectLocationActivity extends FragmentActivity implements OnCameraChangeListener, OnMyLocationChangeListener, OnMarkerClickListener, OnPointFoundListener {
 	private static final String LOGNAME = "SelectLocationActivity";
 	private static final float MARKER_MAX_ZOOM_LEVEL = 15.0f;
 	private static final float DEFAULT_ZOOM_LEVEL = 16.0f;
 	
 	public static final String ACTION_SHOW_LOC_ON_MAP = "showOnMap";
 	public static final String EXTRA_LOCATION = "location";
+
+	private static final String DIALOG_ID_FIND_LOCATION = "FindLocationDialog";
+	private static final String DIALOG_ID_EDIT_LOCATION = "EditLocationDialog";
 	
 	private HashMap<Location,Marker> markers = new HashMap<Location,Marker>();
 	private HashMap<Marker,Location> locations = new HashMap<Marker,Location>();
+	private ProgressDialog progressIndicator = null;
 	
 	/**
      * Note that this may be null if the Google Play services APK is not available.
@@ -53,13 +63,12 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
     private boolean mapTracksUserPos = false;
     private LocationTracker posTracker;
     private EditLocationPopup elp = null;
+    private FindLocationPopup flp = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_select_location);
-				
-        setUpMapIfNeeded();
 	}
 
     @Override
@@ -80,14 +89,72 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
         }
     }
     
-    @Override
+	@Override
     protected void onPause() {
     	if (null != posTracker) {
     		posTracker.stopTrackingLocation();
     	}
     	super.onPause();
     }
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.activity_select_locations, menu);
+		return true;
+	}
 
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Handling key-up.  keyCode ["+keyCode+"], keyEvent ["+event+"]");
+		switch (keyCode) {
+		case KeyEvent.KEYCODE_SEARCH:
+			showSearch(true);
+			return true;
+		default:
+			return super.onKeyUp(keyCode, event);
+		}
+	}
+	
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+    	switch (item.getItemId()) {
+    	case R.id.menu_search_location:
+    		showSearch(true);
+    		return true;
+    	default:
+    		return false;
+    	}
+    }
+    
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    private void showSearch(final boolean show) {
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		flp = FindLocationPopup.newInstance();
+		
+		final SelectLocationActivity self = this;
+		
+		//show dialog
+		flp.show(fragmentManager, DIALOG_ID_FIND_LOCATION);
+		fragmentManager.executePendingTransactions();
+		flp.getDialog().setOnDismissListener(new OnDismissListener() {
+			@Override
+			public void onDismiss(DialogInterface arg0) {
+				self.onDismiss(arg0, DIALOG_ID_FIND_LOCATION);
+			}
+		});
+		
+		WindowManager.LayoutParams p = flp.getDialog().getWindow().getAttributes();
+
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			p.y = getActionBar().getHeight(); //findViewById(R.id.locationSelectionMap).getTop();
+		} else {
+			p.y = 50; //getActionBar().getHeight(); //findViewById(R.id.locationSelectionMap).getTop();
+		}		
+		flp.getDialog().getWindow().setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
+		flp.getDialog().getWindow().setAttributes(p);
+    }
+    
     /**
      * Sets up the map if it is possible to do so (i.e., the Google Play services APK is correctly
      * installed) and the map has not already been instantiated.. This will ensure that we only ever
@@ -133,7 +200,24 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
     	mMap.setOnCameraChangeListener(this);
     	mMap.setOnMyLocationChangeListener(this);
     	mMap.setOnMarkerClickListener(this);
-//    	mMap.setOnInfoWindowClickListener(this);
+    }
+    
+    private void runSearch(String toFind) {
+    	if (null == toFind || "".equals(toFind.trim())) return;
+    	
+		Location loc = LocationManager.getLocationByStopCode(this, toFind);
+		if (null != loc) {
+			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Location found: "+loc.getLocationName());
+        	LatLng ll = new LatLng(((double)loc.getLat())/10000,((double)loc.getLon())/10000);
+    		mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll, DEFAULT_ZOOM_LEVEL));
+		} else {
+			//not a stop code entered - do a general google search
+		    new SearchTask(this, toFind, this).execute();
+	    
+	        progressIndicator = new ProgressDialog(this);
+	        progressIndicator.setMessage("Searching...");
+	        progressIndicator.show();
+	    }
     }
     
     public void onCameraChange(CameraPosition position) {
@@ -217,32 +301,6 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
     	}
 	}
 	
-	public void onToggleGPSClicked(View view) {
-		if (null == mMap) return; //map not loaded - ignore button actions
-		
-	    // Is the toggle on?
-	    mapTracksUserPos = ((ToggleButton) view).isChecked();
-//	    Log.d(LOGNAME, "Gps is toggled on: "+on);
-//    	mMap.setMyLocationEnabled(on);
-	}
-	
-	public void onFindStopCodeClicked(View view) {
-		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Find Stop button clicked");
-		EditText stopField = (EditText)this.findViewById(R.id.select_location_stop_code_filter);
-		String stopCode = stopField.getText().toString();
-		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Locating stop for code: "+stopCode);
-
-		Location loc = LocationManager.getLocationByStopCode(this, stopCode);
-		if (null != loc) {
-			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Location found: "+loc.getLocationName());
-        	LatLng ll = new LatLng(((double)loc.getLat())/10000,((double)loc.getLon())/10000);
-    		mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll, DEFAULT_ZOOM_LEVEL));
-		} else {
-			if (Preferences.ENABLE_LOGGING) Log.i(LOGNAME, "No location found");
-			Toast.makeText(this, "No matching stop found", Toast.LENGTH_SHORT).show();
-		}
-	}
-
 	@Override
 	public boolean onMarkerClick(Marker arg0) {
 		Location loc = locations.get(arg0);
@@ -253,28 +311,56 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		elp = EditLocationPopup.newInstance(loc);
 		
+		final SelectLocationActivity self = this;
+		
 		//show dialog
-		elp.show(fragmentManager, "EditLocationDialog");
+		elp.show(fragmentManager, DIALOG_ID_EDIT_LOCATION);
 		fragmentManager.executePendingTransactions();
-		elp.getDialog().setOnDismissListener(this);
+		elp.getDialog().setOnDismissListener(new OnDismissListener() {
+			@Override
+			public void onDismiss(DialogInterface arg0) {
+				self.onDismiss(arg0, DIALOG_ID_EDIT_LOCATION);
+			}
+		});
 
 		//return true to indicate we have handled the event
 		return true;
 	}
 
-	@Override
-	public void onDismiss(DialogInterface arg0) {
-		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Dialog dismissed - removing edited marker");
-		Location loc = elp.getLocation();
-		Marker marker = markers.get(loc);
-		markers.remove(loc);
-		locations.remove(marker);
-		
-		elp = null;
+	public void onDismiss(DialogInterface arg0, String id) {
+		if (DIALOG_ID_EDIT_LOCATION.equals(id)) {
+			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Dialog dismissed - removing edited marker");
+			Location loc = elp.getLocation();
+			Marker marker = markers.get(loc);
+			markers.remove(loc);
+			locations.remove(marker);
+			
+			elp = null;
+	
+			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Removed edited marker - refreshing map");
+			//force map to redraw for the same position
+	        onCameraChange(mMap.getCameraPosition());
+		}
+		if (DIALOG_ID_FIND_LOCATION.equals(id)) {
+			if (null == flp) return;
+			String toFind = flp.getSearchTerm();
+			if (null == toFind || "".equals(toFind.trim())) return;
+			
+			runSearch(toFind);
+		}
+	}
 
-		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Removed edited marker - refreshing map");
-		//force map to redraw for the same position
-        onCameraChange(mMap.getCameraPosition());
+	@Override
+	public void onPointFound(LatLng ll) {
+        if (null != progressIndicator) progressIndicator.dismiss();
+
+        if (null == ll) {
+        	Toast.makeText(this, "No matches", Toast.LENGTH_SHORT).show();
+        	return;
+        }
+    	if (null != mMap) {
+    		mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll, DEFAULT_ZOOM_LEVEL));
+    	}
 	}
 
 }

@@ -58,10 +58,14 @@
 	<string name="menu_manage_sources">Manage Sources</string>
 	<string name="menu_view_favourites">View Favs</string>
 	<string name="menu_settings">Settings</string>
+	<string name="menu_search_locations">Search</string>
 	
 	<string name="location_actions_edit">Edit</string>
 	<string name="location_actions_show_on_map">Show</string>
-    
+
+	<string name="select_location_find_location_hint">Location</string>
+	<string name="find_location_textfield_hint">Stop code, post code, etc</string>
+	
     <string-array name="settings_sources_names">
         <item>London, UK (TFL)</item>
     </string-array>

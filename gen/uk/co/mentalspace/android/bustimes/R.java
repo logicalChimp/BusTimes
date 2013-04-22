@@ -194,51 +194,50 @@ containing a value of this type.
         public static final int textfield_default=0x7f020014;
     }
     public static final class id {
-        public static final int arrow_down=0x7f070021;
-        public static final int arrow_up=0x7f07001d;
-        public static final int btn1=0x7f070011;
-        public static final int btn2=0x7f070012;
+        public static final int arrow_down=0x7f07001f;
+        public static final int arrow_up=0x7f07001b;
+        public static final int btn1=0x7f07000d;
+        public static final int btn2=0x7f07000e;
         public static final int bus_times_location=0x7f070007;
         public static final int bus_times_message=0x7f070008;
         public static final int bus_times_results=0x7f070009;
-        public static final int chosen_location_nick_name_label=0x7f070025;
-        public static final int chosen_location_stop_code_label=0x7f070027;
-        public static final int chosen_location_stop_name_label=0x7f070026;
+        public static final int chosen_location_nick_name_label=0x7f070023;
+        public static final int chosen_location_stop_code_label=0x7f070025;
+        public static final int chosen_location_stop_name_label=0x7f070024;
         public static final int configure_chosen_locations_list=0x7f07000a;
-        public static final int footer=0x7f070020;
-        public static final int header2=0x7f07001c;
+        public static final int find_location_search_button=0x7f070019;
+        public static final int find_location_textfield=0x7f070018;
+        public static final int footer=0x7f07001e;
+        public static final int header2=0x7f07001a;
         public static final int hybrid=0x7f070004;
-        public static final int i_more=0x7f070014;
+        public static final int i_more=0x7f070010;
         public static final int iv_icon=0x7f070005;
-        public static final int l_list=0x7f070013;
-        public static final int locationSelectionMap=0x7f070010;
+        public static final int l_list=0x7f07000f;
+        public static final int locationSelectionMap=0x7f07000c;
         public static final int manage_sources_source_list=0x7f07000b;
-        public static final int map_info_window_monitored_button=0x7f07001b;
-        public static final int map_info_window_monitored_label=0x7f07001a;
-        public static final int map_info_window_nick_name_label=0x7f070018;
-        public static final int map_info_window_nick_name_value=0x7f070019;
-        public static final int map_info_window_stop_name_label=0x7f070016;
-        public static final int map_info_window_stop_name_value=0x7f070017;
-        public static final int menu_add_favourite=0x7f07002c;
-        public static final int menu_manage_sources=0x7f07002d;
-        public static final int menu_settings=0x7f07002b;
-        public static final int menu_view_favourites=0x7f07002a;
+        public static final int map_info_window_monitored_button=0x7f070017;
+        public static final int map_info_window_monitored_label=0x7f070016;
+        public static final int map_info_window_nick_name_label=0x7f070014;
+        public static final int map_info_window_nick_name_value=0x7f070015;
+        public static final int map_info_window_stop_name_label=0x7f070012;
+        public static final int map_info_window_stop_name_value=0x7f070013;
+        public static final int menu_add_favourite=0x7f07002a;
+        public static final int menu_manage_sources=0x7f07002b;
+        public static final int menu_search_location=0x7f07002c;
+        public static final int menu_settings=0x7f070029;
+        public static final int menu_view_favourites=0x7f070028;
         public static final int none=0x7f070000;
         public static final int normal=0x7f070001;
-        public static final int rowBusDestination=0x7f070023;
-        public static final int rowBusExpected=0x7f070024;
-        public static final int rowBusNumber=0x7f070022;
+        public static final int rowBusDestination=0x7f070021;
+        public static final int rowBusExpected=0x7f070022;
+        public static final int rowBusNumber=0x7f070020;
         public static final int satellite=0x7f070002;
-        public static final int scroll=0x7f07001e;
-        public static final int select_location_show_gps_location=0x7f07000f;
-        public static final int select_location_stop_code_filter=0x7f07000d;
-        public static final int select_location_stop_code_filter_button=0x7f07000e;
-        public static final int select_location_stop_code_filter_label=0x7f07000c;
-        public static final int sources_list_row_name=0x7f070028;
-        public static final int sources_list_row_refresh_time=0x7f070029;
-        public static final int t_name=0x7f070015;
+        public static final int scroll=0x7f07001c;
+        public static final int sources_list_row_name=0x7f070026;
+        public static final int sources_list_row_refresh_time=0x7f070027;
+        public static final int t_name=0x7f070011;
         public static final int terrain=0x7f070003;
-        public static final int tracks=0x7f07001f;
+        public static final int tracks=0x7f07001d;
         public static final int tv_title=0x7f070006;
     }
     public static final class layout {
@@ -254,15 +253,17 @@ containing a value of this type.
         public static final int list=0x7f030009;
         public static final int main=0x7f03000a;
         public static final int popup_edit_location=0x7f03000b;
-        public static final int quickaction=0x7f03000c;
-        public static final int row_layout_bus_times=0x7f03000d;
-        public static final int row_layout_location_list=0x7f03000e;
-        public static final int row_layout_sources_list=0x7f03000f;
+        public static final int popup_find_location=0x7f03000c;
+        public static final int quickaction=0x7f03000d;
+        public static final int row_layout_bus_times=0x7f03000e;
+        public static final int row_layout_location_list=0x7f03000f;
+        public static final int row_layout_sources_list=0x7f030010;
     }
     public static final class menu {
         public static final int activity_bus_times=0x7f0b0000;
         public static final int activity_favourite_locations=0x7f0b0001;
         public static final int activity_manage_sources=0x7f0b0002;
+        public static final int activity_select_locations=0x7f0b0003;
     }
     public static final class string {
         public static final int app_id=0x7f050014;
@@ -338,9 +339,10 @@ containing a value of this type.
         public static final int dummy_content=0x7f050019;
         public static final int fav_locations_add_location_button=0x7f050041;
         public static final int fav_locations_list_label=0x7f050040;
+        public static final int find_location_textfield_hint=0x7f05004d;
         public static final int hello=0x7f050000;
-        public static final int location_actions_edit=0x7f050049;
-        public static final int location_actions_show_on_map=0x7f05004a;
+        public static final int location_actions_edit=0x7f05004a;
+        public static final int location_actions_show_on_map=0x7f05004b;
         public static final int location_selection_stop_code_filter_button=0x7f050032;
         public static final int location_selection_stop_code_filter_label=0x7f050031;
         public static final int location_selection_stop_code_gps=0x7f050033;
@@ -356,6 +358,7 @@ containing a value of this type.
         public static final int menu_announce=0x7f050017;
         public static final int menu_manage_sources=0x7f050047;
         public static final int menu_notify=0x7f050018;
+        public static final int menu_search_locations=0x7f050049;
         public static final int menu_settings=0x7f050016;
         public static final int menu_view_favourites=0x7f050048;
         public static final int msg_failed_to_get_bus_times=0x7f05001f;
@@ -365,6 +368,7 @@ containing a value of this type.
         public static final int msg_no_source_selected=0x7f05001c;
         public static final int msg_unable_to_select_stop=0x7f05001e;
         public static final int mw_placeholder=0x7f050015;
+        public static final int select_location_find_location_hint=0x7f05004c;
         public static final int select_location_map_info_window_chosen_icon=0x7f050038;
         public static final int settings_CancelButton=0x7f050022;
         public static final int settings_locators_dialogtitle=0x7f050029;
@@ -384,10 +388,10 @@ containing a value of this type.
         public static final int source_actions_popup_install=0x7f050043;
         public static final int source_actions_popup_refresh=0x7f050044;
         public static final int source_actions_popup_uninstall=0x7f050045;
-        public static final int title_activity_bus_times=0x7f05004d;
-        public static final int title_activity_favourite_locations=0x7f05004c;
-        public static final int title_activity_manage_sources=0x7f05004e;
-        public static final int title_activity_select_location=0x7f05004b;
+        public static final int title_activity_bus_times=0x7f050050;
+        public static final int title_activity_favourite_locations=0x7f05004f;
+        public static final int title_activity_manage_sources=0x7f050051;
+        public static final int title_activity_select_location=0x7f05004e;
         public static final int title_activity_settings=0x7f05001b;
     }
     public static final class style {
