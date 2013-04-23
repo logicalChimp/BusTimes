@@ -1,0 +1,1 @@
+create table sources (_id integer primary key autoincrement, sourceId text not null, name text not null, estLocationCount integer not null, locationRefreshClassName text not null, busTimeRefreshClassName text not null, areaPolygonPointsJson text not null);

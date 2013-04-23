@@ -1,0 +1,1 @@
+alter table locations add column sourceId text not null default '';

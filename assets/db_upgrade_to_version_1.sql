@@ -1,0 +1,1 @@
+create table locations (_id integer primary key autoincrement, stopCode text not null, name text not null, desc text not null, lat integer, lng integer, srcPosA text not null, srcPosB text not null, heading text not null);

@@ -5,6 +5,7 @@ import android.content.Context;
 import java.util.List;
 import android.util.Log;
 import uk.co.mentalspace.android.bustimes.db.BaseDBAdapter;
+import uk.co.mentalspace.android.bustimes.db.BusTimesDBHelper;
 import uk.co.mentalspace.android.bustimes.db.LocationsDBAdapter;
 import uk.co.mentalspace.android.bustimes.db.LocationsRefreshDBAdapter;
 
@@ -17,6 +18,27 @@ public class LocationManager extends BaseManager<Location> {
 	        if (null == ldba) ldba = new LocationsDBAdapter(ctx);
 	        return ldba;
 		}
+	}
+	
+	public static boolean installLocationsFromScript(final Context ctx, final String scriptName) {
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Installing locations from script ["+scriptName+"]");
+		Task<Boolean> locTask = new LocTask<Boolean>() {
+			protected Boolean doWork() {
+				String prepend = "insert into locations (stopCode, name, desc, lat, lng, srcPosA, srcPosB, heading, nickName, chosen, sourceId)";
+				return BusTimesDBHelper.executeSQLScript(ctx, ldba.getDatabase(), scriptName, prepend);
+			}
+		};
+		return locTask.run(ctx);
+	}
+	
+	public static boolean deleteSourceLocations(final Context ctx, final String srcId) {
+		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Delete all locations for source ["+srcId+"]");
+		Task<Boolean> locTask = new LocTask<Boolean>() {
+			protected Boolean doWork() {
+				return ldba.deleteSourceLocations(srcId);
+			}
+		};
+		return locTask.run(ctx);
 	}
 	
 	public static int getLocationsCount(Context ctx) {

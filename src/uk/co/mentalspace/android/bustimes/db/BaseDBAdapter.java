@@ -53,6 +53,10 @@ public abstract class BaseDBAdapter<T> {
         mDb = mDbHelper.getWritableDatabase();
     }
     
+    public SQLiteDatabase getDatabase() {
+    	return mDb;
+    }
+    
     public void close() {
         mDbHelper.close();
     }
@@ -67,7 +71,11 @@ public abstract class BaseDBAdapter<T> {
     }
         
     public Cursor fetch(String tableName, String[] cols, String whereClause) {
-        Cursor mCursor = mDb.query(true, tableName, cols, whereClause, null, null, null, null, null);
+    	return fetch(tableName, cols, whereClause, null);
+    }
+    
+    public Cursor fetch(String tableName, String[] cols, String whereClause, String[] whereArgs) {
+        Cursor mCursor = mDb.query(true, tableName, cols, whereClause, whereArgs, null, null, null, null);
         if (mCursor != null) {
             mCursor.moveToFirst();
         }
@@ -75,7 +83,11 @@ public abstract class BaseDBAdapter<T> {
     }
     
     public boolean update(String tableName, ContentValues args, String whereClause) {
-        return mDb.update(tableName, args, whereClause, null) > 0;
+        return update(tableName, args, whereClause, null);
+    }
+    
+    public boolean update(String tableName, ContentValues args, String whereClause, String[] whereArgs) {
+        return mDb.update(tableName, args, whereClause, whereArgs) > 0;
     }
     
     public T getSingle(Cursor c) {

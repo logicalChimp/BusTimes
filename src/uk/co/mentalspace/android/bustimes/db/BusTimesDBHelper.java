@@ -1,80 +1,103 @@
 package uk.co.mentalspace.android.bustimes.db;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+import uk.co.mentalspace.android.bustimes.Preferences;
+
 import android.content.Context;
+import android.content.res.AssetManager;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class BusTimesDBHelper extends SQLiteOpenHelper {
-
+	private static final String LOGNAME = "BusTimesDBHelper";
     private static final String DATABASE_NAME = "BusTimesLocationsData.db";
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
 
-    private static final String LOCATIONS_TABLE_CREATE = "create table locations (_id integer primary key autoincrement, stopCode text not null, name text not null, desc text not null, lat integer, lng integer, srcPosA text not null, srcPosB text not null, heading text not null, nickName text not null, chosen int not null, sourceId text not null);";
-    private static final String BUS_TIMES_REFRESH_TABLE_CREATE = "create table btrefreshlog (_id integer primary key autoincrement, sourceId string not null, startTime long not null, endTime long);";
-    private static final String SOURCES_TABLE_CREATE = "create table sources (_id integer primary key autoincrement, sourceId text not null, name text not null, estLocationCount integer not null, locationRefreshClassName text not null, busTimeRefreshClassName text not null, areaPolygonPointsJson text not null, isInstalled int not null);";
-    
     public static final String LOCATIONS_TABLE = "locations";
     public static final String BUS_TIMES_REFRESH_TABLE = "btrefreshlog";
     public static final String SOURCES_TABLE = "sources";
+    
+    private Context ctx = null;
 
     public BusTimesDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        ctx = context;
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(LOCATIONS_TABLE_CREATE);
-        db.execSQL(BUS_TIMES_REFRESH_TABLE_CREATE);
-        db.execSQL(SOURCES_TABLE_CREATE);
         setDefaultOptions(db);
+        onUpgrade(db, 0, DATABASE_VERSION); //run ALL upgrade scripts - inc. v1 - to create a full database
     }
     
     private void setDefaultOptions(SQLiteDatabase db) {
     }
 
+    public static boolean executeSQLScript(Context ctx, SQLiteDatabase database, String scriptName) {
+    	return executeSQLScript(ctx, database, scriptName, null);
+    }
+    
+    public static boolean executeSQLScript(Context ctx, SQLiteDatabase database, String scriptName, String prepend) {
+    	if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Executing script ["+scriptName+"]");
+		AssetManager assetManager = ctx.getAssets();
+
+		BufferedReader br = null;
+		database.beginTransaction();
+	    try{
+	        InputStream inputStream = assetManager.open(scriptName);
+	        br = new BufferedReader(new InputStreamReader(inputStream));
+
+	        String line = null;
+	        while (null != (line = br.readLine())) {
+				String sqlStatement = line.trim(); //createScript[i].trim();
+	            // TODO You may want to parse out comments here
+	            if (sqlStatement.length() > 0) {
+					if (null != prepend) sqlStatement = prepend + sqlStatement;
+                    database.execSQL(sqlStatement + ";");
+                }
+	        }
+	        database.setTransactionSuccessful();
+	        return true;
+	    } catch (IOException e){
+	    	if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "IOException occured loading script", e);
+	    } catch (SQLException e) {
+	    	if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "SQLException occured loading script", e);
+	    } finally {
+	    	if (null != br) try {br.close();} catch (IOException ioe) {/*Do nothing here */};
+    		if (null != database) database.endTransaction();
+	    }
+	    return false;
+	}
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-    	if (oldVersion < 2) {
-    		upgradeToVersion2(db);
-    	}
-    	if (oldVersion < 3) {
-    		upgradeToVersion3(db);
-    	}
-    	if (oldVersion < 4) {
-    		upgradeToVersion4(db);
-    	}
-    	if (oldVersion < 5) {
-    		upgradeToVersion5(db);
-    	}
-    	if (oldVersion < 6) {
-    		upgradeToVersion6(db);
+    	if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Upgrading from ["+oldVersion+"] to ["+newVersion+"]");
+    	if (oldVersion < newVersion) {
+    		//explicitly fall-through - start at 'oldVersion', and run each upgrade to reach 'newVersion'
+    		switch (oldVersion) {
+    		case 0:
+    			BusTimesDBHelper.executeSQLScript(ctx, db, "db_upgrade_to_version_1.sql");
+    		case 1:
+    			BusTimesDBHelper.executeSQLScript(ctx, db, "db_upgrade_to_version_2.sql");
+    		case 2:
+    			BusTimesDBHelper.executeSQLScript(ctx, db, "db_upgrade_to_version_3.sql");
+    		case 3:
+    			BusTimesDBHelper.executeSQLScript(ctx, db, "db_upgrade_to_version_4.sql");
+    		case 4:
+    			BusTimesDBHelper.executeSQLScript(ctx, db, "db_upgrade_to_version_5.sql");
+    		case 5:
+    			BusTimesDBHelper.executeSQLScript(ctx, db, "db_upgrade_to_version_6.sql");
+    		case 6:
+    			BusTimesDBHelper.executeSQLScript(ctx, db, "db_upgrade_to_version_7.sql");
+    		}
     	}
     }
     
-    private void upgradeToVersion6(SQLiteDatabase db) {
-    	final String alterLocationsAddSourceId = "alter table "+SOURCES_TABLE+" add column isInstalled int not null default 0;";
-        db.execSQL(alterLocationsAddSourceId);
-    }
-    
-    private void upgradeToVersion5(SQLiteDatabase db) {
-        db.execSQL(SOURCES_TABLE_CREATE);
-    }
-    
-    private void upgradeToVersion4(SQLiteDatabase db) {
-        db.execSQL(BUS_TIMES_REFRESH_TABLE_CREATE);
-    }
-    
-    private void upgradeToVersion3(SQLiteDatabase db) {
-    	final String alterLocationsAddSourceId = "alter table "+LOCATIONS_TABLE+" add column sourceId text not null default '';";
-        db.execSQL(alterLocationsAddSourceId);
-    }
-    
-    private void upgradeToVersion2(SQLiteDatabase db) {
-    	final String alterLocationsAddNickName = "alter table "+LOCATIONS_TABLE+" add column nickName text not null default '';";
-        db.execSQL(alterLocationsAddNickName);
-
-        final String alterLocationsAddChosen = "alter table "+LOCATIONS_TABLE+" add column chosen int not null default 0;";
-        db.execSQL(alterLocationsAddChosen);
-    }
 }
 

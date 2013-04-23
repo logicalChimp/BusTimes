@@ -50,7 +50,11 @@ public class LocationsDBAdapter extends BaseDBAdapter<Location> {
     }
 
     public boolean deleteLocationByStopCode(String stopCode) {
-    	return delete(KEY_STOP_CODE + "=" + stopCode);
+    	return delete(KEY_STOP_CODE+" = '"+stopCode+"'");
+    }
+    
+    public boolean deleteSourceLocations(String sourceId) {
+    	return delete(KEY_SOURCE_ID+" = '"+sourceId+"'");
     }
 
     /**
@@ -58,7 +62,7 @@ public class LocationsDBAdapter extends BaseDBAdapter<Location> {
      * @return Cursor over all notes
      */
     public Cursor fetchAllLocations() {
-    	return fetch(BusTimesDBHelper.LOCATIONS_TABLE, ALL_COLUMNS, null);
+    	return fetch(BusTimesDBHelper.LOCATIONS_TABLE, ALL_COLUMNS, KEY_ROWID+" > ?", new String[]{"0"});
     }
     
     public Cursor fetchClosestSelectedLocation(int lat, int lon, boolean limitToSelectedLocations) {
@@ -102,7 +106,7 @@ public class LocationsDBAdapter extends BaseDBAdapter<Location> {
      * @throws SQLException if a matching location could not be found / retrieved
      */
     public Cursor fetchLocationByStopCode(String stopCode) throws SQLException {
-    	return fetch(BusTimesDBHelper.LOCATIONS_TABLE, ALL_COLUMNS, KEY_STOP_CODE + "= '"+stopCode+"'");
+    	return fetch(BusTimesDBHelper.LOCATIONS_TABLE, ALL_COLUMNS, KEY_STOP_CODE + "= ?", new String[] {stopCode});
     }
     
     public Location getLocationByStopCode(String stopCode) {
@@ -122,7 +126,7 @@ public class LocationsDBAdapter extends BaseDBAdapter<Location> {
     }
     
     public Cursor fetchSelectedLocations() throws SQLException {
-    	return fetch(BusTimesDBHelper.LOCATIONS_TABLE, ALL_COLUMNS, KEY_CHOSEN+" = 1");
+    	return fetch(BusTimesDBHelper.LOCATIONS_TABLE, ALL_COLUMNS, KEY_CHOSEN+" = ?", new String[]{"1"});
     }
     
     public List<Location> getSelectedLocations() throws SQLException {
@@ -189,7 +193,7 @@ public class LocationsDBAdapter extends BaseDBAdapter<Location> {
         args.put(KEY_NICK_NAME, nickName);
         args.put(KEY_CHOSEN, chosen);
         args.put(KEY_SOURCE_ID, sourceId);
-        return mDb.update(BusTimesDBHelper.LOCATIONS_TABLE, args, KEY_ROWID + "=" + rowId, null) > 0;
+        return mDb.update(BusTimesDBHelper.LOCATIONS_TABLE, args, KEY_ROWID + "= ?", new String[] {String.valueOf(rowId)}) > 0;
     }
     
     public boolean updateLocation(Location loc) {

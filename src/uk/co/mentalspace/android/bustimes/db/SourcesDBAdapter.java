@@ -15,8 +15,9 @@ public class SourcesDBAdapter extends BaseDBAdapter<Source> {
 	private static final String KEY_BT_REFRESH_CLASSNAME = "busTimeRefreshClassName";
 	private static final String KEY_POLYGON_POINTS_JSON = "areaPolygonPointsJson";
 	private static final String KEY_IS_INSTALLED = "isInstalled";
+	private static final String KEY_INSTALL_FILES = "installFiles";
 
-	private static final String[] ALL_COLUMNS = {KEY_ROWID, KEY_SOURCE_ID, KEY_SOURCE_NAME, KEY_EST_LOC_COUNT, KEY_LOC_REFRESH_CLASSNAME, KEY_BT_REFRESH_CLASSNAME, KEY_POLYGON_POINTS_JSON, KEY_IS_INSTALLED}; 
+	private static final String[] ALL_COLUMNS = {KEY_ROWID, KEY_SOURCE_ID, KEY_SOURCE_NAME, KEY_EST_LOC_COUNT, KEY_LOC_REFRESH_CLASSNAME, KEY_BT_REFRESH_CLASSNAME, KEY_POLYGON_POINTS_JSON, KEY_IS_INSTALLED, KEY_INSTALL_FILES}; 
 
     /**
      * Constructor - takes the context to allow the database to be opened/created
@@ -82,7 +83,8 @@ public class SourcesDBAdapter extends BaseDBAdapter<Source> {
                 c.getString(c.getColumnIndex(KEY_LOC_REFRESH_CLASSNAME)),
                 c.getString(c.getColumnIndex(KEY_BT_REFRESH_CLASSNAME)),
                 c.getString(c.getColumnIndex(KEY_POLYGON_POINTS_JSON)),
-                (0 == isInstalled)? false : true);
+                (0 == isInstalled)? false : true, 
+                c.getString(c.getColumnIndex(KEY_INSTALL_FILES)));
     	return src;
     }
 
