@@ -90,15 +90,17 @@
             android:name="uk.co.mentalspace.android.bustimes.displays.android.FavouriteLocationsActivity"
             android:label="@string/title_activity_favourite_locations" >
         </activity>
-
         <activity
             android:name="uk.co.mentalspace.android.bustimes.displays.android.BusTimeActivity"
             android:label="@string/title_activity_bus_times" >
         </activity>
-        
         <activity
             android:name="uk.co.mentalspace.android.bustimes.displays.android.ManageSourcesActivity"
             android:label="@string/title_activity_manage_sources" >
+        </activity>
+        <activity
+            android:name="uk.co.mentalspace.android.bustimes.displays.android.DebugTasksActivity"
+            android:label="@string/title_activity_debug_tasks" >
         </activity>
     </application>
 

@@ -4,7 +4,7 @@ import java.util.List;
 
 import android.content.Context;
 
-public interface Renderer {
+public interface Display {
 
 	public static final int MESSAGE_DEBUG = 0;
 	public static final int MESSAGE_NORMAL = 1;

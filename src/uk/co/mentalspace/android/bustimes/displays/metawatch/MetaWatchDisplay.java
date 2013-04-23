@@ -18,10 +18,10 @@ import uk.co.mentalspace.android.bustimes.BusTime;
 import uk.co.mentalspace.android.bustimes.Location;
 import uk.co.mentalspace.android.bustimes.Preferences;
 import uk.co.mentalspace.android.bustimes.R;
-import uk.co.mentalspace.android.bustimes.Renderer;
+import uk.co.mentalspace.android.bustimes.Display;
 import uk.co.mentalspace.android.bustimes.utils.Utils;
 
-public class MetaWatchDisplay implements Renderer {
+public class MetaWatchDisplay implements Display {
 
 	private static final String LOGNAME = "MetaWatchDisplay";
 	

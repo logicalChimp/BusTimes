@@ -8,19 +8,19 @@ package net.londatiga.android;
 
 public final class R {
 	public static final class id {
-		public static final int arrow_up = 0x7f07001b;
-		public static final int footer = 0x7f07001e;
-		public static final int l_list = 0x7f07000f;
+		public static final int arrow_up = 0x7f07001c;
+		public static final int footer = 0x7f07001f;
+		public static final int l_list = 0x7f070010;
 		public static final int iv_icon = 0x7f070005;
-		public static final int i_more = 0x7f070010;
-		public static final int btn2 = 0x7f07000e;
-		public static final int scroll = 0x7f07001c;
-		public static final int btn1 = 0x7f07000d;
-		public static final int arrow_down = 0x7f07001f;
+		public static final int i_more = 0x7f070011;
+		public static final int btn2 = 0x7f07000f;
+		public static final int scroll = 0x7f07001d;
+		public static final int btn1 = 0x7f07000e;
+		public static final int arrow_down = 0x7f070020;
 		public static final int tv_title = 0x7f070006;
-		public static final int t_name = 0x7f070011;
-		public static final int tracks = 0x7f07001d;
-		public static final int header2 = 0x7f07001a;
+		public static final int t_name = 0x7f070012;
+		public static final int tracks = 0x7f07001e;
+		public static final int header2 = 0x7f07001b;
 	}
 	public static final class anim {
 		public static final int shrink_from_bottom = 0x7f040007;
@@ -54,11 +54,11 @@ public final class R {
 	}
 	public static final class layout {
 		public static final int action_item = 0x7f030000;
-		public static final int example2 = 0x7f030008;
-		public static final int list = 0x7f030009;
-		public static final int quickaction = 0x7f03000d;
-		public static final int example1 = 0x7f030007;
-		public static final int main = 0x7f03000a;
+		public static final int example2 = 0x7f030009;
+		public static final int list = 0x7f03000a;
+		public static final int quickaction = 0x7f03000e;
+		public static final int example1 = 0x7f030008;
+		public static final int main = 0x7f03000b;
 	}
 	public static final class drawable {
 		public static final int quickcontact_drop_shadow = 0x7f020013;

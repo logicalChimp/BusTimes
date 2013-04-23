@@ -6,7 +6,7 @@ import uk.co.mentalspace.android.bustimes.BusTimeRefreshService;
 import uk.co.mentalspace.android.bustimes.Location;
 import uk.co.mentalspace.android.bustimes.LocationManager;
 import uk.co.mentalspace.android.bustimes.Preferences;
-import uk.co.mentalspace.android.bustimes.Renderer;
+import uk.co.mentalspace.android.bustimes.Display;
 import uk.co.mentalspace.android.bustimes.WakefulIntentService;
 import uk.co.mentalspace.android.bustimes.utils.LocationTracker;
 import android.content.Intent;
@@ -51,7 +51,7 @@ public class MetaWatchService extends WakefulIntentService {
 				}
 				if (null == loc) {
 					if (Preferences.ENABLE_LOGGING) Log.w(LOGNAME, "Cannot get 'nearest' location - maybe none chosen?");
-					mwd.displayMessage(null, "Please select one or more locations to monitor.", Renderer.MESSAGE_ERROR);
+					mwd.displayMessage(null, "Please select one or more locations to monitor.", Display.MESSAGE_ERROR);
 					return;
 				}
 				
@@ -81,13 +81,13 @@ public class MetaWatchService extends WakefulIntentService {
 				String msg = intent.getStringExtra(BusTimeRefreshService.EXTRA_MESSAGE);
 				if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Message: "+msg);
 				MetaWatchDisplay mwd = new MetaWatchDisplay(getApplicationContext());
-				mwd.displayMessage(loc, msg, Renderer.MESSAGE_ERROR);
+				mwd.displayMessage(loc, msg, Display.MESSAGE_ERROR);
 			}
 			if (BusTimeRefreshService.ACTION_INVALID_REFRESH_REQUEST.equals(action)) {
 				String msg = intent.getStringExtra(BusTimeRefreshService.EXTRA_MESSAGE);
 				if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Invalid refresh request.  Message: "+msg);
 				MetaWatchDisplay mwd = new MetaWatchDisplay(getApplicationContext());
-				mwd.displayMessage(loc, "Cannot refresh. Please pick another location.", Renderer.MESSAGE_ERROR);
+				mwd.displayMessage(loc, "Cannot refresh. Please pick another location.", Display.MESSAGE_ERROR);
 			}
 			else if (BusTimeRefreshService.ACTION_LATEST_BUS_TIMES.equals(action)) {
 				if (null == loc) {
@@ -120,10 +120,10 @@ public class MetaWatchService extends WakefulIntentService {
 		}
 	}
 	
-	public void getBusTimes(Renderer display, Location loc) {
+	public void getBusTimes(Display display, Location loc) {
 		if (null == loc) {
 			if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Cannot get bus times for <null> location");
-			display.displayMessage(null, "Error: invalid location.  Please select another location", Renderer.MESSAGE_ERROR);
+			display.displayMessage(null, "Error: invalid location.  Please select another location", Display.MESSAGE_ERROR);
 			return;
 		}
 		
@@ -134,7 +134,7 @@ public class MetaWatchService extends WakefulIntentService {
 		this.startService(service);
 
 		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Initiating request of bus times for location: "+loc);
-		display.displayMessage(loc, "Getting bus times", Renderer.MESSAGE_NORMAL);
+		display.displayMessage(loc, "Getting bus times", Display.MESSAGE_NORMAL);
 	}
 
 	public void terminate() {
