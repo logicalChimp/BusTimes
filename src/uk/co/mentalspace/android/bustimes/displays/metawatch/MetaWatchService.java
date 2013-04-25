@@ -1,14 +1,14 @@
 package uk.co.mentalspace.android.bustimes.displays.metawatch;
 
-import java.util.List;
 import uk.co.mentalspace.android.bustimes.BusTime;
+import java.util.List;
 import uk.co.mentalspace.android.bustimes.BusTimeRefreshService;
 import uk.co.mentalspace.android.bustimes.Location;
 import uk.co.mentalspace.android.bustimes.LocationManager;
 import uk.co.mentalspace.android.bustimes.Preferences;
 import uk.co.mentalspace.android.bustimes.Display;
 import uk.co.mentalspace.android.bustimes.WakefulIntentService;
-import uk.co.mentalspace.android.bustimes.utils.LocationTracker;
+import uk.co.mentalspace.android.utils.LocationTracker;
 import android.content.Intent;
 import android.util.Log;
 

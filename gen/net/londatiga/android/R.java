@@ -38,19 +38,19 @@ public final class R {
 		public static final int shrink_from_bottomright_to_topleft = 0x7f040009;
 	}
 	public static final class style {
-		public static final int Animations_PopDownMenu = 0x7f060001;
-		public static final int Animations_PopUpMenu_Center = 0x7f060008;
-		public static final int Animations_PopUpMenu_Right = 0x7f060007;
-		public static final int Animations_PopDownMenu_Left = 0x7f060002;
-		public static final int Animations_PopDownMenu_Center = 0x7f060004;
-		public static final int Animations_PopUpMenu_Left = 0x7f060006;
-		public static final int Animations_PopUpMenu = 0x7f060005;
-		public static final int Animations = 0x7f060000;
-		public static final int Animations_PopDownMenu_Right = 0x7f060003;
+		public static final int Animations_PopDownMenu = 0x7f060003;
+		public static final int Animations_PopUpMenu_Center = 0x7f06000a;
+		public static final int Animations_PopUpMenu_Right = 0x7f060009;
+		public static final int Animations_PopDownMenu_Left = 0x7f060004;
+		public static final int Animations_PopDownMenu_Center = 0x7f060006;
+		public static final int Animations_PopUpMenu_Left = 0x7f060008;
+		public static final int Animations_PopUpMenu = 0x7f060007;
+		public static final int Animations = 0x7f060002;
+		public static final int Animations_PopDownMenu_Right = 0x7f060005;
 	}
 	public static final class string {
-		public static final int hello = 0x7f050000;
-		public static final int app_name = 0x7f050001;
+		public static final int hello = 0x7f050001;
+		public static final int app_name = 0x7f050000;
 	}
 	public static final class layout {
 		public static final int action_item = 0x7f030000;

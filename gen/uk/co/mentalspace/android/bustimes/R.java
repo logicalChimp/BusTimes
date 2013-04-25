@@ -272,7 +272,7 @@ containing a value of this type.
     public static final class string {
         public static final int action_settings=0x7f050054;
         public static final int app_id=0x7f050014;
-        public static final int app_name=0x7f050001;
+        public static final int app_name=0x7f050000;
         /**   Title for notification shown when GooglePlayServices is unavailable [CHAR LIMIT=70] 
          */
         public static final int auth_client_availability_notification_title=0x7f050010;
@@ -346,7 +346,7 @@ containing a value of this type.
         public static final int fav_locations_add_location_button=0x7f050041;
         public static final int fav_locations_list_label=0x7f050040;
         public static final int find_location_textfield_hint=0x7f05004d;
-        public static final int hello=0x7f050000;
+        public static final int hello=0x7f050001;
         public static final int hello_world=0x7f050055;
         public static final int location_actions_edit=0x7f05004a;
         public static final int location_actions_show_on_map=0x7f05004b;
@@ -403,20 +403,40 @@ containing a value of this type.
         public static final int title_activity_settings=0x7f05001b;
     }
     public static final class style {
-        public static final int Animations=0x7f060000;
+        public static final int Animations=0x7f060002;
         /**  PopDownMenu 
          */
-        public static final int Animations_PopDownMenu=0x7f060001;
-        public static final int Animations_PopDownMenu_Center=0x7f060004;
-        public static final int Animations_PopDownMenu_Left=0x7f060002;
-        public static final int Animations_PopDownMenu_Right=0x7f060003;
+        public static final int Animations_PopDownMenu=0x7f060003;
+        public static final int Animations_PopDownMenu_Center=0x7f060006;
+        public static final int Animations_PopDownMenu_Left=0x7f060004;
+        public static final int Animations_PopDownMenu_Right=0x7f060005;
         /**  PopUpMenu 
          */
-        public static final int Animations_PopUpMenu=0x7f060005;
-        public static final int Animations_PopUpMenu_Center=0x7f060008;
-        public static final int Animations_PopUpMenu_Left=0x7f060006;
-        public static final int Animations_PopUpMenu_Right=0x7f060007;
+        public static final int Animations_PopUpMenu=0x7f060007;
+        public static final int Animations_PopUpMenu_Center=0x7f06000a;
+        public static final int Animations_PopUpMenu_Left=0x7f060008;
+        public static final int Animations_PopUpMenu_Right=0x7f060009;
         /** 
+        Base application theme, dependent on API level. This theme is replaced
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+    
+
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+        
+
+        Base application theme for API 11+. This theme completely replaces
+        AppBaseTheme from res/values/styles.xml on API 11+ devices.
+    
+ API 11 theme customizations can go here. 
+
+        Base application theme for API 14+. This theme completely replaces
+        AppBaseTheme from BOTH res/values/styles.xml and
+        res/values-v11/styles.xml on API 14+ devices.
+    
+ API 14 theme customizations can go here. 
+
         Base application theme, dependent on API level. This theme is replaced
         by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
 
@@ -440,11 +460,13 @@ containing a value of this type.
     
  API 14 theme customizations can go here. 
          */
-        public static final int AppBaseTheme=0x7f060009;
+        public static final int AppBaseTheme=0x7f060000;
         /**  Application theme. 
  All customizations that are NOT specific to a particular API-level can go here. 
+ Application theme. 
+ All customizations that are NOT specific to a particular API-level can go here. 
          */
-        public static final int AppTheme=0x7f06000a;
+        public static final int AppTheme=0x7f060001;
         public static final int ButtonBar=0x7f06000c;
         public static final int ButtonBarButton=0x7f06000b;
         public static final int FullscreenActionBarStyle=0x7f06000e;

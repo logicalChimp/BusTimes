@@ -1,6 +1,5 @@
 package uk.co.mentalspace.android.bustimes.displays.android;
 
-
 import uk.co.mentalspace.android.bustimes.BusTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +12,7 @@ import uk.co.mentalspace.android.bustimes.R;
 import uk.co.mentalspace.android.bustimes.Display;
 import uk.co.mentalspace.android.bustimes.displays.android.listadapters.BusTimeListAdapter;
 import uk.co.mentalspace.android.bustimes.displays.android.listadapters.LocationsListAdapter;
-import uk.co.mentalspace.android.bustimes.utils.LocationTracker;
+import uk.co.mentalspace.android.utils.LocationTracker;
 
 import android.os.Bundle;
 import android.app.Activity;
