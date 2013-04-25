@@ -9,10 +9,11 @@ import uk.co.mentalspace.android.bustimes.Preferences;
 import uk.co.mentalspace.android.bustimes.Display;
 import uk.co.mentalspace.android.bustimes.WakefulIntentService;
 import uk.co.mentalspace.android.utils.LocationTracker;
+import uk.co.mentalspace.android.utils.MW;
 import android.content.Intent;
 import android.util.Log;
 
-public class MetaWatchService extends WakefulIntentService {
+public class MetaWatchService extends WakefulIntentService implements MW {
 	private static final String LOGNAME = "MetaWatchService";
 	
 	private static final int BUTTON_NEXT_LOCATION = 5;
@@ -40,7 +41,7 @@ public class MetaWatchService extends WakefulIntentService {
 		try {
 			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Meta Watch Service handling intent");
 			final String action = intent.getAction();
-			if (MetaWatchReceiver.MW_ACTIVATED.equals(action)) {
+			if (ACTION_ACTIVATE.equals(action)) {
 				if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "MetaWatch app activated, handing over to Coordinator");
 				MetaWatchDisplay mwd = new MetaWatchDisplay(getApplicationContext());
 				if (null == loc) {
@@ -57,13 +58,13 @@ public class MetaWatchService extends WakefulIntentService {
 				
 				getBusTimes(mwd, loc); 
 			}
-			else if (MetaWatchReceiver.MW_DEACTIVATED.equals(action)) {
+			else if (ACTION_DEACTIVATE.equals(action)) {
 				if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "MetaWatch app deactivated, displaying blank screen and terminating");
 				MetaWatchDisplay mwd = new MetaWatchDisplay(getApplicationContext());
 				mwd.displayMessage(null, "", MetaWatchDisplay.MESSAGE_NORMAL);
 				//GPS will auto-disconnect when this function terminates
 			}
-			else if (MetaWatchReceiver.MW_BUTTON.equals(action)) {
+			else if (ACTION_BUTTON_PRESS.equals(action)) {
 				int btnId = intent.getIntExtra("button", -1);
 				if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Metawatch Button ["+btnId+"] pressed");
 				if (BUTTON_NEXT_LOCATION == btnId) {
