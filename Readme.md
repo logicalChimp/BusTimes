@@ -2,7 +2,9 @@ Bus Times is a small app intended to display live Bus Time information, with sup
 
 It is currently focused on the UK (with initial support for London), and only the MetaWatch is supported.
 
-Note: This project now relies on the AndroidUtils project (also by me, also hosted on GitHub) for a number of common MetaWatch related interfaces, definitions, etc, and for the LocationTracker utility class that wraps up a lot of crufty GPS code
+Note: This project now relies on the following GitHub projects:
+* AndroidUtils project, at https://github.com/logicalChimp/AndroidUtils for a number of common MetaWatch related interfaces, definitions, etc, and for the LocationTracker utility class that wraps up a lot of crufty GPS code
+* NewQuickAction project, at https://github.com/lorensiuswlt/NewQuickAction (See http://www.londatiga.net/it/how-to-create-quickaction-dialog-in-android/ for more information.)
 
 To do:
 * Finish initial implementation (use GPS to locate closest preferred stop)
