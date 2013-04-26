@@ -82,6 +82,7 @@ public class BusTimeRefreshService extends WakefulIntentService {
 				if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Sending ["+busTimesSize+"] bus times back.");
 				this.sendBroadcast(intent);
 			} catch (Exception e) {
+				if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Refresh failed", e);
 				Intent intent = getIntent(ACTION_REFRESH_FAILED, sourceId, locationId, null, "Refresh failed: "+e.toString());
 				this.sendBroadcast(intent);
 			}
