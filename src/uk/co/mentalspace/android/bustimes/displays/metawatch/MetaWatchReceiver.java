@@ -1,10 +1,10 @@
 package uk.co.mentalspace.android.bustimes.displays.metawatch;
 
-import android.content.BroadcastReceiver;
 import uk.co.mentalspace.android.bustimes.BusTimeRefreshService;
+import android.content.BroadcastReceiver;
 import uk.co.mentalspace.android.bustimes.Preferences;
 import uk.co.mentalspace.android.bustimes.R;
-import uk.co.mentalspace.android.utils.MW;
+import uk.co.mentalspace.android.mw.utils.MW;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;

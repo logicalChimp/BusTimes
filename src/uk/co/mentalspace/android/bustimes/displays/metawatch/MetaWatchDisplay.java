@@ -1,8 +1,8 @@
 package uk.co.mentalspace.android.bustimes.displays.metawatch;
 
 
-import java.util.List;
 import android.content.Context;
+import java.util.List;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -19,7 +19,7 @@ import uk.co.mentalspace.android.bustimes.Location;
 import uk.co.mentalspace.android.bustimes.Preferences;
 import uk.co.mentalspace.android.bustimes.R;
 import uk.co.mentalspace.android.bustimes.Display;
-import uk.co.mentalspace.android.utils.Utils;
+import uk.co.mentalspace.android.mw.utils.Utils;
 
 public class MetaWatchDisplay implements Display {
 
