@@ -14,6 +14,7 @@ import uk.co.mentalspace.android.bustimes.Source;
 import uk.co.mentalspace.android.bustimes.SourceManager;
 import uk.co.mentalspace.android.bustimes.displays.android.listadapters.SourcesListAdapter;
 import uk.co.mentalspace.android.bustimes.utils.BTActionItem;
+import uk.co.mentalspace.android.bustimes.utils.QABGenerator;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.content.DialogInterface;
@@ -30,10 +31,6 @@ import android.widget.ListView;
 
 public class ManageSourcesActivity extends FragmentActivity implements OnItemClickListener, OnDismissListener, OnActionItemClickListener, QuickAction.OnDismissListener, OnTaskCompleteListener {
 	private static final String LOGNAME = "ManageSourcesActivity";
-	
-	private static final int ACTION_ID_INSTALL_SOURCE = 0;
-	private static final int ACTION_ID_REFRESH_SOURCE = 1;
-	private static final int ACTION_ID_UNINSTALL_SOURCE = 2;
 	
 	private static final int TASK_ID_INSTALL_LOCATIONS = 1;
 	
@@ -96,22 +93,23 @@ public class ManageSourcesActivity extends FragmentActivity implements OnItemCli
 		if (null == srcs || srcs.size() <= position) return;
 		
 		Source src = srcs.get(position);
-		final QuickAction mQuickAction 	= new QuickAction(this);
-
-		if (!src.isInstalled()) {
-			ActionItem installItem = new BTActionItem<Source>(ACTION_ID_INSTALL_SOURCE, getString(R.string.source_actions_popup_install), getResources().getDrawable(android.R.drawable.stat_sys_download_done), src);
-			mQuickAction.addActionItem(installItem);
-		} else {
-			ActionItem refreshItem = new BTActionItem<Source>(ACTION_ID_REFRESH_SOURCE, getString(R.string.source_actions_popup_refresh), getResources().getDrawable(android.R.drawable.stat_notify_sync_noanim), src);
-			mQuickAction.addActionItem(refreshItem);
-	        ActionItem uninstallItem = new BTActionItem<Source>(ACTION_ID_UNINSTALL_SOURCE, getString(R.string.source_actions_popup_uninstall), getResources().getDrawable(android.R.drawable.ic_menu_set_as), src);
-			mQuickAction.addActionItem(uninstallItem);
-		}
-		
-		//setup the action item click listener
-		mQuickAction.setOnActionItemClickListener(this);
-		mQuickAction.setOnDismissListener(this);
-		mQuickAction.mAnimateTrack(false);
+		final QuickAction mQuickAction = QABGenerator.getManageSourceQABar(this, src, this);
+//		final QuickAction mQuickAction 	= new QuickAction(this);
+//
+//		if (!src.isInstalled()) {
+//			ActionItem installItem = new BTActionItem<Source>(ACTION_ID_INSTALL_SOURCE, getString(R.string.source_actions_popup_install), getResources().getDrawable(android.R.drawable.stat_sys_download_done), src);
+//			mQuickAction.addActionItem(installItem);
+//		} else {
+//			ActionItem refreshItem = new BTActionItem<Source>(ACTION_ID_REFRESH_SOURCE, getString(R.string.source_actions_popup_refresh), getResources().getDrawable(android.R.drawable.stat_notify_sync_noanim), src);
+//			mQuickAction.addActionItem(refreshItem);
+//	        ActionItem uninstallItem = new BTActionItem<Source>(ACTION_ID_UNINSTALL_SOURCE, getString(R.string.source_actions_popup_uninstall), getResources().getDrawable(android.R.drawable.ic_menu_set_as), src);
+//			mQuickAction.addActionItem(uninstallItem);
+//		}
+//		
+//		//setup the action item click listener
+//		mQuickAction.setOnActionItemClickListener(this);
+//		mQuickAction.setOnDismissListener(this);
+//		mQuickAction.mAnimateTrack(false);
 		mQuickAction.show(view);
 	}
 
@@ -126,11 +124,11 @@ public class ManageSourcesActivity extends FragmentActivity implements OnItemCli
 		Source src = ((BTActionItem<Source>)ai).getData();
 		
 		switch (actionId) {
-		case ACTION_ID_INSTALL_SOURCE:
+		case QABGenerator.ACTION_ITEM_ID_INSTALL_SOURCE:
 			task = new InstallSourceTask(this, TASK_ID_INSTALL_LOCATIONS, this, src);
 			task.execute();
 			return;
-		case ACTION_ID_REFRESH_SOURCE:
+		case QABGenerator.ACTION_ITEM_ID_REFRESH_SOURCE:
 			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Sending intent to refresh locations for source ["+src.getName()+"]");
 			Intent intent = new Intent(this, LocationRefreshService.class);
 			intent.setAction(LocationRefreshService.ACTION_REFRESH_LOCATION_DATA);
@@ -138,7 +136,7 @@ public class ManageSourcesActivity extends FragmentActivity implements OnItemCli
 			this.startService(intent);
 			Toast.makeText(this, "Refresh queued", Toast.LENGTH_SHORT).show();
 			return;
-		case ACTION_ID_UNINSTALL_SOURCE:
+		case QABGenerator.ACTION_ITEM_ID_UNINSTALL_SOURCE:
 			boolean result = LocationManager.deleteSourceLocations(this, src.getID());
 			if (result) {
 				SourceManager.updateInstallationStatus(this, src.getID(), false);
