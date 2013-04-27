@@ -101,7 +101,6 @@ public class FavouriteLocationsActivity extends FragmentActivity implements OnIt
 		mQuickAction.setOnActionItemClickListener(this);
 		mQuickAction.setOnDismissListener(this);
 		mQuickAction.show(view);
-		mQuickAction.setAnimStyle(QuickAction.ANIM_AUTO);
 	}
 
 	//dismiss of edit dialog

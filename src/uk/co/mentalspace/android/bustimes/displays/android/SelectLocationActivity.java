@@ -4,12 +4,18 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.londatiga.android.ActionItem;
+import net.londatiga.android.QAPosition;
+import net.londatiga.android.QuickAction;
+import net.londatiga.android.QuickAction.OnActionItemClickListener;
+
 import uk.co.mentalspace.android.bustimes.Location;
 import uk.co.mentalspace.android.bustimes.LocationManager;
 import uk.co.mentalspace.android.bustimes.Preferences;
 import uk.co.mentalspace.android.bustimes.R;
 import uk.co.mentalspace.android.bustimes.displays.android.popups.EditLocationPopup;
 import uk.co.mentalspace.android.bustimes.displays.android.popups.FindLocationPopup;
+import uk.co.mentalspace.android.bustimes.utils.QABGenerator;
 import uk.co.mentalspace.android.utils.LocationTracker;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -17,6 +23,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -31,6 +38,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 import android.annotation.TargetApi;
@@ -38,10 +46,11 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
+import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
 
-public class SelectLocationActivity extends FragmentActivity implements OnCameraChangeListener, OnMyLocationChangeListener, OnMarkerClickListener, OnPointFoundListener {
+public class SelectLocationActivity extends FragmentActivity implements OnCameraChangeListener, OnMyLocationChangeListener, OnMarkerClickListener, OnPointFoundListener, OnActionItemClickListener {
 	private static final String LOGNAME = "SelectLocationActivity";
 	private static final float MARKER_MAX_ZOOM_LEVEL = 15.0f;
 	private static final float DEFAULT_ZOOM_LEVEL = 16.0f;
@@ -279,7 +288,7 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
     		markers.get(loc).remove(); 
     		Marker marker = markers.get(loc);
         	markers.remove(loc);
-        	locations.remove(marker);
+        	locations.remove(marker);        	
     	}
     }
     
@@ -308,26 +317,22 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
 	
 	@Override
 	public boolean onMarkerClick(Marker arg0) {
+		//get projection AFTER animating the camera, to ensure the project is up-to-date
+		Projection projection = mMap.getProjection();
+		LatLng markerLocation = arg0.getPosition();
+		Point mPos = projection.toScreenLocation(markerLocation);
+		int[] vPos = new int[2];
+		View mv = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.locationSelectionMap)).getView();
+		mv.getLocationOnScreen(vPos);
+
+		int x = mPos.x+vPos[0];
+		int y = mPos.y+vPos[1];
+		QAPosition qap = new QAPosition(x, y, 0, 0, x, y);
+		
 		Location loc = locations.get(arg0);
-
-		//center the map on the marker that was clicked
-		mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(arg0.getPosition(), DEFAULT_ZOOM_LEVEL));
-
-		FragmentManager fragmentManager = getSupportFragmentManager();
-		elp = EditLocationPopup.newInstance(loc);
+		final QuickAction mQuickAction = QABGenerator.getLocationQABar(this, loc, this, false);
+		mQuickAction.show(qap, mv);
 		
-		final SelectLocationActivity self = this;
-		
-		//show dialog
-		elp.show(fragmentManager, DIALOG_ID_EDIT_LOCATION);
-		fragmentManager.executePendingTransactions();
-		elp.getDialog().setOnDismissListener(new OnDismissListener() {
-			@Override
-			public void onDismiss(DialogInterface arg0) {
-				self.onDismiss(arg0, DIALOG_ID_EDIT_LOCATION);
-			}
-		});
-
 		//return true to indicate we have handled the event
 		return true;
 	}
@@ -337,9 +342,6 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
 			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Dialog dismissed - removing edited marker");
 			Location loc = elp.getLocation();
 			removeMarker(loc);
-//			Marker marker = markers.get(loc);
-//			markers.remove(loc);
-//			locations.remove(marker);
 			
 			elp = null;
 	
@@ -367,6 +369,48 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
     	if (null != mMap) {
     		mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll, DEFAULT_ZOOM_LEVEL));
     	}
+	}
+
+	@Override
+	public void onItemClick(QuickAction source, int pos, int actionId) {
+		ActionItem ai = source.getActionItem(pos);
+		Location loc = QABGenerator.getLocation(ai);
+
+		switch (actionId) {
+		case QABGenerator.ACTION_ITEM_ID_EDIT_LOCATION:
+			FragmentManager fragmentManager = getSupportFragmentManager();
+			elp = EditLocationPopup.newInstance(loc);
+			
+			final SelectLocationActivity self = this;
+			
+			//show dialog
+			elp.show(fragmentManager, DIALOG_ID_EDIT_LOCATION);
+			fragmentManager.executePendingTransactions();
+			
+			//done AFTER 'executePendingTransactions to ensure the dialog has been built
+			elp.getDialog().setOnDismissListener(new OnDismissListener() {
+				@Override
+				public void onDismiss(DialogInterface arg0) {
+					self.onDismiss(arg0, DIALOG_ID_EDIT_LOCATION);
+				}
+			});
+			break;
+		case QABGenerator.ACTION_ITEM_ID_MAKE_FAVOURITE:
+			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "'Make Favourite' action item clicked");
+			removeMarker(loc);
+			LocationManager.selectLocation(this, loc.getId());
+			//force map to redraw for the same position
+	        onCameraChange(mMap.getCameraPosition());
+	        break;
+		case QABGenerator.ACTION_ITEM_ID_UNMAKE_FAVOURITE:
+			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "'Unmake Favourite' action item clicked");
+			removeMarker(loc);
+			LocationManager.deselectLocation(this, loc.getId());
+			//force map to redraw for the same position
+	        onCameraChange(mMap.getCameraPosition());
+	        break;
+		}
+			
 	}
 
 }
