@@ -1,6 +1,7 @@
 package uk.co.mentalspace.android.bustimes;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 import android.util.Log;
 
@@ -8,18 +9,18 @@ public class Source implements Serializable {
 	private static final long serialVersionUID = 5205293391053288165L;
 	private static final String LOGNAME = "Source";
 
-	private long rowId = -1;
-	private String srcId = null;
-	private String srcName = null;
-	private int estLocCount = 0;
-	private String locRefreshClassName = null;
-	private String btRefreshClassName = null;
-	private String polygonPointsJson = null;
-	private boolean isInstalled = false;
-	private String[] installFiles = null;
+	final protected long rowId;
+	final protected String srcId;
+	final protected String srcName;
+	final protected int estLocCount;
+	final protected String locRefreshClassName;
+	final protected String btRefreshClassName;
+	final protected String polygonPointsJson;
+	final protected boolean isInstalled;
+	final protected String[] installFiles;
 	
-	private transient LocationRefreshTask lrt = null;
-	private transient BusTimeRefreshTask btrt = null;
+	protected transient LocationRefreshTask lrt = null;
+	protected transient BusTimeRefreshTask btrt = null;
 	
 	public Source(String srcId, String srcName, int estLocCount, String locRefreshClassname, String btRefreshClassname, String polygonPointsJson, boolean isInstalled) {
 		this(-1, srcId, srcName, estLocCount, locRefreshClassname, btRefreshClassname, polygonPointsJson, isInstalled, "");
@@ -35,6 +36,7 @@ public class Source implements Serializable {
 		this.polygonPointsJson = polygonPointsJson;
 		this.isInstalled = isInstalled;
 		if (null != installFiles) this.installFiles = installFiles.split(",");
+		else this.installFiles = new String[0];
 	}
 	
 	@Override
@@ -54,21 +56,12 @@ public class Source implements Serializable {
 		sb.append(btRefreshClassName);
 		sb.append("], polygonPointsJson [");
 		sb.append(polygonPointsJson);
+		sb.append("], isInstalled [");
+		sb.append(isInstalled);
+		sb.append("], installFiles [");
+		sb.append(installFiles);
 		sb.append("]");
 		return sb.toString();
-	}
-	
-	public boolean isEqual(Object o) {
-		if (null == o) return false;
-		if (this == o) return true;
-		if (!this.getClass().equals(o.getClass())) return false;
-		
-		Source other = (Source)o;
-		if (this.getRowId() != -1) return this.getRowId() == other.getRowId();
-		else {
-			if (other.getRowId() != -1) return false;
-			return this.getID().equals(other.getID());
-		}
 	}
 	
 	public long getRowId() {
@@ -147,5 +140,49 @@ public class Source implements Serializable {
 			if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Failed to load Bus Time refresh task ["+btRefreshClassName+"]", ie);
 		}
 		return null;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((btRefreshClassName == null) ? 0 : btRefreshClassName.hashCode());
+		result = prime * result + estLocCount;
+		result = prime * result + Arrays.hashCode(installFiles);
+		result = prime * result + (isInstalled ? 1231 : 1237);
+		result = prime * result + ((locRefreshClassName == null) ? 0 : locRefreshClassName.hashCode());
+		result = prime * result + ((polygonPointsJson == null) ? 0 : polygonPointsJson.hashCode());
+		result = prime * result + (int) (rowId ^ (rowId >>> 32));
+		result = prime * result + ((srcId == null) ? 0 : srcId.hashCode());
+		result = prime * result + ((srcName == null) ? 0 : srcName.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (!(obj instanceof Source)) return false;
+		
+		Source other = (Source) obj;
+		
+		if (rowId != other.rowId) return false;
+		if (estLocCount != other.estLocCount) return false;
+		if (!Arrays.equals(installFiles, other.installFiles)) return false;
+		if (isInstalled != other.isInstalled) return false;
+		
+		if (!isParamEqual(btRefreshClassName, other.btRefreshClassName)) return false;
+		if (!isParamEqual(locRefreshClassName, other.locRefreshClassName)) return false;
+		if (!isParamEqual(polygonPointsJson, other.polygonPointsJson)) return false;
+		if (!isParamEqual(srcId, other.srcId)) return false; 
+		if (!isParamEqual(srcName, other.srcName)) return false;
+		return true;
+	}
+	
+	private boolean isParamEqual(Object left, Object right) {
+		if (left == null) {
+			if (right != null) return false;
+		} else if (!left.equals(right)) return false;
+		return true;
 	}
 }
