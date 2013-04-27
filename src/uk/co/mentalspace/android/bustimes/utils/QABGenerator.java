@@ -45,7 +45,7 @@ public class QABGenerator {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static Location getLocation(ActionItem actionItem) {
+	public static Location getLocationFromActionItem(ActionItem actionItem) {
 		try {
 			return ((BTActionItem<Location>)actionItem).getData();
 		} catch (ClassCastException cce) {

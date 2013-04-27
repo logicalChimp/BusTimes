@@ -374,7 +374,7 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
 	@Override
 	public void onItemClick(QuickAction source, int pos, int actionId) {
 		ActionItem ai = source.getActionItem(pos);
-		Location loc = QABGenerator.getLocation(ai);
+		Location loc = QABGenerator.getLocationFromActionItem(ai);
 
 		switch (actionId) {
 		case QABGenerator.ACTION_ITEM_ID_EDIT_LOCATION:
