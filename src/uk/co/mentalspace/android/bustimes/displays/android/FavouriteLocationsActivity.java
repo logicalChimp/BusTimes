@@ -1,7 +1,7 @@
 package uk.co.mentalspace.android.bustimes.displays.android;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import net.londatiga.android.ActionItem;
 import net.londatiga.android.QuickAction;
@@ -13,7 +13,7 @@ import uk.co.mentalspace.android.bustimes.Preferences;
 import uk.co.mentalspace.android.bustimes.R;
 import uk.co.mentalspace.android.bustimes.displays.android.listadapters.LocationsListAdapter;
 import uk.co.mentalspace.android.bustimes.displays.android.popups.EditLocationPopup;
-import uk.co.mentalspace.android.bustimes.utils.BTActionItem;
+import uk.co.mentalspace.android.bustimes.utils.QABGenerator;
 
 import android.os.Bundle;
 import android.content.DialogInterface;
@@ -37,9 +37,6 @@ public class FavouriteLocationsActivity extends FragmentActivity implements OnIt
 	public static final String ACTION_SHOW_STAGE_TWO_WELCOME = "showStageTwoWelcome";
 	public static final String ACTION_NORMAL = "actionNormal";
 	
-	private static final int ACTION_ID_EDIT = 0;
-	private static final int ACTION_ID_SHOW_ON_MAP = 1;
-
 	private List<Location> locations = null;
 	
     @Override
@@ -90,16 +87,7 @@ public class FavouriteLocationsActivity extends FragmentActivity implements OnIt
 		if (null == locations || locations.size() <= position) return;
 		
 		Location loc = locations.get(position);
-		final QuickAction mQuickAction 	= new QuickAction(this);
-
-		ActionItem editItem = new BTActionItem<Location>(ACTION_ID_EDIT, getString(R.string.location_actions_edit), getResources().getDrawable(android.R.drawable.ic_menu_edit), loc);
-		mQuickAction.addActionItem(editItem);
-		ActionItem showItem = new BTActionItem<Location>(ACTION_ID_SHOW_ON_MAP, getString(R.string.location_actions_show_on_map), getResources().getDrawable(android.R.drawable.ic_menu_mapmode), loc);
-		mQuickAction.addActionItem(showItem);
-		
-		//setup the action item click listener
-		mQuickAction.setOnActionItemClickListener(this);
-		mQuickAction.setOnDismissListener(this);
+		final QuickAction mQuickAction = QABGenerator.getLocationQABar(this, loc, this, true);
 		mQuickAction.show(view);
 	}
 
@@ -135,11 +123,10 @@ public class FavouriteLocationsActivity extends FragmentActivity implements OnIt
 	public void onItemClick(QuickAction source, int pos, int actionId) {
 		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "QuickAction clicked. Pos ["+pos+"], id ["+actionId+"]");
 		ActionItem ai = source.getActionItem(pos);
-		@SuppressWarnings("unchecked")
-		Location loc = ((BTActionItem<Location>)ai).getData();
+		Location loc = QABGenerator.getLocationFromActionItem(ai);
 		
 		switch (actionId) {
-		case ACTION_ID_EDIT:
+		case QABGenerator.ACTION_ITEM_ID_EDIT_LOCATION:
 			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "QuickAction 'Location Edit' clicked");
 			FragmentManager fragmentManager = getSupportFragmentManager();
 			EditLocationPopup elp = EditLocationPopup.newInstance(loc);
@@ -149,13 +136,21 @@ public class FavouriteLocationsActivity extends FragmentActivity implements OnIt
 			fragmentManager.executePendingTransactions();
 			elp.getDialog().setOnDismissListener(this);
 			return;
-		case ACTION_ID_SHOW_ON_MAP:
+		case QABGenerator.ACTION_ITEM_ID_SHOW_ON_MAP:
 			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Sending intent to show location ["+loc+"] on map");
 			Intent intent = new Intent(this, SelectLocationActivity.class);
 			intent.setAction(SelectLocationActivity.ACTION_SHOW_LOC_ON_MAP);
 			intent.putExtra(SelectLocationActivity.EXTRA_LOCATION, loc);
 			startActivity(intent);
 			return;
+		case QABGenerator.ACTION_ITEM_ID_MAKE_FAVOURITE:
+			LocationManager.selectLocation(this, loc.getId());
+			configureFavouriteLocationsList();
+			break;
+		case QABGenerator.ACTION_ITEM_ID_UNMAKE_FAVOURITE:
+			LocationManager.deselectLocation(this, loc.getId());
+			configureFavouriteLocationsList();
+			break;
 		}
 	}
 }
