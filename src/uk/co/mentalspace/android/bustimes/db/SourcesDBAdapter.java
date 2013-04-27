@@ -1,12 +1,17 @@
 package uk.co.mentalspace.android.bustimes.db;
 
 import java.util.List;
+
+import uk.co.mentalspace.android.bustimes.Preferences;
 import uk.co.mentalspace.android.bustimes.Source;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
 public class SourcesDBAdapter extends BaseDBAdapter<Source> {
+	private static final String LOGNAME = "SourcesDBAdapter";
+	
 	private static final String KEY_ROWID = "_id";
 	private static final String KEY_SOURCE_ID = "sourceId";
 	private static final String KEY_SOURCE_NAME = "name";
@@ -50,7 +55,27 @@ public class SourcesDBAdapter extends BaseDBAdapter<Source> {
     }
 
     public Cursor fetchAllSources() {
-    	return fetch(BusTimesDBHelper.SOURCES_TABLE, ALL_COLUMNS, null);
+    	String sql = "SELECT "+BusTimesDBHelper.SOURCES_TABLE+"."+KEY_ROWID+
+    				 ", "+BusTimesDBHelper.SOURCES_TABLE+"."+KEY_SOURCE_ID+
+    				 ", "+KEY_SOURCE_NAME+
+    				 ", "+KEY_EST_LOC_COUNT+
+    				 ", "+KEY_LOC_REFRESH_CLASSNAME+
+    				 ", "+KEY_BT_REFRESH_CLASSNAME+
+    				 ", "+KEY_POLYGON_POINTS_JSON+
+    				 ", "+KEY_IS_INSTALLED+
+    				 ", "+KEY_INSTALL_FILES+
+    				 ", Max("+LocationsRefreshDBAdapter.KEY_END_TIME+") as "+LocationsRefreshDBAdapter.KEY_END_TIME+
+    				 " FROM "+BusTimesDBHelper.SOURCES_TABLE+
+    				 " LEFT JOIN "+BusTimesDBHelper.BUS_TIMES_REFRESH_TABLE+
+    				 " ON "+BusTimesDBHelper.SOURCES_TABLE+".sourceId = "+BusTimesDBHelper.BUS_TIMES_REFRESH_TABLE+".sourceId"+
+    				 " GROUP BY "+BusTimesDBHelper.SOURCES_TABLE+"."+KEY_SOURCE_ID;
+    	if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Getting sources with refresh times.  SQL: "+sql);
+
+    	Cursor mCursor = mDb.rawQuery(sql, null);
+        if (mCursor != null) {
+            mCursor.moveToFirst();
+        }
+        return mCursor;
     }
     
     public List<Source> getAllSources() {
@@ -76,6 +101,7 @@ public class SourcesDBAdapter extends BaseDBAdapter<Source> {
     @Override
 	protected Source populateFromCursor(Cursor c) {
     	int isInstalled = c.getInt(c.getColumnIndex(KEY_IS_INSTALLED));
+    	long lastRefreshTimestamp = (c.getColumnIndex(LocationsRefreshDBAdapter.KEY_END_TIME) == -1) ? -1 : c.getLong(c.getColumnIndex(LocationsRefreshDBAdapter.KEY_END_TIME));
     	Source src = new Source(c.getLong(c.getColumnIndex(KEY_ROWID)),
                 c.getString(c.getColumnIndex(KEY_SOURCE_ID)),
                 c.getString(c.getColumnIndex(KEY_SOURCE_NAME)),
@@ -84,7 +110,8 @@ public class SourcesDBAdapter extends BaseDBAdapter<Source> {
                 c.getString(c.getColumnIndex(KEY_BT_REFRESH_CLASSNAME)),
                 c.getString(c.getColumnIndex(KEY_POLYGON_POINTS_JSON)),
                 (0 == isInstalled)? false : true, 
-                c.getString(c.getColumnIndex(KEY_INSTALL_FILES)));
+                c.getString(c.getColumnIndex(KEY_INSTALL_FILES)),
+                lastRefreshTimestamp);
     	return src;
     }
 

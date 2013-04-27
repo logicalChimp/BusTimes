@@ -19,14 +19,16 @@ public class Source implements Serializable {
 	final protected boolean isInstalled;
 	final protected String[] installFiles;
 	
+	final protected long lastRefreshTimestamp;
+	
 	protected transient LocationRefreshTask lrt = null;
 	protected transient BusTimeRefreshTask btrt = null;
 	
 	public Source(String srcId, String srcName, int estLocCount, String locRefreshClassname, String btRefreshClassname, String polygonPointsJson, boolean isInstalled) {
-		this(-1, srcId, srcName, estLocCount, locRefreshClassname, btRefreshClassname, polygonPointsJson, isInstalled, "");
+		this(-1, srcId, srcName, estLocCount, locRefreshClassname, btRefreshClassname, polygonPointsJson, isInstalled, "", -1);
 	}
 	
-	public Source(long rowId, String srcId, String srcName, int estLocCount, String locRefreshClassname, String btRefreshClassname, String polygonPointsJson, boolean isInstalled, String installFiles) {
+	public Source(long rowId, String srcId, String srcName, int estLocCount, String locRefreshClassname, String btRefreshClassname, String polygonPointsJson, boolean isInstalled, String installFiles, long lastRefreshTimestamp) {
 		this.rowId = rowId;
 		this.srcId = srcId;
 		this.srcName = srcName;
@@ -35,6 +37,8 @@ public class Source implements Serializable {
 		this.btRefreshClassName = btRefreshClassname;
 		this.polygonPointsJson = polygonPointsJson;
 		this.isInstalled = isInstalled;
+		this.lastRefreshTimestamp = lastRefreshTimestamp;
+
 		if (null != installFiles) this.installFiles = installFiles.split(",");
 		else this.installFiles = new String[0];
 	}
@@ -98,6 +102,10 @@ public class Source implements Serializable {
 	
 	public String[] getInstallFiles() {
 		return installFiles;
+	}
+	
+	public long getLastRefreshTimestamp() {
+		return lastRefreshTimestamp;
 	}
 	
 	public LocationRefreshTask getLocationRefreshTask() {

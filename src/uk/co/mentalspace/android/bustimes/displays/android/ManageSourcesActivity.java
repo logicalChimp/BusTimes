@@ -94,22 +94,6 @@ public class ManageSourcesActivity extends FragmentActivity implements OnItemCli
 		
 		Source src = srcs.get(position);
 		final QuickAction mQuickAction = QABGenerator.getManageSourceQABar(this, src, this);
-//		final QuickAction mQuickAction 	= new QuickAction(this);
-//
-//		if (!src.isInstalled()) {
-//			ActionItem installItem = new BTActionItem<Source>(ACTION_ID_INSTALL_SOURCE, getString(R.string.source_actions_popup_install), getResources().getDrawable(android.R.drawable.stat_sys_download_done), src);
-//			mQuickAction.addActionItem(installItem);
-//		} else {
-//			ActionItem refreshItem = new BTActionItem<Source>(ACTION_ID_REFRESH_SOURCE, getString(R.string.source_actions_popup_refresh), getResources().getDrawable(android.R.drawable.stat_notify_sync_noanim), src);
-//			mQuickAction.addActionItem(refreshItem);
-//	        ActionItem uninstallItem = new BTActionItem<Source>(ACTION_ID_UNINSTALL_SOURCE, getString(R.string.source_actions_popup_uninstall), getResources().getDrawable(android.R.drawable.ic_menu_set_as), src);
-//			mQuickAction.addActionItem(uninstallItem);
-//		}
-//		
-//		//setup the action item click listener
-//		mQuickAction.setOnActionItemClickListener(this);
-//		mQuickAction.setOnDismissListener(this);
-//		mQuickAction.mAnimateTrack(false);
 		mQuickAction.show(view);
 	}
 

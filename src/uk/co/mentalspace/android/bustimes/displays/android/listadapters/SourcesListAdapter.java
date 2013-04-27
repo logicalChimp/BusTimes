@@ -1,5 +1,9 @@
 package uk.co.mentalspace.android.bustimes.displays.android.listadapters;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import uk.co.mentalspace.android.bustimes.Preferences;
 import uk.co.mentalspace.android.bustimes.R;
 import uk.co.mentalspace.android.bustimes.Source;
@@ -41,8 +45,18 @@ public class SourcesListAdapter extends ArrayAdapter<Source> {
 		
 		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "source: "+src);
 		((TextView)rowView.findViewById(R.id.sources_list_row_name)).setText(src.getName());
-		((TextView)rowView.findViewById(R.id.sources_list_row_refresh_time)).setText("");
 		
+		TextView rttv = ((TextView)rowView.findViewById(R.id.sources_list_row_refresh_time));
+		if (0 >= src.getLastRefreshTimestamp()) {
+			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Source has no refresh time ["+src.getLastRefreshTimestamp()+"]");
+			rttv.setText("");
+		} else {
+			DateFormat simpleDateFormat = SimpleDateFormat.getDateTimeInstance();
+			Date refreshTime = new Date();
+			refreshTime.setTime(src.getLastRefreshTimestamp());
+			String dateAsString = simpleDateFormat.format(refreshTime);
+			rttv.setText("Last refreshed: "+dateAsString);
+		}
 		return rowView;
 	}
 }
