@@ -260,10 +260,12 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
         reference.retainAll(locations);
         if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Current marker count ["+markers.size()+"], to add ["+(locations.size() - reference.size())+"]");
         for (Location loc: locations) {
-        	if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Location ["+loc.getStopCode()+"] is already on map: "+reference.contains(loc));
+        	if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Location ["+loc.getStopCode()+"] is already on map? "+reference.contains(loc));
         	if (!reference.contains(loc)) {
         		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "...adding marker");
         		addMarker(loc);        	
+        	} else {
+        		if (Preferences.ENABLE_LOGGING) Log.w(LOGNAME, "Location ["+loc+"] already exists");
         	}
         }
         
@@ -272,7 +274,9 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
     
     private void removeMarker(Location loc) {
     	if (markers.containsKey(loc)) {
-    		markers.get(loc).remove();
+    		//remove from map - *before* removing from collection 
+    		//better to have a dead object in the collection than a dead marker on the map
+    		markers.get(loc).remove(); 
     		Marker marker = markers.get(loc);
         	markers.remove(loc);
         	locations.remove(marker);
@@ -287,9 +291,10 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
     }
     
     private MarkerOptions getMarkerOptions(Location loc) {
-    	LatLng ll = new LatLng(((double)loc.getLat())/10000,((double)loc.getLon())/10000);
+    	LatLng ll = loc.getLatLng();
+//    	LatLng ll = new LatLng(((double)loc.getLat())/10000,((double)loc.getLon())/10000);
     	MarkerOptions mo = new MarkerOptions().position(ll).title(loc.getLocationName()).snippet(loc.getStopCode());
-    	if (loc.getChosen() == 1) mo.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+    	if (loc.getChosen()) mo.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
     	return mo;
     }
 
@@ -331,9 +336,10 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
 		if (DIALOG_ID_EDIT_LOCATION.equals(id)) {
 			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Dialog dismissed - removing edited marker");
 			Location loc = elp.getLocation();
-			Marker marker = markers.get(loc);
-			markers.remove(loc);
-			locations.remove(marker);
+			removeMarker(loc);
+//			Marker marker = markers.get(loc);
+//			markers.remove(loc);
+//			locations.remove(marker);
 			
 			elp = null;
 	

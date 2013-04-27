@@ -4,6 +4,7 @@ import uk.co.mentalspace.android.bustimes.Location;
 import uk.co.mentalspace.android.bustimes.LocationManager;
 import uk.co.mentalspace.android.bustimes.Preferences;
 import uk.co.mentalspace.android.bustimes.R;
+import uk.co.mentalspace.android.utils.DebugUtils;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -34,6 +35,10 @@ public class EditLocationPopup extends DialogFragment implements OnClickListener
 	public static EditLocationPopup newInstance(Location loc) {
 		Bundle args = new Bundle();
 		args.putSerializable(EditLocationPopup.BUNDLE_LOCATION, loc);
+
+		if (null == loc && Preferences.ENABLE_LOGGING) {
+			DebugUtils.dumpStackTrace("NullEditLoc");
+		}
 		
 		EditLocationPopup elp = new EditLocationPopup();
 		elp.setArguments(args);
@@ -51,7 +56,7 @@ public class EditLocationPopup extends DialogFragment implements OnClickListener
 	    	((TextView)popupView.findViewById(R.id.map_info_window_stop_name_value)).setText(loc.getLocationName());
 	    	((EditText)popupView.findViewById(R.id.map_info_window_nick_name_value)).setText(loc.getNickName());
 	    	ToggleButton btn = ((ToggleButton)popupView.findViewById(R.id.map_info_window_monitored_button));
-	    	btn.setChecked(loc.getChosen() == 1);
+	    	btn.setChecked(loc.getChosen());
 	    	btn.setOnClickListener(this);
 		}
     	return popupView;
@@ -83,14 +88,18 @@ public class EditLocationPopup extends DialogFragment implements OnClickListener
 	}
 	
 	public void checkValuesAndDismiss() {
-		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "checking Nick Name before dismissing");
-		EditText et = ((EditText)getDialog().findViewById(R.id.map_info_window_nick_name_value));
-		String nickName = (null == et.getText()) ? "" : et.getText().toString();
-		if (nickName != null && !nickName.equals(loc.getNickName())) {
-			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Updating nickname ["+nickName+"] for stop code ["+loc.getStopCode()+"]");
-			LocationManager.updateNickName(getActivity(), loc.getId(), nickName);
+		if (null != loc) {
+			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "checking Nick Name before dismissing");
+			EditText et = ((EditText)getDialog().findViewById(R.id.map_info_window_nick_name_value));
+			String nickName = (null == et.getText()) ? "" : et.getText().toString();
+			if (nickName != null && !nickName.equals(loc.getNickName())) {
+				if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Updating nickname ["+nickName+"] for stop code ["+loc.getStopCode()+"]");
+				LocationManager.updateNickName(getActivity(), loc.getId(), nickName);
+			} else {
+				if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Not updating nickname ["+nickName+"] for stop code ["+loc.getStopCode()+"]");
+			}
 		} else {
-			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Not updating nickname ["+nickName+"] for stop code ["+loc.getStopCode()+"]");
+			if (Preferences.ENABLE_LOGGING) Log.w(LOGNAME, "Edit dialog has <null> location - ignoring user edits");
 		}
 		EditLocationPopup.this.getDialog().dismiss();
 	}

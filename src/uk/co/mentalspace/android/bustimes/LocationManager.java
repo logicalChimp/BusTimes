@@ -68,7 +68,7 @@ public class LocationManager extends BaseManager<Location> {
 			protected Boolean doWork() {
 		        Location loc = ldba.getLocationByID(stopId);
 		        if (null == loc) return false;
-		        return (loc.getChosen() == 1);
+		        return loc.getChosen();
 			}
 		};
 		return locTask.run(ctx);
@@ -81,7 +81,7 @@ public class LocationManager extends BaseManager<Location> {
 			protected Boolean doWork() {
 		        Location loc = ldba.getLocationByID(stopId);
 		        if (null == loc) return false;
-		        loc.setChosen(1);
+		        loc = loc.setChosen(true);
 		        return ldba.updateLocation(loc);
 			}
 		};
@@ -95,7 +95,7 @@ public class LocationManager extends BaseManager<Location> {
 			protected Boolean doWork() {
 		        Location loc = ldba.getLocationByID(stopId);
 		        if (null == loc) return false;
-		        loc.setChosen(0);
+		        loc = loc.setChosen(false);
 		        return ldba.updateLocation(loc);
 			}
 		};
@@ -109,7 +109,7 @@ public class LocationManager extends BaseManager<Location> {
 			protected Boolean doWork() {
 		        Location loc = ldba.getLocationByID(stopId);
 		        if (null == loc) return false;
-		        loc.setNickName(nickName);
+		        loc = loc.setNickName(nickName);
 		        return ldba.updateLocation(loc);
 			}
 		};

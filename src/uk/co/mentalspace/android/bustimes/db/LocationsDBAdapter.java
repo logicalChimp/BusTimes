@@ -146,7 +146,7 @@ public class LocationsDBAdapter extends BaseDBAdapter<Location> {
                 c.getInt(c.getColumnIndex(KEY_WGS84_LAT)),
                 c.getInt(c.getColumnIndex(KEY_WGS84_LONG)),
                 c.getString(c.getColumnIndex(KEY_NICK_NAME)),
-                c.getInt(c.getColumnIndex(KEY_CHOSEN)),
+                1 == c.getInt(c.getColumnIndex(KEY_CHOSEN)),
                 c.getString(c.getColumnIndex(KEY_SOURCE_ID)));
 		return loc;
     }
@@ -180,7 +180,7 @@ public class LocationsDBAdapter extends BaseDBAdapter<Location> {
      * @param body value to set note body to
      * @return true if the note was successfully updated, false otherwise
      */
-    public boolean updateLocation(long rowId, String stopCode, String name, String desc, int lat, int lng, String srcPosA, String srcPosB, String heading, String nickName, int chosen, String sourceId) {
+    public boolean updateLocation(long rowId, String stopCode, String name, String desc, int lat, int lng, String srcPosA, String srcPosB, String heading, String nickName, boolean chosen, String sourceId) {
         ContentValues args = new ContentValues();
         args.put(KEY_STOP_CODE, stopCode);
         args.put(KEY_NAME, name);
@@ -191,7 +191,7 @@ public class LocationsDBAdapter extends BaseDBAdapter<Location> {
         args.put(KEY_SRC_POS_B, srcPosB);
         args.put(KEY_HEADING, heading);
         args.put(KEY_NICK_NAME, nickName);
-        args.put(KEY_CHOSEN, chosen);
+        args.put(KEY_CHOSEN, (chosen)?1:0);
         args.put(KEY_SOURCE_ID, sourceId);
         return mDb.update(BusTimesDBHelper.LOCATIONS_TABLE, args, KEY_ROWID + "= ?", new String[] {String.valueOf(rowId)}) > 0;
     }

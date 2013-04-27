@@ -8,28 +8,28 @@ public class Location implements Serializable {
 
 	private static final long serialVersionUID = -6198852740620788874L;
 	
-	private long id = -1;
-	private String stopCode = null;
-	private String locationName = null;
-	private String desc = null;
-	private String srcPosA = null;
-	private String srcPosB = null;
-	private String heading = null;
-	private String nickName = null;
-	private int lat = 0;
-	private int lon = 0;
-	private int chosen = 0;
-	private String sourceId = null;
+	private final long id;
+	private final String stopCode;
+	private final String locationName;
+	private final String desc;
+	private final String srcPosA;
+	private final String srcPosB;
+	private final String heading;
+	private final String nickName;
+	private final int lat;
+	private final int lon;
+	private final boolean chosen;
+	private final String sourceId;
 	
 	public Location(String stopCode, String locName, String desc, String srcPosA, String srcPosB, String heading, int lattitude, int longitude) {
 		this(-1, stopCode, locName, desc, srcPosA, srcPosB, heading, lattitude, longitude);
 	}
 	
 	public Location(long id, String stopCode, String locName, String desc, String srcPosA, String srcPosB, String heading, int lattitude, int longitude) {
-		this(id, stopCode, locName, desc, srcPosA, srcPosB, heading, lattitude, longitude, "", 0, "");
+		this(id, stopCode, locName, desc, srcPosA, srcPosB, heading, lattitude, longitude, "", false, "");
 	}
 	
-	public Location(long id, String stopCode, String locName, String desc, String srcPosA, String srcPosB, String heading, int lattitude, int longitude, String nickName, int chosen, String sourceId) {
+	public Location(long id, String stopCode, String locName, String desc, String srcPosA, String srcPosB, String heading, int lattitude, int longitude, String nickName, boolean chosen, String sourceId) {
 		this.id = id;
 		this.stopCode = stopCode;
 		this.desc = desc;
@@ -59,6 +59,12 @@ public class Location implements Serializable {
 		sb.append(this.lat);
 		sb.append("], [lon:");
 		sb.append(this.lon);
+		sb.append("], [srcPosA:");
+		sb.append(this.srcPosA);
+		sb.append("], [srcPosB:");
+		sb.append(this.srcPosB);
+		sb.append("], [heading:");
+		sb.append(this.heading);
 		sb.append("], [Nick:");
 		sb.append(this.nickName);
 		sb.append("], [Chosen:");
@@ -69,44 +75,20 @@ public class Location implements Serializable {
 		return sb.toString();
 	}
 	
-	@Override
-	public boolean equals(Object o) {
-		if (null == o) return false;
-		if (this == o) return true;
-		if (!this.getClass().equals(o.getClass())) return false;
-		
-		Location other = (Location)o;
-		if (this.getId() != -1) return this.getId() == other.getId();
-		else {
-			if (other.getId() != -1) return false;
-			if (null == this.getStopCode()) return null == other.getStopCode();
-			
-			//use pattern 'boolean && <test>' = if boolean is false, test will be skipped
-			//this avoids running tests once objects have been proved not equal 
-			boolean isEqual = true;
-			isEqual = isEqual && this.getStopCode().equals(other.getStopCode());
-			isEqual = isEqual && this.getSourceId().equals(other.getSourceId());
-			isEqual = isEqual && this.getNickName().equals(other.getNickName());
-			isEqual = isEqual && this.getChosen() == other.getChosen();
-			
-			return isEqual;
-		}
-	}
-	
 	public long getId() {
 		return id;
 	}
 	
-	public void setChosen(int chosen) {
-		this.chosen = chosen;
+	public Location setChosen(boolean chosen) {
+		return new Location(id, stopCode, locationName, desc, srcPosA, srcPosB, heading, lat, lon, nickName, chosen, sourceId);
 	}
 	
-	public int getChosen() {
+	public boolean getChosen() {
 		return chosen;
 	}
 	
-	public void setNickName(String name) {
-		nickName = name;
+	public Location setNickName(String nickName) {
+		return new Location(id, stopCode, locationName, desc, srcPosA, srcPosB, heading, lat, lon, nickName, chosen, sourceId);
 	}
 	
 	public String getNickName() {
@@ -155,5 +137,58 @@ public class Location implements Serializable {
 	
 	public LatLng getLatLng() {
 		return new LatLng( ((double)lat)/10000, ((double)lon)/10000 );
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (chosen ? 1231 : 1237);
+		result = prime * result + ((desc == null) ? 0 : desc.hashCode());
+		result = prime * result + ((heading == null) ? 0 : heading.hashCode());
+		result = prime * result + (int) (id ^ (id >>> 32));
+		result = prime * result + lat;
+		result = prime * result + ((locationName == null) ? 0 : locationName.hashCode());
+		result = prime * result + lon;
+		result = prime * result + ((nickName == null) ? 0 : nickName.hashCode());
+		result = prime * result + ((sourceId == null) ? 0 : sourceId.hashCode());
+		result = prime * result + ((srcPosA == null) ? 0 : srcPosA.hashCode());
+		result = prime * result + ((srcPosB == null) ? 0 : srcPosB.hashCode());
+		result = prime * result + ((stopCode == null) ? 0 : stopCode.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (!(obj instanceof Location)) return false;
+
+		Location other = (Location) obj;
+		
+		//test simple params first
+		if (id != other.id) return false;
+		if (lat != other.lat) return false;		
+		if (lon != other.lon) return false;
+		if (chosen != other.chosen) return false;
+
+		//then test the obj params, by recursing to their .equals methods
+		if (!isParamEqual(desc, other.desc)) return false;
+		if (!isParamEqual(heading, other.heading)) return false; 
+		if (!isParamEqual(locationName, other.locationName)) return false;
+		if (!isParamEqual(nickName, other.nickName)) return false; 
+		if (!isParamEqual(sourceId, other.sourceId)) return false;
+		if (!isParamEqual(srcPosA, other.srcPosA)) return false;
+		if (!isParamEqual(srcPosB, other.srcPosB)) return false;
+		if (!isParamEqual(stopCode, other.stopCode)) return false;
+
+		return true;
+	}
+	
+	private boolean isParamEqual(Object left, Object right) {
+		if (left == null) {
+			if (right != null) return false;
+		} else if (!left.equals(right)) return false;
+		return true;
 	}
 }
