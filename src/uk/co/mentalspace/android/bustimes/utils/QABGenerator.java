@@ -83,30 +83,30 @@ public class QABGenerator {
 	}
 	
 	protected static ActionItem getSourceInstallActionItem(Context ctx, Source src) {
-		return new BTActionItem<Source>(ACTION_ITEM_ID_INSTALL_SOURCE, ctx.getString(R.string.source_actions_popup_install), ctx.getResources().getDrawable(android.R.drawable.stat_sys_download_done), src);
+		return new BTActionItem<Source>(ACTION_ITEM_ID_INSTALL_SOURCE, ctx.getString(R.string.source_actions_popup_install), ctx.getResources().getDrawable(R.drawable.list), src);
 	}
 	
 	protected static ActionItem getSourceUninstallActionItem(Context ctx, Source src) {
-		return new BTActionItem<Source>(ACTION_ITEM_ID_UNINSTALL_SOURCE, ctx.getString(R.string.source_actions_popup_uninstall), ctx.getResources().getDrawable(android.R.drawable.stat_sys_download), src);
+		return new BTActionItem<Source>(ACTION_ITEM_ID_UNINSTALL_SOURCE, ctx.getString(R.string.source_actions_popup_uninstall), ctx.getResources().getDrawable(R.drawable.trash_can), src);
 	}
 	
 	protected static ActionItem getSourceRefreshActionItem(Context ctx, Source src) {
-		return new BTActionItem<Source>(ACTION_ITEM_ID_REFRESH_SOURCE, ctx.getString(R.string.source_actions_popup_refresh), ctx.getResources().getDrawable(android.R.drawable.ic_menu_set_as), src);
+		return new BTActionItem<Source>(ACTION_ITEM_ID_REFRESH_SOURCE, ctx.getString(R.string.source_actions_popup_refresh), ctx.getResources().getDrawable(R.drawable.refresh), src);
 	}
 	
 	protected static ActionItem getLocationEditActionItem(Context ctx, Location loc) {
-		return new BTActionItem<Location>(ACTION_ITEM_ID_EDIT_LOCATION, ctx.getString(R.string.location_actions_edit), ctx.getResources().getDrawable(android.R.drawable.ic_menu_edit), loc);
+		return new BTActionItem<Location>(ACTION_ITEM_ID_EDIT_LOCATION, ctx.getString(R.string.location_actions_edit), ctx.getResources().getDrawable(R.drawable.pencil), loc);
 	}
 	
 	protected static ActionItem getLocationMakeFavouriteActionItem(Context ctx, Location loc) {
-		return new BTActionItem<Location>(ACTION_ITEM_ID_MAKE_FAVOURITE, ctx.getString(R.string.location_actions_make_favourite), ctx.getResources().getDrawable(android.R.drawable.star_big_on), loc);
+		return new BTActionItem<Location>(ACTION_ITEM_ID_MAKE_FAVOURITE, ctx.getString(R.string.location_actions_make_favourite), ctx.getResources().getDrawable(R.drawable.bookmark), loc);
 	}
 
 	protected static ActionItem getLocationUnmakeFavouriteActionItem(Context ctx, Location loc) {
-		return new BTActionItem<Location>(ACTION_ITEM_ID_UNMAKE_FAVOURITE, ctx.getString(R.string.location_actions_unmake_favourite), ctx.getResources().getDrawable(android.R.drawable.star_big_off), loc);
+		return new BTActionItem<Location>(ACTION_ITEM_ID_UNMAKE_FAVOURITE, ctx.getString(R.string.location_actions_unmake_favourite), ctx.getResources().getDrawable(R.drawable.book), loc);
 	}
 
 	protected static ActionItem getLocationShowOnMapActionItem(Context ctx, Location loc) {
-		return new BTActionItem<Location>(ACTION_ITEM_ID_SHOW_ON_MAP, ctx.getString(R.string.location_actions_show_on_map), ctx.getResources().getDrawable(android.R.drawable.ic_menu_mapmode), loc);
+		return new BTActionItem<Location>(ACTION_ITEM_ID_SHOW_ON_MAP, ctx.getString(R.string.location_actions_show_on_map), ctx.getResources().getDrawable(R.drawable.world), loc);
 	}
 }
