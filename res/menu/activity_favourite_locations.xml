@@ -3,18 +3,18 @@
     
 	<item 
 	    android:id="@+id/menu_add_favourite"
-	    android:icon="@android:drawable/ic_menu_add"
+	    android:icon="@drawable/ab_add_enabled"
 	    android:title="@string/menu_add_favourite"
 	    android:showAsAction="ifRoom|withText" />
 	
 	<item
 	    android:id="@+id/menu_manage_sources"
-	    android:icon="@android:drawable/ic_menu_set_as"
+	    android:icon="@drawable/ab_dispatch_order_enabled"
 	    android:title="@string/menu_manage_sources"
 	    android:showAsAction="ifRoom|withText" />
 
     <item 
         android:id="@+id/menu_settings"
-        android:icon="@android:drawable/ic_menu_preferences"
+        android:icon="@drawable/ab_gear_enabled"
         android:title="@string/menu_settings" />
 </menu>
