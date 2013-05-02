@@ -1,9 +1,11 @@
-package uk.co.mentalspace.android.bustimes.displays.android;
+package uk.co.mentalspace.android.bustimes.displays.android.tasks;
 
 import uk.co.mentalspace.android.bustimes.Preferences;
 import uk.co.mentalspace.android.bustimes.LocationManager;
 import uk.co.mentalspace.android.bustimes.Source;
 import uk.co.mentalspace.android.bustimes.SourceManager;
+import uk.co.mentalspace.android.bustimes.displays.android.OnTaskCompleteListener;
+import uk.co.mentalspace.android.bustimes.displays.android.Task;
 import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;

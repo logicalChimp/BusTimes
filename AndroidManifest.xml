@@ -102,6 +102,10 @@
             android:name="uk.co.mentalspace.android.bustimes.displays.android.DebugTasksActivity"
             android:label="@string/title_activity_debug_tasks" >
         </activity>
+        <activity
+            android:name="uk.co.mentalspace.android.bustimes.displays.android.SettingsActivity"
+            android:label="@string/title_activity_settings" >
+        </activity>
     </application>
 
 </manifest>

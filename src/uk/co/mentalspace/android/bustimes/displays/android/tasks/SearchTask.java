@@ -1,9 +1,10 @@
-package uk.co.mentalspace.android.bustimes.displays.android;
+package uk.co.mentalspace.android.bustimes.displays.android.tasks;
 
 import java.util.Locale;
 import java.util.List;
 
 import uk.co.mentalspace.android.bustimes.Preferences;
+import uk.co.mentalspace.android.bustimes.displays.android.OnPointFoundListener;
 
 import com.google.android.gms.maps.model.LatLng;
 

@@ -15,6 +15,9 @@ public class MetaWatchReceiver extends BroadcastReceiver implements MW {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
+		//ensure the user prefs are loaded before processing
+		Preferences.loadPreferences(context);
+		
 		try {
 			final String action = intent.getAction();
 			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Received Intent.  Action: " + action);

@@ -78,7 +78,28 @@
     <string-array name="settings_locators_values">
         <item>PreferredLocationLocator</item>
     </string-array>
-
+    
+    <string-array name="pref_refresh_rates_names">
+        <item>Source default</item>
+        <item>30 seconds</item>
+        <item>60 seconds</item>
+    </string-array>
+    <string-array name="pref_refresh_rates_values">
+        <item>SOURCE_DEFAULT</item>
+        <item>THIRTY_SECONDS</item>
+        <item>SIXTY_SECONDS</item>
+    </string-array>
+    <string name="pref_refresh_rates_default">SOURCE_DEFAULT</string>
+    
+    <string-array name="pref_metawatch_firmware_types_names">
+        <item>Producation</item>
+        <item>Developer</item>
+    </string-array>
+    <string-array name="pref_metawatch_firmware_types_values">
+        <item>PRODUCTION</item>
+        <item>DEVELOPER</item>
+    </string-array>
+	<string name="pref_metawatch_firmware_types_default">PRODUCTION</string>
     <string name="title_activity_select_location">Select Location</string>
     <string name="title_activity_favourite_locations">Favourites</string>
     <string name="title_activity_bus_times">Bus Times</string>

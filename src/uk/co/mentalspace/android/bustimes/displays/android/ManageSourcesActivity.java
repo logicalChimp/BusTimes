@@ -13,6 +13,7 @@ import uk.co.mentalspace.android.bustimes.R;
 import uk.co.mentalspace.android.bustimes.Source;
 import uk.co.mentalspace.android.bustimes.SourceManager;
 import uk.co.mentalspace.android.bustimes.displays.android.listadapters.SourcesListAdapter;
+import uk.co.mentalspace.android.bustimes.displays.android.tasks.InstallSourceTask;
 import uk.co.mentalspace.android.bustimes.utils.BTActionItem;
 import uk.co.mentalspace.android.bustimes.utils.QABGenerator;
 import android.os.AsyncTask;
@@ -23,6 +24,7 @@ import android.content.DialogInterface.OnDismissListener;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
@@ -151,4 +153,16 @@ public class ManageSourcesActivity extends FragmentActivity implements OnItemCli
 			return;
 		}
 	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.menu_settings:
+    		startActivity(new Intent(this, SettingsActivity.class));
+    		return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
 }

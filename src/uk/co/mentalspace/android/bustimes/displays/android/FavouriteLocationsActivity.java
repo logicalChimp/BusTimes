@@ -106,6 +106,9 @@ public class FavouriteLocationsActivity extends FragmentActivity implements OnIt
 		case R.id.menu_manage_sources:
     		startActivity(new Intent(this, ManageSourcesActivity.class));
 			return true;
+		case R.id.menu_settings:
+    		startActivity(new Intent(this, SettingsActivity.class));
+    		return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}

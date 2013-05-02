@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="Bus stop selection">
+
+	    <CheckBoxPreference
+	        android:key="use_gps_to_select_location"
+	        android:title="Use GPS to select nearest stop"
+	        android:summary="Use GPS to select the closest appropriate bus stop"
+	        android:defaultValue="true" />
+
+	    <CheckBoxPreference
+	        android:dependency="use_gps_to_select_location"
+	        android:key="get_nearest_includes_non_favourites"
+	        android:title="Only select 'Favourite' stops"
+	        android:summary="Limit stop select to bus stops that have been marked as favourites"
+	        android:defaultValue="true" />
+	</PreferenceCategory>    
+	
+	<PreferenceCategory
+	    android:title="Automatic refresh">
+	    
+	    <CheckBoxPreference
+	        android:key="auto_refresh_bus_times"
+	        android:title="Automatically refresh bus times"
+	        android:summary="Automatically refresh the list of bus times whilst looking at them"
+	        android:defaultValue="true" />
+
+	    <ListPreference
+	        android:dependency="auto_refresh_bus_times"
+	        android:key="auto_refresh_rate"
+	        android:title="Refresh rate"
+	        android:summary="Select how often list of bus times should refresh"
+	        android:dialogTitle="Refresh rate"
+	        android:entries="@array/pref_refresh_rates_names"
+	        android:entryValues="@array/pref_refresh_rates_values"
+	        android:defaultValue="@string/pref_refresh_rates_default" />
+	</PreferenceCategory>
+
+	<PreferenceCategory
+	    android:title="Map">
+	    
+		<CheckBoxPreference
+		    android:key="remember_last_map_pos"
+		    android:title="Remember last map position"
+		    android:summary="Remember last map location, and default opening the map there"
+		    android:defaultValue="true" />
+	</PreferenceCategory>
+	
+	<PreferenceScreen
+	    android:title="Meta Watch">
+	    
+	    <PreferenceCategory
+	        android:title="Watch firmware">
+	        
+	        <ListPreference
+	            android:key="mw_firmware_version"
+	            android:title="Firmware type"
+	            android:summary="Indicate if the watch is running an old-style developer firmware"
+	            android:dialogTitle="Firmware type"
+	            android:entries="@array/pref_metawatch_firmware_types_names"
+	            android:entryValues="@array/pref_metawatch_firmware_types_values"
+	            android:defaultValue="@string/pref_metawatch_firmware_types_default" />
+	        	    
+  	    </PreferenceCategory>
+	</PreferenceScreen>
+	
+	<PreferenceScreen
+	    android:title="Debug options">
+
+	    <PreferenceCategory
+	        android:title="Logcat" >
+	        
+	        <CheckBoxPreference
+	            android:key="enable_logging"
+	            android:title="Enable logging"
+	            android:summary="Enable logging of all log statements to local Logcat"
+    			android:defaultValue="false" />
+	        
+	    </PreferenceCategory>	    
+	    <PreferenceCategory
+	        android:title="Logging to file" >
+
+	        <CheckBoxPreference
+	            android:key="enable_logging_to_file"
+	            android:title="Enable logging to file"
+	            android:summary="Capture all log entries to local file"
+	            android:defaultValue="false" />
+	        
+	        <EditTextPreference
+	            android:dependency="enable_logging_to_file"
+	            android:key="logfile_location"
+	            android:title="Logfile name"
+	            android:summary="Enter a name for the logfile (which will appear in the root of the SDCard, if installed)"
+	            android:defaultValue="" />
+	        	        
+	    </PreferenceCategory>
+	</PreferenceScreen>
+</PreferenceScreen>

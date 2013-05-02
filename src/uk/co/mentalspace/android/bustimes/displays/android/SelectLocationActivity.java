@@ -15,6 +15,7 @@ import uk.co.mentalspace.android.bustimes.Preferences;
 import uk.co.mentalspace.android.bustimes.R;
 import uk.co.mentalspace.android.bustimes.displays.android.popups.EditLocationPopup;
 import uk.co.mentalspace.android.bustimes.displays.android.popups.FindLocationPopup;
+import uk.co.mentalspace.android.bustimes.displays.android.tasks.SearchTask;
 import uk.co.mentalspace.android.bustimes.utils.QABGenerator;
 import uk.co.mentalspace.android.utils.LocationTracker;
 
@@ -131,11 +132,16 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
     	case R.id.menu_search_location:
     		showSearch(true);
     		return true;
+    	case R.id.menu_settings:
+    		startActivity(new Intent(this, SettingsActivity.class));
+    		return true;
     	default:
     		return false;
     	}
     }
-    
+
+    //Target Honeycomb required to determine location of Action Bar
+    //older phones won't have this, and will top of screen instead
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void showSearch(final boolean show) {
 		FragmentManager fragmentManager = getSupportFragmentManager();

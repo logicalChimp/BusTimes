@@ -49,6 +49,10 @@ public class BusTimeActivity extends Activity implements Display, OnItemSelected
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bus_time);
+
+        //ensure the prefs are loaded from memory when the app starts
+        Preferences.loadPreferences(this);
+        
 		findViewById(R.id.bus_times_results).setVisibility(View.GONE);
 		findViewById(R.id.bus_times_message).setVisibility(View.GONE);
 		((Spinner)findViewById(R.id.bus_times_location)).setOnItemSelectedListener(this);
@@ -154,7 +158,7 @@ public class BusTimeActivity extends Activity implements Display, OnItemSelected
     		startActivity(new Intent(this, FavouriteLocationsActivity.class));
     		return true;
     	case R.id.menu_settings:
-    		//TODO remove quick and dirty hack
+    		startActivity(new Intent(this, SettingsActivity.class));
     		return true;
     	default:
     		return super.onOptionsItemSelected(item);
