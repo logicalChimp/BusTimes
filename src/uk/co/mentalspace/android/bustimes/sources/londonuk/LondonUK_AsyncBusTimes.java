@@ -30,7 +30,7 @@ public class LondonUK_AsyncBusTimes implements BusTimeRefreshTask {
 			return null;
 		}
 		
-		String url = BUS_TIMES_URL + "?StopCode1="+location.getStopCode()+"&DirectionID=1&VisitNumber=1&ReturnList=LineName,DestinationText,EstimatedTime";
+		String url = BUS_TIMES_URL + "?StopCode1="+location.getStopCode()+"&ReturnList=LineName,DestinationText,EstimatedTime";
 		if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Data feed url: "+url);
 
 		ArrayList<BusTime> busTimes = new ArrayList<BusTime>();
