@@ -61,7 +61,7 @@ public class LondonUK_AsyncBusTimes implements BusTimeRefreshTask {
 			
 		} catch (IOException ioe) {
 			if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Unexception IOException occured: "+ioe);
-			return null;
+			//no explicit return - use the one at the end of the function
 		} finally {
 			if (null != br) {
 				try { br.close(); } catch (IOException ioe2) { if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Failed to close input stream. cause: "+ioe2); }
