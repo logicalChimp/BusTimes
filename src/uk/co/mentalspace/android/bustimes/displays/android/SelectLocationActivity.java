@@ -47,7 +47,11 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -307,9 +311,38 @@ public class SelectLocationActivity extends FragmentActivity implements OnCamera
     
     private MarkerOptions getMarkerOptions(Location loc) {
     	LatLng ll = loc.getLatLng();
-//    	LatLng ll = new LatLng(((double)loc.getLat())/10000,((double)loc.getLon())/10000);
     	MarkerOptions mo = new MarkerOptions().position(ll).title(loc.getLocationName()).snippet(loc.getStopCode());
     	if (loc.getChosen()) mo.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+    	else {
+    		mo = mo.anchor(0.5f, 0.5f);
+    		BitmapDrawable bd = (BitmapDrawable)getResources().getDrawable(R.drawable.map_marker_dot_red);
+    		Bitmap base = null;
+    		String h = loc.getHeading();
+    		if (null != h && !("".equals(h.trim()))) {
+    			try {
+    				float degrees = Float.parseFloat(h);
+    	    		BitmapDrawable dir = (BitmapDrawable)getResources().getDrawable(R.drawable.map_marker_heading_red);
+        			Matrix m = new Matrix();
+        			m.setRotate(0);
+    	    		Bitmap bbd = bd.getBitmap();
+    	    		base = Bitmap.createBitmap(bbd.getWidth(), bbd.getHeight(), Bitmap.Config.ARGB_8888);
+    	    		Canvas c = new Canvas(base);
+        			c.drawBitmap(bbd, m, null);
+        			m.postRotate(degrees, base.getWidth()/2, base.getHeight()/2);
+        			c.drawBitmap(dir.getBitmap(), m, null);
+    			} catch (NumberFormatException nfe) {
+    				if (Preferences.ENABLE_LOGGING) Log.e(LOGNAME, "Failed to parse heading", nfe);
+    				//can't parse heading - show just the dot icon
+    				base = bd.getBitmap();
+    			}
+    		} else {
+    			if (Preferences.ENABLE_LOGGING) Log.d(LOGNAME, "Heading ["+h+"] empty");
+    			//no heading, show just the dot icon
+				base = bd.getBitmap();
+    		}
+    		Bitmap bhs = Bitmap.createScaledBitmap(base, base.getWidth()/2, base.getHeight()/2, false);
+    		mo.icon(BitmapDescriptorFactory.fromBitmap(bhs));
+    	}
     	return mo;
     }
 
